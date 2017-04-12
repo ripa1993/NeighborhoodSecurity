@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Neighborhood Security</string>
+    <string name="gMaps_API_key">AIzaSyBMh1EhXjUCBf1iImY_PNHlSpE9_kQoaMw</string>
 </resources>
