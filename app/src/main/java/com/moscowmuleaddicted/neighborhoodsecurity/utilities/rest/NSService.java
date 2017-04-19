@@ -61,7 +61,7 @@ public class NSService {
                     List<Event> events = eventList.getEvents();
                     callback.onEventListLoad(events);
                 } else {
-                    callback.onMessageLoad(eventList);
+                    callback.onMessageLoad(eventList, response.code());
                 }
             }
 
@@ -82,7 +82,7 @@ public class NSService {
                     List<Event> events = eventList.getEvents();
                     callback.onEventListLoad(events);
                 } else {
-                    callback.onMessageLoad(eventList);
+                    callback.onMessageLoad(eventList, response.code());
                 }
             }
 
@@ -101,7 +101,7 @@ public class NSService {
                 if (event.getArgument().equals("")){
                     callback.onEventLoad(event);
                 } else{
-                    callback.onMessageLoad(event);
+                    callback.onMessageLoad(event, response.code());
                 }
             }
 
@@ -119,7 +119,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess(response.headers().get("Content-Location"));
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -137,7 +137,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess(response.headers().get("Content-Location"));
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -155,7 +155,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess("ok");
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -173,7 +173,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess("ok");
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -191,7 +191,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess("ok");
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -210,7 +210,7 @@ public class NSService {
                 if(user.getArgument().equals("")){
                     callback.onUserLoad(user);
                 } else {
-                    callback.onMessageLoad(user);
+                    callback.onMessageLoad(user, response.code());
                 }
             }
 
@@ -230,7 +230,7 @@ public class NSService {
                     List<Event> events = eventList.getEvents();
                     callback.onEventListLoad(events);
                 } else {
-                    callback.onMessageLoad(eventList);
+                    callback.onMessageLoad(eventList, response.code());
                 }
             }
 
@@ -248,7 +248,7 @@ public class NSService {
                 if (response.isSuccessful()){
                     callback.onSuccess(response.headers().get("Content-Location"));
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -267,7 +267,7 @@ public class NSService {
                 if(authToken.getArgument().equals("")){
                     callback.onAuthTokenLoad(authToken);
                 } else {
-                    callback.onMessageLoad(authToken);
+                    callback.onMessageLoad(authToken, response.code());
                 }
             }
 
@@ -285,7 +285,7 @@ public class NSService {
                 if(response.isSuccessful()){
                     callback.onSuccess("ok");
                 } else {
-                    callback.onMessageLoad(response.body());
+                    callback.onMessageLoad(response.body(), response.code());
                 }
             }
 
@@ -301,7 +301,7 @@ public class NSService {
 
     public static interface CallbackMessage{
         public void onFailure();
-        public void onMessageLoad(MyMessage message);
+        public void onMessageLoad(MyMessage message, int status);
 
     }
 
