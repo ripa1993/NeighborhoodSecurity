@@ -62,7 +62,7 @@ public interface NSRestService {
     @GET("users/{id}")
     public Call<User> getUserById(@Path("id") int userId);
 
-    @GET("users/{id}")
+    @GET("users/{id}/events")
     public Call<EventList> getEventByUser(@Path("id") int userId);
 
     @FormUrlEncoded
