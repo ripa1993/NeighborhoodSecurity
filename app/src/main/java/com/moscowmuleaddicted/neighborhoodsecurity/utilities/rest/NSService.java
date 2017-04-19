@@ -52,6 +52,16 @@ public class NSService {
         return instance;
     }
 
+    /**
+     * Retrieves events using an square area
+     * @param latitudeMin
+     * @param latitudeMax
+     * @param longitudeMin
+     * @param longitudeMax
+     * @param callback onEventListLoad if 200 OK,
+     *                 onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void getEventsByArea(float latitudeMin, float latitudeMax, float longitudeMin, float longitudeMax, final CallbackEventList callback){
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<EventList>(){
             @Override
@@ -73,6 +83,15 @@ public class NSService {
         });
     }
 
+    /**
+     * Retrieves events using a circular area
+     * @param latitude
+     * @param longitude
+     * @param radius
+     * @param callback onEventListLoad if 200 OK,
+     *                 onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void getEventsByRadius(float latitude, float longitude, float radius, final CallbackEventList callback){
         restInterface.getEventsByRadius(latitude, longitude,radius).enqueue(new retrofit2.Callback<EventList>(){
             @Override
@@ -93,6 +112,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Retrieves an event given the id
+     * @param id
+     * @param callback onEventLoad if 200 OK,
+     *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void getEventById(int id, final CallbackEvent callback){
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>(){
             @Override
@@ -112,6 +138,17 @@ public class NSService {
         });
     }
 
+    /**
+     * Post an event given the address
+     * @param eventType
+     * @param description
+     * @param country
+     * @param city
+     * @param street
+     * @param callback onSuccess if 201 CREATED,
+     *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void postEventWithAddress(String eventType, String description, String country, String city, String street,final CallbackSuccess callback){
         restInterface.postEventWithAddress(eventType, description, country, city, street).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -130,6 +167,16 @@ public class NSService {
         });
     }
 
+    /**
+     * Post an event given the coordinates
+     * @param eventType
+     * @param description
+     * @param latitude
+     * @param longitude
+     * @param callback onSuccess if 201 CREATED,
+     *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void postEventWithCoordinates(String eventType, String description, float latitude, float longitude,final CallbackSuccess callback){
         restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -148,6 +195,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Deletes an event given the id
+     * @param id
+     * @param callback onSuccess if 204 NO CONTENT,
+     *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void deleteEvent(int id,final CallbackSuccess callback){
         restInterface.deleteEvent(id).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -166,6 +220,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Vote an event using its id
+     * @param id
+     * @param callback onSuccess if 204 NO CONTENT (idempotent),
+     *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void voteEvent(int id,final CallbackSuccess callback){
         restInterface.voteEvent(id).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -184,6 +245,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Unvote an event using its id
+     * @param id
+     * @param callback onSuccess if 204 NO CONTENT (idempotent),
+     *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void unvoteEvent(int id,final CallbackSuccess callback){
         restInterface.unvoteEvent(id).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -202,6 +270,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Retrieves an user given its id
+     * @param id
+     * @param callback onUserLoad if 200 OK,
+     *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void getUserById(int id,final CallbackUser callback){
         restInterface.getUserById(id).enqueue(new retrofit2.Callback<User>(){
             @Override
@@ -221,6 +296,13 @@ public class NSService {
         });
     }
 
+    /**
+     * Retrieves events of an user given its id
+     * @param id
+     * @param callback onEventListLoad if 200 OK,
+     *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void getEventsByUser(int id,final CallbackEventList callback){
         restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<EventList>(){
             @Override
@@ -241,6 +323,15 @@ public class NSService {
         });
     }
 
+    /**
+     * Creates an user account using username, password, email
+     * @param username
+     * @param email
+     * @param password
+     * @param callback onSuccess if 201 CREATED,
+     *                 onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void createUserClassic(String username, String email, String password,final CallbackSuccess callback){
         restInterface.createUserClassic(username, email, password).enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -259,6 +350,14 @@ public class NSService {
         });
     }
 
+    /**
+     * Perform login using username and password
+     * @param username
+     * @param password
+     * @param callback onSuccess if 200 OK,
+     *                 onMessageLoad if 401 UNAUHTORIZED or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void loginClassic(String username, String password,final CallbackAuthToken callback){
         restInterface.loginClassic(username, password).enqueue(new retrofit2.Callback<AuthToken>(){
             @Override
@@ -278,6 +377,12 @@ public class NSService {
         });
     }
 
+    /**
+     * Logs out, invalidating the auth token
+     * @param callback onSuccess if 200 OK,
+     *                 onMessageLoad if 401 UNAUHTORIZED or 500 INTERNAL SERVER ERROR,
+     *                 onFailure if exception
+     */
     public void logout(final CallbackSuccess callback){
         restInterface.logout().enqueue(new retrofit2.Callback<MyMessage>(){
             @Override
@@ -298,30 +403,58 @@ public class NSService {
 
 
 
-
     public static interface CallbackMessage{
+        /**
+         * an exception has occurred
+         */
         public void onFailure();
+
+        /**
+         * service replied with a message
+         * @param message
+         * @param status http status code
+         */
         public void onMessageLoad(MyMessage message, int status);
 
     }
 
     public static interface CallbackEvent extends CallbackMessage{
+        /**
+         * service replied with an event
+         * @param event
+         */
         public void onEventLoad(Event event);
     }
 
     public static interface CallbackEventList extends CallbackMessage{
+        /**
+         * service replied with a list of events
+         * @param events
+         */
         public void onEventListLoad(List<Event> events);
     }
 
     public static interface CallbackUser  extends CallbackMessage{
+        /**
+         * service replied with a user
+         * @param user
+         */
         public void onUserLoad(User user);
     }
 
     public static interface CallbackAuthToken  extends CallbackMessage{
+        /**
+         * service replied with an auth token
+         * @param authToken
+         */
         public void onAuthTokenLoad(AuthToken authToken);
     }
 
     public static interface CallbackSuccess extends CallbackMessage{
+        /**
+         * service replied with a success code
+         * @param msg
+         */
         public void onSuccess(String msg);
     }
 
