@@ -19,7 +19,7 @@ public class Event {
     private Date date;
     @SerializedName("eventType")
     @Expose
-    private String eventType;
+    private EventType eventType;
     @SerializedName("description")
     @Expose
     private String description;
@@ -73,11 +73,11 @@ public class Event {
         this.date = date;
     }
 
-    public String getEventType() {
+    public EventType getEventType() {
         return eventType;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(EventType eventType) {
         this.eventType = eventType;
     }
 

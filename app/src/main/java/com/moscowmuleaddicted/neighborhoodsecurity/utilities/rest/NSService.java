@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventList;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
 
@@ -186,7 +186,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithAddress(String eventType, String description, String country, String city, String street, final CallbackSuccess callback) {
+    public void postEventWithAddress(EventType eventType, String description, String country, String city, String street, final CallbackSuccess callback) {
         restInterface.postEventWithAddress(eventType, description, country, city, street).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -225,7 +225,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithCoordinates(String eventType, String description, float latitude, float longitude, final CallbackSuccess callback) {
+    public void postEventWithCoordinates(EventType eventType, String description, float latitude, float longitude, final CallbackSuccess callback) {
         restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {

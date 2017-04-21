@@ -3,12 +3,15 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
@@ -20,12 +23,22 @@ import java.util.List;
 public class TestRestAPI extends AppCompatActivity {
 
     private NSService service;
+    private Spinner etSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        service = NSService.getInstance(getApplicationContext());
+        
+        EventType.setContext(getApplicationContext());
+
         setContentView(R.layout.activity_test_rest_api);
+
+        service = NSService.getInstance(getApplicationContext());
+
+        etSpinner = (Spinner) findViewById(R.id.et);
+        etSpinner.setAdapter(new ArrayAdapter<EventType>(this, R.layout.support_simple_spinner_dropdown_item, EventType.values()));
+
+
     }
 
     public void getEventsByAreaClicked(View view) {
@@ -60,7 +73,7 @@ public class TestRestAPI extends AppCompatActivity {
         service.getEventById(eventId, new NSService.CallbackEvent() {
             @Override
             public void onEventLoad(Event event) {
-                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType() + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType().getLabel(getApplicationContext()) + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -100,9 +113,10 @@ public class TestRestAPI extends AppCompatActivity {
     }
 
     public void postEventClicked(View view) {
-        String eventType ="", description="";
+        EventType eventType;
+        String description="";
         float lat=0, lon=0;
-        eventType = ((EditText)findViewById(R.id.et)).getText().toString();
+        eventType = (EventType) etSpinner.getSelectedItem();
         description = ((EditText)findViewById(R.id.desc)).getText().toString();
         lat = NumberUtils.toFloat(((EditText)findViewById(R.id.lat)).getText().toString(), 0);
         lon = NumberUtils.toFloat(((EditText)findViewById(R.id.lon)).getText().toString(), 0);
