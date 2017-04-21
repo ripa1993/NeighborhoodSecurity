@@ -2,7 +2,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventList;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
 
@@ -38,13 +38,13 @@ public interface NSRestService {
 
     @FormUrlEncoded
     @POST("events")
-    public Call<MyMessage>  postEventWithAddress(@Field("eventType") String eventType, @Field("description") String description,
+    public Call<MyMessage>  postEventWithAddress(@Field("eventType") EventType eventType, @Field("description") String description,
                                                  @Field("country") String country, @Field("city") String city, @Field("street") String street);
 
     @FormUrlEncoded
     @POST("events")
-    public Call<MyMessage> postEventWithCoordinates(@Field("eventType") String eventType, @Field("description") String description,
-                                                @Field("latitude") float latitude, @Field("longitude") float longitude);
+    public Call<MyMessage> postEventWithCoordinates(@Field("eventType") EventType eventType, @Field("description") String description,
+                                                    @Field("latitude") float latitude, @Field("longitude") float longitude);
 
     @DELETE("events/{id}")
     public Call<MyMessage> deleteEvent(@Path("id") int eventId);
