@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by Simone Ripamonti on 19/04/2017.
  */
 
-public class AuthToken extends MyMessage {
+public class AuthToken {
     @SerializedName("authToken")
     @Expose
     private String authToken;
@@ -22,7 +22,7 @@ public class AuthToken extends MyMessage {
     private String userUrl;
 
     public AuthToken(){
-        super();
+
     }
 
     public String getAuthToken() {

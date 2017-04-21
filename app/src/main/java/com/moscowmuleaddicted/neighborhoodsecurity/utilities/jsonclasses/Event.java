@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by Simone Ripamonti on 12/04/2017.
  */
 
-public class Event extends MyMessage {
+public class Event {
 
     @SerializedName("id")
     @Expose
@@ -53,7 +53,7 @@ public class Event extends MyMessage {
 
 
     public Event(){
-        super();
+
     }
 
 

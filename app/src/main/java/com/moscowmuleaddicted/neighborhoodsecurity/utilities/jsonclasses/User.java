@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by Simone Ripamonti on 19/04/2017.
  */
 
-public class User extends MyMessage {
+public class User {
     @SerializedName("id")
     @Expose
     int id;
@@ -27,7 +27,7 @@ public class User extends MyMessage {
     String userUrl;
 
     public User(){
-        super();
+
     }
 
     public int getId() {

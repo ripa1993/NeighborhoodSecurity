@@ -18,8 +18,9 @@ public final class HeaderRequestInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
         Request newRequest = originalRequest.newBuilder()
-                .header("serivce_key", "moscowmule")
-                .header("auth_token", "XXX").build();
+                .header("Accept", "application/json")
+                .header("service_key", "moscowmule")
+                .header("auth_token", NSService.getInstance(null).getAuthToken().getAuthToken()).build();
         return chain.proceed(newRequest);
     }
 }

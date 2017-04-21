@@ -26,11 +26,11 @@ public interface NSRestService {
     // events
 
     @GET("events")
-    public Call<EventList> getEventsByArea(@Query("latMin") float latitutdeMin, @Query("latMax") float latitudeMax,
+    public Call<List<Event>> getEventsByArea(@Query("latMin") float latitutdeMin, @Query("latMax") float latitudeMax,
                                              @Query("lonMin") float longitudeMin, @Query("lonMax") float longitudeMax);
 
     @GET("events")
-    public Call<EventList> getEventsByRadius(@Query("lat") float latitude, @Query("lon") float longitude,
+    public Call<List<Event>> getEventsByRadius(@Query("lat") float latitude, @Query("lon") float longitude,
                                                @Query("rad") float radius);
 
     @GET("events/{id}")
@@ -63,7 +63,7 @@ public interface NSRestService {
     public Call<User> getUserById(@Path("id") int userId);
 
     @GET("users/{id}/events")
-    public Call<EventList> getEventByUser(@Path("id") int userId);
+    public Call<List<Event>> getEventByUser(@Path("id") int userId);
 
     @FormUrlEncoded
     @POST("users/classic")
