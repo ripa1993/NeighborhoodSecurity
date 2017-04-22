@@ -363,32 +363,33 @@ public class NSService {
      *                 onFailure if exception
      */
     public void getUserById(int id, final CallbackUser callback) {
-        restInterface.getUserById(id).enqueue(new retrofit2.Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                logResponse(response);
-
-
-                if (response.isSuccessful()) {
-                    User user = response.body();
-                    callback.onUserLoad(user);
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+        // Todo: replace with Firebase code
+//        restInterface.getUserById(id).enqueue(new retrofit2.Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                logResponse(response);
+//
+//
+//                if (response.isSuccessful()) {
+//                    User user = response.body();
+//                    callback.onUserLoad(user);
+//                } else {
+//                    try {
+//                        MyMessage msg = converter.convert(response.errorBody());
+//                        callback.onMessageLoad(msg, response.code());
+//                    } catch (IOException e) {
+//                        callback.onFailure();
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                System.err.println(t.getMessage());
+//                callback.onFailure();
+//            }
+//        });
     }
 
     /**
@@ -400,31 +401,32 @@ public class NSService {
      *                 onFailure if exception
      */
     public void getEventsByUser(int id, final CallbackEventList callback) {
-        restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<List<Event>>() {
-            @Override
-            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
-                logResponse(response);
-
-                if (response.isSuccessful()) {
-                    List<Event> eventList = response.body();
-                    callback.onEventListLoad(eventList);
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Event>> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+        // Todo: replace with firebase code
+//        restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<List<Event>>() {
+//            @Override
+//            public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
+//                logResponse(response);
+//
+//                if (response.isSuccessful()) {
+//                    List<Event> eventList = response.body();
+//                    callback.onEventListLoad(eventList);
+//                } else {
+//                    try {
+//                        MyMessage msg = converter.convert(response.errorBody());
+//                        callback.onMessageLoad(msg, response.code());
+//                    } catch (IOException e) {
+//                        callback.onFailure();
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Event>> call, Throwable t) {
+//                System.err.println(t.getMessage());
+//                callback.onFailure();
+//            }
+//        });
     }
 
     /**
@@ -438,29 +440,31 @@ public class NSService {
      *                 onFailure if exception
      */
     public void createUserClassic(String username, String email, String password, final CallbackSuccess callback) {
-        restInterface.createUserClassic(username, email, password).enqueue(new retrofit2.Callback<MyMessage>() {
-            @Override
-            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
-                logResponse(response);
+        // Todo: replace with firebase code
 
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.headers().get("location"));
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+//        restInterface.createUserClassic(username, email, password).enqueue(new retrofit2.Callback<MyMessage>() {
+//            @Override
+//            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+//                logResponse(response);
+//
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess(response.headers().get("location"));
+//                } else {
+//                    try {
+//                        MyMessage msg = converter.convert(response.errorBody());
+//                        callback.onMessageLoad(msg, response.code());
+//                    } catch (IOException e) {
+//                        callback.onFailure();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MyMessage> call, Throwable t) {
+//                System.err.println(t.getMessage());
+//                callback.onFailure();
+//            }
+//        });
     }
 
     /**
@@ -473,31 +477,33 @@ public class NSService {
      *                 onFailure if exception
      */
     public void loginClassic(String username, String password, final CallbackAuthToken callback) {
-        restInterface.loginClassic(username, password).enqueue(new retrofit2.Callback<AuthToken>() {
-            @Override
-            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
-                logResponse(response);
+        // Todo: replace with firebase code
 
-                if (response.isSuccessful()) {
-                    AuthToken authToken = response.body();
-                    callback.onAuthTokenLoad(authToken);
-
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AuthToken> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+//        restInterface.loginClassic(username, password).enqueue(new retrofit2.Callback<AuthToken>() {
+//            @Override
+//            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
+//                logResponse(response);
+//
+//                if (response.isSuccessful()) {
+//                    AuthToken authToken = response.body();
+//                    callback.onAuthTokenLoad(authToken);
+//
+//                } else {
+//                    try {
+//                        MyMessage msg = converter.convert(response.errorBody());
+//                        callback.onMessageLoad(msg, response.code());
+//                    } catch (IOException e) {
+//                        callback.onFailure();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AuthToken> call, Throwable t) {
+//                System.err.println(t.getMessage());
+//                callback.onFailure();
+//            }
+//        });
     }
 
     /**
@@ -508,29 +514,30 @@ public class NSService {
      *                 onFailure if exception
      */
     public void logout(final CallbackSuccess callback) {
-        restInterface.logout().enqueue(new retrofit2.Callback<MyMessage>() {
-            @Override
-            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
-                logResponse(response);
-
-                if (response.isSuccessful()) {
-                    callback.onSuccess("ok");
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+        // Todo: replace with firebase code
+//        restInterface.logout().enqueue(new retrofit2.Callback<MyMessage>() {
+//            @Override
+//            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+//                logResponse(response);
+//
+//                if (response.isSuccessful()) {
+//                    callback.onSuccess("ok");
+//                } else {
+//                    try {
+//                        MyMessage msg = converter.convert(response.errorBody());
+//                        callback.onMessageLoad(msg, response.code());
+//                    } catch (IOException e) {
+//                        callback.onFailure();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MyMessage> call, Throwable t) {
+//                System.err.println(t.getMessage());
+//                callback.onFailure();
+//            }
+//        });
     }
 
 

@@ -59,24 +59,24 @@ public interface NSRestService {
 
     // users
 
-    @GET("users/{id}")
-    public Call<User> getUserById(@Path("id") int userId);
-
-    @GET("users/{id}/events")
-    public Call<List<Event>> getEventByUser(@Path("id") int userId);
-
-    @FormUrlEncoded
-    @POST("users/classic")
-    public Call<MyMessage> createUserClassic(@Field("username") String username, @Field("email") String email,
-                                        @Field("password") String password);
+//    @GET("users/{id}")
+//    public Call<User> getUserById(@Path("id") int userId);
+//
+//    @GET("users/{id}/events")
+//    public Call<List<Event>> getEventByUser(@Path("id") int userId);
+//
+//    @FormUrlEncoded
+//    @POST("users/classic")
+//    public Call<MyMessage> createUserClassic(@Field("username") String username, @Field("email") String email,
+//                                        @Field("password") String password);
 
     // authentication
 
-    @FormUrlEncoded
-    @POST("auth/classic")
-    public Call<AuthToken> loginClassic(@Field("username") String username, @Field("password") String password);
-
-    @POST("auth/logout")
-    public Call<MyMessage> logout();
+//    @FormUrlEncoded
+//    @POST("auth/classic")
+//    public Call<AuthToken> loginClassic(@Field("username") String username, @Field("password") String password);
+//
+//    @POST("auth/logout")
+//    public Call<MyMessage> logout();
 
 }
