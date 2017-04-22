@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "822387448086",
+    "firebase_url": "https://neighborhoodsecurity-a0cb6.firebaseio.com",
+    "project_id": "neighborhoodsecurity-a0cb6",
+    "storage_bucket": "neighborhoodsecurity-a0cb6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822387448086:android:0b31fd5623ae57aa",
+        "android_client_info": {
+          "package_name": "com.moscowmuleaddicted.neighborhoodsecurity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "822387448086-pon1nngcgpm55b0pb66ja818osnt0kst.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.moscowmuleaddicted.neighborhoodsecurity",
+            "certificate_hash": "c0a9713f0a80677270464a7e5d9439c5cf88a638"
+          }
+        },
+        {
+          "client_id": "822387448086-becf94hab3hbcq5h0irme0hij0kq6d45.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAinqnuOJtzD-YGE5eaBepDnnZKgJQ7V98"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "822387448086-becf94hab3hbcq5h0irme0hij0kq6d45.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
