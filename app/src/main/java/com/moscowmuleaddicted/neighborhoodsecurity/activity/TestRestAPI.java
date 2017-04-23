@@ -6,8 +6,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -20,6 +23,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.List;
 
+import static com.google.firebase.auth.FirebaseAuth.*;
+
 public class TestRestAPI extends AppCompatActivity {
 
     private NSService service;
@@ -28,7 +33,7 @@ public class TestRestAPI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         EventType.setContext(getApplicationContext());
 
         setContentView(R.layout.activity_test_rest_api);
@@ -42,15 +47,15 @@ public class TestRestAPI extends AppCompatActivity {
     }
 
     public void getEventsByAreaClicked(View view) {
-        float latMin=0, latMax=0, lonMin=0, lonMax=0;
-        latMin = NumberUtils.toFloat(((EditText)findViewById(R.id.latMin)).getText().toString(), 0);
-        latMax = NumberUtils.toFloat(((EditText)findViewById(R.id.latMax)).getText().toString(), 0);
-        lonMin = NumberUtils.toFloat(((EditText)findViewById(R.id.lonMin)).getText().toString(), 0);
-        lonMax = NumberUtils.toFloat(((EditText)findViewById(R.id.lonMax)).getText().toString(), 0);
+        float latMin = 0, latMax = 0, lonMin = 0, lonMax = 0;
+        latMin = NumberUtils.toFloat(((EditText) findViewById(R.id.latMin)).getText().toString(), 0);
+        latMax = NumberUtils.toFloat(((EditText) findViewById(R.id.latMax)).getText().toString(), 0);
+        lonMin = NumberUtils.toFloat(((EditText) findViewById(R.id.lonMin)).getText().toString(), 0);
+        lonMax = NumberUtils.toFloat(((EditText) findViewById(R.id.lonMax)).getText().toString(), 0);
 
-        service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.CallbackEventList() {
+        service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
             @Override
-            public void onEventListLoad(List<Event> events) {
+            public void onSuccess(List<Event> events) {
                 Toast.makeText(getApplicationContext(), "Received " + events.size() + " events", Toast.LENGTH_SHORT).show();
             }
 
@@ -67,12 +72,12 @@ public class TestRestAPI extends AppCompatActivity {
     }
 
     public void getEventClicked(View view) {
-        int eventId=0;
-        eventId = NumberUtils.toInt(((EditText)findViewById(R.id.eventId)).getText().toString(),0);
+        int eventId = 0;
+        eventId = NumberUtils.toInt(((EditText) findViewById(R.id.eventId)).getText().toString(), 0);
 
-        service.getEventById(eventId, new NSService.CallbackEvent() {
+        service.getEventById(eventId, new NSService.MyCallback<Event>() {
             @Override
-            public void onEventLoad(Event event) {
+            public void onSuccess(Event event) {
                 Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType().getLabel(getApplicationContext()) + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
             }
 
@@ -89,15 +94,15 @@ public class TestRestAPI extends AppCompatActivity {
     }
 
     public void getUserClicked(View view) {
-        int userId=0;
-        userId = NumberUtils.toInt(((EditText)findViewById(R.id.userId)).getText().toString(), 0);
+        String userId = "";
+        userId = ((EditText) findViewById(R.id.userId)).getText().toString();
 
-        service.getUserById(userId, new NSService.CallbackUser() {
+        service.getUserById(userId, new NSService.MyCallback<User>() {
 
 
             @Override
-            public void onUserLoad(User user) {
-                Toast.makeText(getApplicationContext(), user.getUsername() +" "+user.getEmail(), Toast.LENGTH_SHORT).show();
+            public void onSuccess(User user) {
+                Toast.makeText(getApplicationContext(), user.getName() + " " + user.getEmail(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -110,44 +115,31 @@ public class TestRestAPI extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void getThisUserClicked(View v) {
+        FirebaseUser user = getInstance().getCurrentUser();
+        if (user != null) {
+            Toast.makeText(getApplicationContext(), "Provider: " + user.getProviderId() +
+                    "\nDisplay name: " + user.getDisplayName() +
+                    "\nUID: " + user.getUid() +
+                    "\nEmail: " + user.getEmail(), Toast.LENGTH_LONG).show();
+            ((EditText) findViewById(R.id.userId)).setText(user.getUid(), TextView.BufferType.EDITABLE);
+        } else {
+            Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void postEventClicked(View view) {
         EventType eventType;
-        String description="";
-        float lat=0, lon=0;
+        String description = "";
+        float lat = 0, lon = 0;
         eventType = (EventType) etSpinner.getSelectedItem();
-        description = ((EditText)findViewById(R.id.desc)).getText().toString();
-        lat = NumberUtils.toFloat(((EditText)findViewById(R.id.lat)).getText().toString(), 0);
-        lon = NumberUtils.toFloat(((EditText)findViewById(R.id.lon)).getText().toString(), 0);
+        description = ((EditText) findViewById(R.id.desc)).getText().toString();
+        lat = NumberUtils.toFloat(((EditText) findViewById(R.id.lat)).getText().toString(), 0);
+        lon = NumberUtils.toFloat(((EditText) findViewById(R.id.lon)).getText().toString(), 0);
 
-        service.postEventWithCoordinates(eventType, description, lat, lon, new NSService.CallbackSuccess(){
-
-            @Override
-            public void onFailure() {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onSuccess(String msg) {
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    public void postUserClicked(View view) {
-        String username ="", password ="", mail = "";
-        username = ((EditText)findViewById(R.id.username)).getText().toString();
-        password = ((EditText)findViewById(R.id.password)).getText().toString();
-        mail = ((EditText)findViewById(R.id.mail)).getText().toString();
-
-        service.createUserClassic(username, mail, password, new NSService.CallbackSuccess() {
+        service.postEventWithCoordinates(eventType, description, lat, lon, new NSService.MyCallback<String>() {
 
             @Override
             public void onFailure() {
@@ -166,17 +158,41 @@ public class TestRestAPI extends AppCompatActivity {
         });
 
     }
+
 
     public void loginClassicClicked(View view) {
-        String username ="", password ="";
-        username = ((EditText)findViewById(R.id.username)).getText().toString();
-        password = ((EditText)findViewById(R.id.password)).getText().toString();
+        String email = "", password = "";
+        email = ((EditText) findViewById(R.id.mail)).getText().toString();
+        password = ((EditText) findViewById(R.id.password)).getText().toString();
 
-        service.loginClassic(username, password, new NSService.CallbackAuthToken() {
+        service.signInWithEmail(email, password, new NSService.MyCallback<String>() {
             @Override
-            public void onAuthTokenLoad(AuthToken authToken) {
-                service.setToken(authToken);
-                Toast.makeText(getApplicationContext(), "Token: "+ authToken.getAuthToken(), Toast.LENGTH_SHORT ).show();
+            public void onSuccess(String msg) {
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void signupClassicClicked(View view){
+        String email = "", password = "", name="";
+        email = ((EditText) findViewById(R.id.mail)).getText().toString();
+        password = ((EditText) findViewById(R.id.password)).getText().toString();
+        name = ((EditText) findViewById(R.id.username)).getText().toString();
+
+        service.signUpWithEmail(name, email, password, new NSService.MyCallback<String>() {
+            @Override
+            public void onSuccess(String s) {
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -193,7 +209,7 @@ public class TestRestAPI extends AppCompatActivity {
 
     public void logoutClicked(View view) {
 
-        service.logout(new NSService.CallbackSuccess() {
+        service.logout(new NSService.MyCallback<String>() {
             @Override
             public void onFailure() {
                 Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
@@ -206,38 +222,16 @@ public class TestRestAPI extends AppCompatActivity {
 
             @Override
             public void onSuccess(String msg) {
-                service.removeToken();
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public void delEventClicked(View view){
-        int eventId=0;
-        eventId = NumberUtils.toInt(((EditText)findViewById(R.id.dEid)).getText().toString(),0);
+    public void delEventClicked(View view) {
+        int eventId = 0;
+        eventId = NumberUtils.toInt(((EditText) findViewById(R.id.dEid)).getText().toString(), 0);
 
-        service.deleteEvent(eventId, new NSService.CallbackSuccess() {
-            @Override
-            public void onSuccess(String msg) {
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure() {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public void votePlusClicked(View view){
-        int eventId=0;
-        eventId = NumberUtils.toInt(((EditText)findViewById(R.id.vEid)).getText().toString(),0);
-        service.voteEvent(eventId, new NSService.CallbackSuccess() {
+        service.deleteEvent(eventId, new NSService.MyCallback<String>() {
             @Override
             public void onSuccess(String msg) {
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
@@ -255,10 +249,31 @@ public class TestRestAPI extends AppCompatActivity {
         });
     }
 
-    public void voteMinusClicked(View view){
-        int eventId=0;
-        eventId = NumberUtils.toInt(((EditText)findViewById(R.id.vEid)).getText().toString(),0);
-        service.unvoteEvent(eventId, new NSService.CallbackSuccess() {
+    public void votePlusClicked(View view) {
+        int eventId = 0;
+        eventId = NumberUtils.toInt(((EditText) findViewById(R.id.vEid)).getText().toString(), 0);
+        service.voteEvent(eventId, new NSService.MyCallback<String>() {
+            @Override
+            public void onSuccess(String msg) {
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void voteMinusClicked(View view) {
+        int eventId = 0;
+        eventId = NumberUtils.toInt(((EditText) findViewById(R.id.vEid)).getText().toString(), 0);
+        service.unvoteEvent(eventId, new NSService.MyCallback<String>() {
             @Override
             public void onSuccess(String msg) {
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();

@@ -59,12 +59,16 @@ public interface NSRestService {
 
     // users
 
-//    @GET("users/{id}")
-//    public Call<User> getUserById(@Path("id") int userId);
-//
-//    @GET("users/{id}/events")
-//    public Call<List<Event>> getEventByUser(@Path("id") int userId);
-//
+    @GET("users/{id}")
+    public Call<User> getUserById(@Path("id") String userId);
+
+    @GET("users/{id}/events")
+    public Call<List<Event>> getEventByUser(@Path("id") String userId);
+
+    @FormUrlEncoded
+    @POST("users")
+    public Call<MyMessage> postUser(@Field("id") String id, @Field("name") String name, @Field("email") String email);
+
 //    @FormUrlEncoded
 //    @POST("users/classic")
 //    public Call<MyMessage> createUserClassic(@Field("username") String username, @Field("email") String email,
