@@ -12,38 +12,34 @@ import java.util.Date;
 public class User {
     @SerializedName("id")
     @Expose
-    int id;
-    @SerializedName("username")
+    String id;
+    @SerializedName("name")
     @Expose
-    String username;
+    String name;
     @SerializedName("email")
     @Expose
     String email;
-    @SerializedName("created")
-    @Expose
-    Date created;
-    @SerializedName("userUrl")
-    @Expose
-    String userUrl;
 
-    public User(){
+
+    public User() {
 
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -54,19 +50,4 @@ public class User {
         this.email = email;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getUserUrl() {
-        return userUrl;
-    }
-
-    public void setUserUrl(String userUrl) {
-        this.userUrl = userUrl;
-    }
 }

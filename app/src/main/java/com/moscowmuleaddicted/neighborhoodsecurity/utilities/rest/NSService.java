@@ -1,7 +1,16 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -21,6 +30,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.google.android.gms.internal.zzt.TAG;
+
 /**
  * Created by Simone Ripamonti on 12/04/2017.
  */
@@ -28,7 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NSService {
 
     private static final String baseUrl = "thawing-taiga-87659.herokuapp.com";
-
+    private FirebaseAuth mAuth;
     private static AuthToken authToken;
     private static NSService instance;
     private static NSRestService restInterface;
@@ -50,7 +61,8 @@ public class NSService {
 
         converter = retrofit.responseBodyConverter(MyMessage.class, new Annotation[0]);
 
-        removeToken();
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
     public static synchronized NSService getInstance(Context context) {
@@ -71,7 +83,7 @@ public class NSService {
      *                     onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                     onFailure if exception
      */
-    public void getEventsByArea(float latitudeMin, float latitudeMax, float longitudeMin, float longitudeMax, final CallbackEventList callback) {
+    public void getEventsByArea(float latitudeMin, float latitudeMax, float longitudeMin, float longitudeMax, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -80,7 +92,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
-                    callback.onEventListLoad(eventList);
+                    callback.onSuccess(eventList);
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -110,7 +122,7 @@ public class NSService {
      *                  onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                  onFailure if exception
      */
-    public void getEventsByRadius(float latitude, float longitude, float radius, final CallbackEventList callback) {
+    public void getEventsByRadius(float latitude, float longitude, float radius, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByRadius(latitude, longitude, radius).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -119,7 +131,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
-                    callback.onEventListLoad(eventList);
+                    callback.onSuccess(eventList);
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -146,7 +158,8 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventById(int id, final CallbackEvent callback) {
+    public void getEventById(int id, final MyCallback<Event> callback) {
+        Log.i(TAG, "getEventById: querying for event "+id);
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>() {
             @Override
             public void onResponse(Call<Event> call, Response<Event> response) {
@@ -155,7 +168,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     Event event = response.body();
-                    callback.onEventLoad(event);
+                    callback.onSuccess(event);
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -186,7 +199,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithAddress(EventType eventType, String description, String country, String city, String street, final CallbackSuccess callback) {
+    public void postEventWithAddress(EventType eventType, String description, String country, String city, String street, final MyCallback<String> callback) {
         restInterface.postEventWithAddress(eventType, description, country, city, street).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -225,7 +238,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithCoordinates(EventType eventType, String description, float latitude, float longitude, final CallbackSuccess callback) {
+    public void postEventWithCoordinates(EventType eventType, String description, float latitude, float longitude, final MyCallback<String> callback) {
         restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -259,7 +272,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void deleteEvent(int id, final CallbackSuccess callback) {
+    public void deleteEvent(int id, final MyCallback<String> callback) {
         restInterface.deleteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
 
             @Override
@@ -294,7 +307,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void voteEvent(int id, final CallbackSuccess callback) {
+    public void voteEvent(int id, final MyCallback<String> callback) {
         restInterface.voteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -328,7 +341,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void unvoteEvent(int id, final CallbackSuccess callback) {
+    public void unvoteEvent(int id, final MyCallback<String> callback) {
         restInterface.unvoteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -362,7 +375,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getUserById(int id, final CallbackUser callback) {
+    public void getUserById(String id, final MyCallback<User> callback) {
         restInterface.getUserById(id).enqueue(new retrofit2.Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -371,7 +384,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     User user = response.body();
-                    callback.onUserLoad(user);
+                    callback.onSuccess(user);
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -399,7 +412,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventsByUser(int id, final CallbackEventList callback) {
+    public void getEventsByUser(String id, final MyCallback<List<Event>> callback) {
         restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -407,7 +420,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
-                    callback.onEventListLoad(eventList);
+                    callback.onSuccess(eventList);
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -437,65 +450,75 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void createUserClassic(String username, String email, String password, final CallbackSuccess callback) {
-        restInterface.createUserClassic(username, email, password).enqueue(new retrofit2.Callback<MyMessage>() {
-            @Override
-            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
-                logResponse(response);
+    public void signUpWithEmail(final String username, final String email, String password, final MyCallback<String> callback) {
 
-                if (response.isSuccessful()) {
-                    callback.onSuccess(response.headers().get("location"));
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "signUpWithEmail: success");
+                    FirebaseUser user = task.getResult().getUser();
+                    UserProfileChangeRequest upcr = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
+                    user.updateProfile(upcr).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "signUpWithEmail: profile updated with username");
+                            } else {
+                                Log.w(TAG, "signUpWithEmail: failure in updating user profile", task.getException());
+                            }
+                        }
+                    });
+
+                    // store user info on remote db
+                    postUser(user.getUid(), username, email, new MyCallback<String>() {
+                        @Override
+                        public void onSuccess(String msg) {
+                            Log.d(TAG, "signUpWithEmail: user posted on rest service");
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Log.w(TAG, "signUpWithEmail: failure in posting user on rest service");
+                        }
+
+                        @Override
+                        public void onMessageLoad(MyMessage message, int status) {
+                            Log.w(TAG, "signUpWithEmail: ("+status+") "+message);
+                        }
+                    });
                 } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
+                    Log.w(TAG, "signUpWithEmail:failure", task.getException());
+                    callback.onFailure();
                 }
             }
-
-            @Override
-            public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
         });
+
     }
 
     /**
      * Perform login using username and password
      *
-     * @param username
+     * @param email
      * @param password
      * @param callback onSuccess if 200 OK,
      *                 onMessageLoad if 401 UNAUHTORIZED or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void loginClassic(String username, String password, final CallbackAuthToken callback) {
-        restInterface.loginClassic(username, password).enqueue(new retrofit2.Callback<AuthToken>() {
+    public void signInWithEmail(String email, String password, final MyCallback<String> callback) {
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onResponse(Call<AuthToken> call, Response<AuthToken> response) {
-                logResponse(response);
-
-                if (response.isSuccessful()) {
-                    AuthToken authToken = response.body();
-                    callback.onAuthTokenLoad(authToken);
-
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithEmail:success");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    callback.onSuccess(user.getDisplayName() + " " + user.getUid());
                 } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    callback.onFailure();
                 }
-            }
-
-            @Override
-            public void onFailure(Call<AuthToken> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
             }
         });
     }
@@ -507,30 +530,9 @@ public class NSService {
      *                 onMessageLoad if 401 UNAUHTORIZED or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void logout(final CallbackSuccess callback) {
-        restInterface.logout().enqueue(new retrofit2.Callback<MyMessage>() {
-            @Override
-            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
-                logResponse(response);
-
-                if (response.isSuccessful()) {
-                    callback.onSuccess("ok");
-                } else {
-                    try {
-                        MyMessage msg = converter.convert(response.errorBody());
-                        callback.onMessageLoad(msg, response.code());
-                    } catch (IOException e) {
-                        callback.onFailure();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
-                callback.onFailure();
-            }
-        });
+    public void logout(final MyCallback<String> callback) {
+        mAuth.signOut();
+        callback.onSuccess("ok");
     }
 
 
@@ -550,49 +552,8 @@ public class NSService {
 
     }
 
-    public static interface CallbackEvent extends CallbackMessage {
-        /**
-         * service replied with an event
-         *
-         * @param event
-         */
-        public void onEventLoad(Event event);
-    }
-
-    public static interface CallbackEventList extends CallbackMessage {
-        /**
-         * service replied with a list of events
-         *
-         * @param events
-         */
-        public void onEventListLoad(List<Event> events);
-    }
-
-    public static interface CallbackUser extends CallbackMessage {
-        /**
-         * service replied with a user
-         *
-         * @param user
-         */
-        public void onUserLoad(User user);
-    }
-
-    public static interface CallbackAuthToken extends CallbackMessage {
-        /**
-         * service replied with an auth token
-         *
-         * @param authToken
-         */
-        public void onAuthTokenLoad(AuthToken authToken);
-    }
-
-    public static interface CallbackSuccess extends CallbackMessage {
-        /**
-         * service replied with a success code
-         *
-         * @param msg
-         */
-        public void onSuccess(String msg);
+    public static interface MyCallback<T> extends CallbackMessage{
+        public void onSuccess(T t);
     }
 
     private void logResponse(Response<?> response) {
@@ -605,20 +566,25 @@ public class NSService {
         }
     }
 
-    public void setToken(AuthToken authToken){
-        NSService.authToken = authToken;
+    private void postUser(String id, String name, String email, final MyCallback<String> callback){
+        restInterface.postUser(id, name, email).enqueue( new retrofit2.Callback<MyMessage>(){
+
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+                if(response.isSuccessful()){
+                    callback.onSuccess("ok");
+                } else {
+                    callback.onFailure();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                callback.onFailure();
+            }
+        });
     }
 
-    public void removeToken(){
-        NSService.authToken = new AuthToken();
-        NSService.authToken.setAuthToken("");
-        NSService.authToken.setUserId(0);
-        NSService.authToken.setUsername("");
-        NSService.authToken.setUserUrl("");
-    }
-
-    public AuthToken getAuthToken(){
-        return authToken;
-    }
 
 }

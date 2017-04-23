@@ -43,13 +43,11 @@ public class Event {
     private int votes;
     @SerializedName("submitterId")
     @Expose
-    private int submitterId;
+    private String submitterId;
     @SerializedName("eventUrl")
     @Expose
     private String eventUrl;
-    @SerializedName("submitterUrl")
-    @Expose
-    private String submitterUrl;
+
 
 
     public Event(){
@@ -137,11 +135,11 @@ public class Event {
         this.votes = votes;
     }
 
-    public int getSubmitterId() {
+    public String getSubmitterId() {
         return submitterId;
     }
 
-    public void setSubmitterId(int submitterId) {
+    public void setSubmitterId(String submitterId) {
         this.submitterId = submitterId;
     }
 
@@ -153,11 +151,5 @@ public class Event {
         this.eventUrl = eventUrl;
     }
 
-    public String getSubmitterUrl() {
-        return submitterUrl;
-    }
 
-    public void setSubmitterUrl(String submitterUrl) {
-        this.submitterUrl = submitterUrl;
-    }
 }

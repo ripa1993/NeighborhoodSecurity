@@ -26,6 +26,7 @@
                 android:id="@+id/button3"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_weight="4"
                 android:onClick="getEventsByAreaClicked"
                 android:text="Get Events By Area" />
 
@@ -33,28 +34,36 @@
                 android:id="@+id/latMin"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="45"
+                android:layout_weight="1"
+                android:text="45"
+                android:hint="latMin"
                 android:inputType="numberDecimal" />
 
             <EditText
                 android:id="@+id/latMax"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="46"
+                android:layout_weight="1"
+                android:text="46"
+                android:hint="latMax"
                 android:inputType="numberDecimal" />
 
             <EditText
                 android:id="@+id/lonMin"
                 android:layout_width="wrap_content"
+                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:hint="9"
+                android:text="9"
+                android:hint="lonMin"
                 android:inputType="numberDecimal" />
 
             <EditText
                 android:id="@+id/lonMax"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="10"
+                android:layout_weight="1"
+                android:text="10"
+                android:hint="lonMax"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
@@ -76,12 +85,13 @@
                 android:id="@+id/eventId"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="1"
+                android:text="19"
+                android:hint="id"
                 android:inputType="number" />
 
         </LinearLayout>
 
-        <!-- Get user by id -->
+        <!-- Get user-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,15 +101,24 @@
                 android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:onClick="getUserClicked"
-                android:text="Get User By ID" />
-
-            <EditText
-                android:id="@+id/userId"
+                android:onClick="getThisUserClicked"
+                android:layout_weight="1"
+                android:text="(FIREBASE) UserInfo" />
+            <Button
+                android:id="@+id/button13"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="5"
-                android:inputType="number" />
+                android:onClick="getUserClicked"
+                android:layout_weight="1"
+                android:text="(REST) GetUserById " />
+            <EditText
+                android:id="@+id/userId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="SiqffdcZXAZpY0AIC98N2T9BdSO2"
+                android:hint="id"
+                android:inputType="text" />
 
         </LinearLayout>
 
@@ -125,6 +144,7 @@
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Prova"
             android:hint="Description"
             android:inputType="text" />
 
@@ -137,6 +157,8 @@
                 android:id="@+id/lat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="45.5"
                 android:hint="Lat"
                 android:inputType="numberDecimal" />
 
@@ -144,30 +166,33 @@
                 android:id="@+id/lon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="9.5"
                 android:hint="Long"
                 android:inputType="numberDecimal" />
         </LinearLayout>
 
-        <!-- post user, login, logout -->
+        <!--  login, logout -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="postUserClicked"
-                android:text="Post user" />
+
 
             <Button
                 android:id="@+id/button8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="loginClassicClicked"
-                android:text="Login classic" />
+                android:text="Email" />
+            <Button
+                android:id="@+id/button14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="signupClassicClicked"
+                android:text="EmailSignup" />
 
             <Button
                 android:id="@+id/button9"
@@ -195,7 +220,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
-                android:text="Password1"
                 android:inputType="textPassword" />
 
             <EditText
@@ -203,6 +227,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
+                android:text="simone.ripamonti.1993@gmail.com"
                 android:inputType="textEmailAddress" />
         </LinearLayout>
 
@@ -223,7 +248,8 @@
                 android:id="@+id/dEid"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="5"
+                android:hint="id"
+                android:text="19"
                 android:inputType="number" />
 
         </LinearLayout>
@@ -252,7 +278,8 @@
                 android:id="@+id/vEid"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:hint="45"
+                android:text="19"
+                android:hint="id"
                 android:inputType="number" />
 
 
