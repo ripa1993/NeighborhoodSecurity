@@ -15,6 +15,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthTok
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
 
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class NSService {
 
     /**
      * Retrieves events using an square area
+     * GET /events
      *
      * @param latitudeMin
      * @param latitudeMax
@@ -114,6 +116,7 @@ public class NSService {
 
     /**
      * Retrieves events using a circular area
+     * GET /events
      *
      * @param latitude
      * @param longitude
@@ -152,6 +155,7 @@ public class NSService {
 
     /**
      * Retrieves an event given the id
+     * GET /events/{id}
      *
      * @param id
      * @param callback onEventLoad if 200 OK,
@@ -159,7 +163,7 @@ public class NSService {
      *                 onFailure if exception
      */
     public void getEventById(int id, final MyCallback<Event> callback) {
-        Log.i(TAG, "getEventById: querying for event "+id);
+        Log.i(TAG, "getEventById: querying for event " + id);
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>() {
             @Override
             public void onResponse(Call<Event> call, Response<Event> response) {
@@ -189,6 +193,7 @@ public class NSService {
 
     /**
      * Post an event given the address
+     * POST /events
      *
      * @param eventType
      * @param description
@@ -229,6 +234,7 @@ public class NSService {
 
     /**
      * Post an event given the coordinates
+     * POST /events
      *
      * @param eventType
      * @param description
@@ -266,6 +272,7 @@ public class NSService {
 
     /**
      * Deletes an event given the id
+     * DELETE /events/{id}
      *
      * @param id
      * @param callback onSuccess if 204 NO CONTENT,
@@ -301,6 +308,7 @@ public class NSService {
 
     /**
      * Vote an event using its id
+     * POST /events/{id}/vote
      *
      * @param id
      * @param callback onSuccess if 204 NO CONTENT (idempotent),
@@ -335,6 +343,7 @@ public class NSService {
 
     /**
      * Unvote an event using its id
+     * DELETE /events/{id}/vote
      *
      * @param id
      * @param callback onSuccess if 204 NO CONTENT (idempotent),
@@ -369,6 +378,7 @@ public class NSService {
 
     /**
      * Retrieves an user given its id
+     * GET /users/{id}
      *
      * @param id
      * @param callback onUserLoad if 200 OK,
@@ -406,6 +416,7 @@ public class NSService {
 
     /**
      * Retrieves events of an user given its id
+     * GET /users/{id}/events
      *
      * @param id
      * @param callback onEventListLoad if 200 OK,
@@ -455,14 +466,14 @@ public class NSService {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     Log.d(TAG, "signUpWithEmail: success");
                     FirebaseUser user = task.getResult().getUser();
                     UserProfileChangeRequest upcr = new UserProfileChangeRequest.Builder().setDisplayName(username).build();
                     user.updateProfile(upcr).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Log.d(TAG, "signUpWithEmail: profile updated with username");
                             } else {
                                 Log.w(TAG, "signUpWithEmail: failure in updating user profile", task.getException());
@@ -484,7 +495,7 @@ public class NSService {
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, "signUpWithEmail: ("+status+") "+message);
+                            Log.w(TAG, "signUpWithEmail: (" + status + ") " + message);
                         }
                     });
                 } else {
@@ -498,6 +509,7 @@ public class NSService {
 
     /**
      * Perform login using username and password
+     * FirebaseAuth + POST /users
      *
      * @param email
      * @param password
@@ -535,6 +547,262 @@ public class NSService {
         callback.onSuccess("ok");
     }
 
+    /**
+     * Gets the subscription of the user
+     * GET /subscriptions/{id}
+     *
+     * @param id
+     * @param callback
+     */
+    public void getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
+        restInterface.getSubscriptionsByUser(id).enqueue(new retrofit2.Callback<List<Subscription>>() {
+            @Override
+            public void onResponse(Call<List<Subscription>> call, Response<List<Subscription>> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    List<Subscription> subs = response.body();
+                    callback.onSuccess(subs);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Subscription>> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Updates FCM token of the user
+     * PUT /users/fcm
+     *
+     * @param fcm
+     * @param callback
+     */
+    public void updateFcm(String fcm, final MyCallback<MyMessage> callback) {
+        restInterface.updateFcm(fcm).enqueue(new retrofit2.Callback<MyMessage>() {
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    MyMessage msg = response.body();
+                    callback.onSuccess(msg);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Gets details of a subscription given the id
+     * GET /subscriptions/{id}
+     *
+     * @param id
+     * @param callback
+     */
+    public void getSubscriptionById(int id, final MyCallback<Subscription> callback) {
+        restInterface.getSubscriptionById(id).enqueue(new retrofit2.Callback<Subscription>() {
+            @Override
+            public void onResponse(Call<Subscription> call, Response<Subscription> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    Subscription sub = response.body();
+                    callback.onSuccess(sub);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Subscription> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Delete subscription given its id
+     * DELETE /subscription/{id}
+     *
+     * @param id
+     * @param callback
+     */
+    public void deleteSubscriptionById(int id, final MyCallback<MyMessage> callback) {
+        restInterface.deleteSubscriptionById(id).enqueue(new retrofit2.Callback<MyMessage>() {
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    MyMessage msg = response.body();
+                    callback.onSuccess(msg);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Post subscription using rectangle are
+     * POST /subscriptions
+     * @param minLat
+     * @param maxLat
+     * @param minLon
+     * @param maxLon
+     * @param callback
+     */
+    public void postSubscriptionArea(float minLat, float maxLat, float minLon, float maxLon, final MyCallback<MyMessage> callback) {
+        restInterface.postSubscriptionArea(minLat, maxLat, minLon, maxLon).enqueue(new retrofit2.Callback<MyMessage>() {
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    MyMessage msg = response.body();
+                    callback.onSuccess(msg);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Post subscription using center and radius
+     * POST /subscriptions
+     * @param lat
+     * @param lon
+     * @param radius
+     * @param callback
+     */
+    public void postSubscriptionCenterAndRadius(float lat, float lon, int radius, final MyCallback<MyMessage> callback){
+        restInterface.postSubscriptionCenterAndRadius(lat, lon, radius).enqueue(new retrofit2.Callback<MyMessage>() {
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    MyMessage msg = response.body();
+                    callback.onSuccess(msg);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
+
+    /**
+     * Post subscription using addres
+     * POST /subscriptions
+     * @param country
+     * @param city
+     * @param street
+     * @param radius
+     * @param callback
+     */
+    public void postSubscriptionAddress(String country, String city, String street, int radius, final MyCallback<MyMessage> callback){
+        restInterface.postSubscriptionAddress(country,city,street,radius).enqueue(new retrofit2.Callback<MyMessage>(){
+            @Override
+            public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
+                logResponse(response);
+
+
+                if (response.isSuccessful()) {
+                    MyMessage msg = response.body();
+                    callback.onSuccess(msg);
+                } else {
+                    try {
+                        MyMessage msg = converter.convert(response.errorBody());
+                        callback.onMessageLoad(msg, response.code());
+                    } catch (IOException e) {
+                        callback.onFailure();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<MyMessage> call, Throwable t) {
+                System.err.println(t.getMessage());
+                callback.onFailure();
+            }
+        });
+    }
 
     public static interface CallbackMessage {
         /**
@@ -552,7 +820,7 @@ public class NSService {
 
     }
 
-    public static interface MyCallback<T> extends CallbackMessage{
+    public static interface MyCallback<T> extends CallbackMessage {
         public void onSuccess(T t);
     }
 
@@ -560,19 +828,19 @@ public class NSService {
         System.out.println("Response: " + response.message());
         System.out.println("Content: " + response.raw());
         Map<String, List<String>> map = response.headers().toMultimap();
-        for (String s: map.keySet()
+        for (String s : map.keySet()
                 ) {
-            System.out.println("Headers: " +s+" - "+map.get(s));
+            System.out.println("Headers: " + s + " - " + map.get(s));
         }
     }
 
-    private void postUser(String id, String name, String email, final MyCallback<String> callback){
-        restInterface.postUser(id, name, email).enqueue( new retrofit2.Callback<MyMessage>(){
+    private void postUser(String id, String name, String email, final MyCallback<String> callback) {
+        restInterface.postUser(id, name, email).enqueue(new retrofit2.Callback<MyMessage>() {
 
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess("ok");
                 } else {
                     callback.onFailure();

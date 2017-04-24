@@ -88,20 +88,20 @@ public interface NSRestService {
 
     @POST("subscriptions")
     @FormUrlEncoded
-    public Call<Subscription> postSubscriptionArea(@Field("minLat") float minLat,
+    public Call<MyMessage> postSubscriptionArea(@Field("minLat") float minLat,
                                                    @Field("maxLat") float maxLat,
                                                    @Field("minLon") float minLon,
                                                    @Field("maxLon") float maxLon);
 
     @POST("subscriptions")
     @FormUrlEncoded
-    public Call<Subscription> postSubscriptionCenterAndRadius(@Field("lat") float lat,
+    public Call<MyMessage> postSubscriptionCenterAndRadius(@Field("lat") float lat,
                                                                 @Field("lon") float lon,
                                                                 @Field("radius") int radius);
 
     @POST("subscriptions")
     @FormUrlEncoded
-    public Call<Subscription> postSubscriptionAddress(@Field("country") String country,
+    public Call<MyMessage> postSubscriptionAddress(@Field("country") String country,
                                                       @Field("city") String city,
                                                       @Field("street") String street,
                                                       @Field("radius") int radius);
