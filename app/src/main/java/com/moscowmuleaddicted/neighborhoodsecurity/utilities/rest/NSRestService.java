@@ -4,6 +4,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthTok
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -69,18 +71,40 @@ public interface NSRestService {
     @POST("users")
     public Call<MyMessage> postUser(@Field("id") String id, @Field("name") String name, @Field("email") String email);
 
-//    @FormUrlEncoded
-//    @POST("users/classic")
-//    public Call<MyMessage> createUserClassic(@Field("username") String username, @Field("email") String email,
-//                                        @Field("password") String password);
+    @GET("users/{id}/subscriptions")
+    public Call<List<Subscription>> getSubscriptionsByUser(@Path("id") String userId);
 
-    // authentication
+    @PUT("users/fcm")
+    @FormUrlEncoded
+    public Call<MyMessage> updateFcm(@Field("fcm") String fcm);
 
-//    @FormUrlEncoded
-//    @POST("auth/classic")
-//    public Call<AuthToken> loginClassic(@Field("username") String username, @Field("password") String password);
-//
-//    @POST("auth/logout")
-//    public Call<MyMessage> logout();
+    // subscriptions
+
+    @GET("subscriptions/{id}")
+    public Call<Subscription> getSubscriptionById(@Path("id") int id);
+
+    @DELETE("subscriptions/{id}")
+    public Call<MyMessage> deleteSubscriptionById(@Path("id") int id);
+
+    @POST("subscriptions")
+    @FormUrlEncoded
+    public Call<Subscription> postSubscriptionArea(@Field("minLat") float minLat,
+                                                   @Field("maxLat") float maxLat,
+                                                   @Field("minLon") float minLon,
+                                                   @Field("maxLon") float maxLon);
+
+    @POST("subscriptions")
+    @FormUrlEncoded
+    public Call<Subscription> postSubscriptionCenterAndRadius(@Field("lat") float lat,
+                                                                @Field("lon") float lon,
+                                                                @Field("radius") int radius);
+
+    @POST("subscriptions")
+    @FormUrlEncoded
+    public Call<Subscription> postSubscriptionAddress(@Field("country") String country,
+                                                      @Field("city") String city,
+                                                      @Field("street") String street,
+                                                      @Field("radius") int radius);
+
 
 }
