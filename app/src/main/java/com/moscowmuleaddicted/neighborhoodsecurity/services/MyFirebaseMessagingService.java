@@ -40,6 +40,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
                     .setContentTitle(et +" @ "+ city+", "+street)
                     .setContentText(description);
 
+            // todo: set PendingIntent, in order to open the intent when clicking on the notification
+
             NotificationManager mNotifyMgr =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
