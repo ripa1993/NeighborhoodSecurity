@@ -4,35 +4,47 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 
+import com.moscowmuleaddicted.neighborhoodsecurity.R;
+
+import xdroid.enumformat.EnumFormat;
+import xdroid.enumformat.EnumString;
+
 /**
  * Created by Simone Ripamonti on 21/04/2017.
  */
 
 public enum EventType {
+    @EnumString(R.string.eventtype_carjacking)
     CARJACKING, // furto d'auto
+    @EnumString(R.string.eventtype_burglary)
     BURGLARY, // effrazione
+    @EnumString(R.string.eventtype_robbery)
     ROBBERY, // rapina
+    @EnumString(R.string.eventtype_theft)
     THEFT,	// furto generico
+    @EnumString(R.string.eventtype_shady_people)
     SHADY_PEOPLE, // persone losche
+    @EnumString(R.string.eventtype_scammers)
     SCAMMERS; // truffatori
 
-    private static Context context;
+//    private static Context context;
 
-    public static void setContext(Context context){
-        EventType.context = context;
-    }
+//    public static void setContext(Context context){
+//        EventType.context = context;
+//    }
 
-    public String getLabel(Context context) {
-        Resources res = context.getResources();
-        int resId = res.getIdentifier(this.name(), "string", context.getPackageName());
-        if (0 != resId) {
-            return (res.getString(resId));
-        }
-        return (name());
-    }
+//    public String getLabel(Context context) {
+//        Resources res = context.getResources();
+//        int resId = res.getIdentifier(this.name(), "string", context.getPackageName());
+//        if (0 != resId) {
+//            return (res.getString(resId));
+//        }
+//        return (name());
+//    }
 
     @Override
     public String toString(){
-        return getLabel(context);
+        EnumFormat ef = EnumFormat.getInstance();
+        return ef.format(this);
     }
 }

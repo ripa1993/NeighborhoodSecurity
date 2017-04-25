@@ -34,9 +34,7 @@ public class TestRestAPI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        EventType.setContext(getApplicationContext());
-
+        
         setContentView(R.layout.activity_test_rest_api);
 
         service = NSService.getInstance(getApplicationContext());
@@ -79,8 +77,10 @@ public class TestRestAPI extends AppCompatActivity {
         service.getEventById(eventId, new NSService.MyCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
-                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType().getLabel(getApplicationContext()) + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType() + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+
             }
+
 
             @Override
             public void onFailure() {
