@@ -3,13 +3,14 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
  */
 
-public class Event {
+public class Event implements Serializable{
 
     @SerializedName("id")
     @Expose
@@ -44,9 +45,6 @@ public class Event {
     @SerializedName("submitterId")
     @Expose
     private String submitterId;
-    @SerializedName("eventUrl")
-    @Expose
-    private String eventUrl;
 
 
 
@@ -143,13 +141,32 @@ public class Event {
         this.submitterId = submitterId;
     }
 
-    public String getEventUrl() {
-        return eventUrl;
+    public static Event makeDummy(){
+        Event event = new Event();
+        event.setCity("asd");
+        event.setCountry("it");
+        event.setStreet("dsa");
+        event.setDate(new Date());
+        event.setDescription("desc");
+        event.setEventType(EventType.BURGLARY);
+        event.setLatitude(2f);
+        event.setLongitude(3f);
+        event.setId(19);
+        event.setSubmitterId("sub");
+        return event;
     }
 
-    public void setEventUrl(String eventUrl) {
-        this.eventUrl = eventUrl;
+    public Event(int id, Date date, EventType eventType, String description, String country, String city, String street, Float latitude, Float longitude, int votes, String submitterId) {
+        this.id = id;
+        this.date = date;
+        this.eventType = eventType;
+        this.description = description;
+        this.country = country;
+        this.city = city;
+        this.street = street;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.votes = votes;
+        this.submitterId = submitterId;
     }
-
-
 }
