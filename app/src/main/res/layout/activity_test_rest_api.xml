@@ -27,6 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="4"
+                android:backgroundTint="@color/colorAccent"
                 android:onClick="getEventsByAreaClicked"
                 android:text="Get Events By Area" />
 
@@ -79,6 +80,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="getEventClicked"
+                android:backgroundTint="@color/colorAccent"
+
                 android:text="Get Event" />
 
             <EditText
@@ -103,14 +106,16 @@
                 android:layout_height="match_parent"
                 android:onClick="getThisUserClicked"
                 android:layout_weight="1"
-                android:text="(FIREBASE) UserInfo" />
+                android:backgroundTint="@color/colorPrimary"
+                android:text="UserInfo" />
             <Button
                 android:id="@+id/button13"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="getUserClicked"
+                android:backgroundTint="@color/colorAccent"
                 android:layout_weight="1"
-                android:text="(REST) GetUserById " />
+                android:text="GetUserById " />
             <EditText
                 android:id="@+id/userId"
                 android:layout_width="match_parent"
@@ -129,6 +134,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="postEventClicked"
+            android:backgroundTint="@color/colorAccent"
+
             android:text="Post event" />
 
 
@@ -186,12 +193,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="loginClassicClicked"
+                android:backgroundTint="@color/colorPrimary"
+
                 android:text="Email" />
             <Button
                 android:id="@+id/button14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="signupClassicClicked"
+                android:backgroundTint="@color/colorPrimary"
+
                 android:text="EmailSignup" />
 
             <Button
@@ -199,6 +210,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="logoutClicked"
+                android:backgroundTint="@color/colorPrimary"
+
                 android:text="Logout" />
         </LinearLayout>
 
@@ -242,6 +255,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="delEventClicked"
+                android:backgroundTint="@color/colorAccent"
+
                 android:text="Delete event By ID" />
 
             <EditText
@@ -265,6 +280,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="votePlusClicked"
+                android:backgroundTint="@color/colorAccent"
+
                 android:text="Vote +" />
 
             <Button
@@ -272,12 +289,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="voteMinusClicked"
+                android:backgroundTint="@color/colorAccent"
+
                 android:text="Vote -" />
 
             <EditText
                 android:id="@+id/vEid"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+
                 android:text="19"
                 android:hint="id"
                 android:inputType="number" />
@@ -294,9 +314,51 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/button15"
                 android:text="Update FCM Token"
+                android:backgroundTint="@color/colorAccent"
                 android:onClick="updateFcmClicked"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button16"
+                android:text="Subscribe"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="postSubscriptionClicked"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/latS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
 
+                    android:text="45"
+                    android:hint="lat"
+                    android:inputType="numberDecimal" />
+                <EditText
+                    android:id="@+id/lonS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:text="9"
+                    android:hint="lon"
+                    android:inputType="numberDecimal" />
+                <EditText
+                    android:id="@+id/radS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:text="1"
+                    android:hint="rad"
+                    android:inputType="number" />
+            </LinearLayout>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
