@@ -11,6 +11,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -502,6 +503,8 @@ public class NSService {
                             Log.w(TAG, "signUpWithEmail: (" + status + ") " + message);
                         }
                     });
+
+;
                 } else {
                     Log.w(TAG, "signUpWithEmail:failure", task.getException());
                     callback.onFailure();
@@ -527,8 +530,28 @@ public class NSService {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success");
+                    Log.d(TAG, "signInWithEmail: success");
                     FirebaseUser user = mAuth.getCurrentUser();
+
+                    // update fcm, just in case
+                    String fcmToken = FirebaseInstanceId.getInstance().getToken();
+                    updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                        @Override
+                        public void onSuccess(MyMessage myMessage) {
+                            Log.d(TAG, "signInWithEmail: registered fcm token with server");
+                        }
+
+                        @Override
+                        public void onFailure() {
+                            Log.w(TAG, "signInWithEmail: failed to register fcm token with server");
+                        }
+
+                        @Override
+                        public void onMessageLoad(MyMessage message, int status) {
+                            Log.w(TAG, "signInWithEmail: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                        }
+                    });
+
                     callback.onSuccess(user.getDisplayName() + " " + user.getUid());
                 } else {
                     // If sign in fails, display a message to the user.
@@ -618,6 +641,7 @@ public class NSService {
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
                 System.err.println(t.getMessage());
+
                 callback.onFailure();
             }
         });
@@ -839,6 +863,7 @@ public class NSService {
     }
 
     private void postUser(String id, String name, String email, final MyCallback<String> callback) {
+        // store user in users table
         restInterface.postUser(id, name, email).enqueue(new retrofit2.Callback<MyMessage>() {
 
             @Override
@@ -856,6 +881,8 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+
     }
 
 
