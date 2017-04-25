@@ -285,6 +285,18 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button15"
+                android:text="Update FCM Token"
+                android:onClick="updateFcmClicked"/>
+        </LinearLayout>
+
 
     </LinearLayout>
 </ScrollView>

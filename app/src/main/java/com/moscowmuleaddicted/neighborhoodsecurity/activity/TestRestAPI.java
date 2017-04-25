@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -287,6 +288,28 @@ public class TestRestAPI extends AppCompatActivity {
             @Override
             public void onMessageLoad(MyMessage message, int status) {
                 Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void updateFcmClicked(View view){
+        final String token = FirebaseInstanceId.getInstance().getToken();
+        service.updateFcm(token, new NSService.MyCallback<MyMessage>() {
+            @Override
+            public void onSuccess(MyMessage myMessage) {
+                Toast.makeText(getApplicationContext(), "fcm updated to "+token, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getApplicationContext(), "fcm update failure", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getApplicationContext(), status + " " + message.getArgument()+ " " + message.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
         });
     }
