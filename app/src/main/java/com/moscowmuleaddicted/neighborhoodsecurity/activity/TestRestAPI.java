@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -33,8 +34,6 @@ public class TestRestAPI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        EventType.setContext(getApplicationContext());
 
         setContentView(R.layout.activity_test_rest_api);
 
@@ -78,8 +77,10 @@ public class TestRestAPI extends AppCompatActivity {
         service.getEventById(eventId, new NSService.MyCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
-                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType().getLabel(getApplicationContext()) + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType() + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+
             }
+
 
             @Override
             public void onFailure() {
@@ -287,6 +288,52 @@ public class TestRestAPI extends AppCompatActivity {
             @Override
             public void onMessageLoad(MyMessage message, int status) {
                 Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void updateFcmClicked(View view){
+        final String token = FirebaseInstanceId.getInstance().getToken();
+        service.updateFcm(token, new NSService.MyCallback<MyMessage>() {
+            @Override
+            public void onSuccess(MyMessage myMessage) {
+                Toast.makeText(getApplicationContext(), "fcm updated to "+token, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getApplicationContext(), "fcm update failure", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getApplicationContext(), status + " " + message.getArgument()+ " " + message.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    public void postSubscriptionClicked(View view){
+        int radius = 0;
+        float lat, lon;
+        radius = NumberUtils.toInt(((EditText) findViewById(R.id.radS)).getText().toString(), 1);
+        lat = NumberUtils.toFloat(((EditText) findViewById(R.id.latS)).getText().toString(), 45);
+        lon = NumberUtils.toFloat(((EditText) findViewById(R.id.lonS)).getText().toString(), 9);
+        service.postSubscriptionCenterAndRadius(lat, lon, radius, new NSService.MyCallback<MyMessage>() {
+            @Override
+            public void onSuccess(MyMessage myMessage) {
+                Toast.makeText(getApplicationContext(), "subscribed", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getApplicationContext(), "failure", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getApplicationContext(), "("+status+") ["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

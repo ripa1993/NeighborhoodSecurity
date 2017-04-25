@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Neighborhood Security</string>
-    <string name="CARJACKING">Carjacking</string>
-    <string name="BURGLARY">Burglary</string>
-    <string name="ROBBERY">Robbery</string>
-    <string name="THEFT">Theft</string>
-    <string name="SHADY_PEOPLE">Shady People</string>
-    <string name="SCAMMERS">Scammers</string>
+    <string name="eventtype_carjacking">Carjacking</string>
+    <string name="eventtype_burglary">Burglary</string>
+    <string name="eventtype_robbery">Robbery</string>
+    <string name="eventtype_theft">Theft</string>
+    <string name="eventtype_shady_people">Shady People</string>
+    <string name="eventtype_scammers">Scammers</string>
 </resources>
