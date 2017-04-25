@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -49,6 +50,9 @@ public class NSService {
     private NSService(Context context) {
 
         OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .addInterceptor(new HeaderRequestInterceptor())
                 .build();
 
