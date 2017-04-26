@@ -149,8 +149,8 @@ public class Event implements Serializable{
         event.setDate(new Date());
         event.setDescription("desc");
         event.setEventType(EventType.BURGLARY);
-        event.setLatitude(2f);
-        event.setLongitude(3f);
+        event.setLatitude(45.7238097f);
+        event.setLongitude(9.0098383f);
         event.setId(19);
         event.setSubmitterId("sub");
         return event;
