@@ -28,6 +28,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         setContentView(R.layout.activity_event_detail);
 
         // get data passed to the intent
+
         Bundle extras = getIntent().getExtras();
         Event event;
         if(extras != null){
@@ -41,7 +42,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
         // setup the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("New "+event.getEventType());
+        toolbar.setTitle(event.getEventType().toString());
         setSupportActionBar(toolbar);
 
 
