@@ -10,15 +10,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.moscowmuleaddicted.neighborhoodsecurity.EventDetailListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
-
-import java.util.Date;
 
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
 
@@ -45,13 +51,36 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         toolbar.setTitle(event.getEventType().toString());
         setSupportActionBar(toolbar);
 
+        // setup map fragment
+        final double lat, lon;
+        lat = event.getLatitude();
+        lon = event.getLongitude();
+        GoogleMapOptions gmo = new GoogleMapOptions();
+        final LatLng coords = new LatLng(lat,lon);
+        CameraPosition cp = new CameraPosition.Builder().target(coords).zoom(16f).build();
+        gmo.camera(cp);
+        gmo.scrollGesturesEnabled(false);
+        gmo.tiltGesturesEnabled(false);
+        gmo.rotateGesturesEnabled(false);
+        MapFragment mapFragment = MapFragment.newInstance(gmo);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                MarkerOptions mo = new MarkerOptions();
+                mo.position(coords);
+                googleMap.addMarker(mo);
+            }
+        });
+
+        // setup event detail list fragment
+        EventDetailListFragment edl = EventDetailListFragment.newInstance(1, event);
 
 
         // initialize the fragment
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        EventDetailListFragment edl = EventDetailListFragment.newInstance(1, event);
-        fragmentTransaction.add(R.id.eventDetailFragment, edl);
+        fragmentTransaction.add(R.id.eventDetailListFragment, edl);
+        fragmentTransaction.add(R.id.eventDetailMapFragment, mapFragment);
         fragmentTransaction.commit();
 
 
