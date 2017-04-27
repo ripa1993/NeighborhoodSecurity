@@ -1,9 +1,23 @@
 <resources>
     <string name="app_name">Neighborhood Security</string>
+
+    <!-- Enum Format -->
     <string name="eventtype_carjacking">Carjacking</string>
     <string name="eventtype_burglary">Burglary</string>
     <string name="eventtype_robbery">Robbery</string>
     <string name="eventtype_theft">Theft</string>
     <string name="eventtype_shady_people">Shady People</string>
     <string name="eventtype_scammers">Scammers</string>
+    <string name="details_date">Date</string>
+    <string name="details_event_type">Event type</string>
+    <string name="details_description">Description</string>
+    <string name="details_address">Address</string>
+    <string name="details_coordinates">Coordinates</string>
+    <string name="details_votes">Votes</string>
+
+    <!-- Other -->
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_event_detail">Event Detail</string>
+    <string name="event_voted">Event voted</string>
+    <string name="event_voted_undo">Undo</string>
 </resources>

@@ -3,13 +3,14 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
  */
 
-public class Event {
+public class Event implements Serializable{
 
     @SerializedName("id")
     @Expose
@@ -34,19 +35,16 @@ public class Event {
     private String street;
     @SerializedName("latitude")
     @Expose
-    private Float latitude;
+    private Double latitude;
     @SerializedName("longitude")
     @Expose
-    private Float longitude;
+    private Double longitude;
     @SerializedName("votes")
     @Expose
     private int votes;
     @SerializedName("submitterId")
     @Expose
     private String submitterId;
-    @SerializedName("eventUrl")
-    @Expose
-    private String eventUrl;
 
 
 
@@ -111,19 +109,19 @@ public class Event {
         this.street = street;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -143,13 +141,32 @@ public class Event {
         this.submitterId = submitterId;
     }
 
-    public String getEventUrl() {
-        return eventUrl;
+    public static Event makeDummy(){
+        Event event = new Event();
+        event.setCity("asd");
+        event.setCountry("it");
+        event.setStreet("dsa");
+        event.setDate(new Date());
+        event.setDescription("desc");
+        event.setEventType(EventType.BURGLARY);
+        event.setLatitude(45.7238097d);
+        event.setLongitude(9.0098383d);
+        event.setId(19);
+        event.setSubmitterId("sub");
+        return event;
     }
 
-    public void setEventUrl(String eventUrl) {
-        this.eventUrl = eventUrl;
+    public Event(int id, Date date, EventType eventType, String description, String country, String city, String street, Double latitude, Double longitude, int votes, String submitterId) {
+        this.id = id;
+        this.date = date;
+        this.eventType = eventType;
+        this.description = description;
+        this.country = country;
+        this.city = city;
+        this.street = street;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.votes = votes;
+        this.submitterId = submitterId;
     }
-
-
 }
