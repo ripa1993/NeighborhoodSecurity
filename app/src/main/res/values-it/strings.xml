@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Neighborhood Security</string>
+    <string name="action_settings">Impostazioni</string>
+    <string name="details_address">Indirizzo</string>
+    <string name="details_coordinates">Coordinate</string>
+    <string name="details_date">Data</string>
+    <string name="details_description">Descrizione</string>
+    <string name="details_event_type">Tipo di evento</string>
+    <string name="details_votes">Voti</string>
+    <string name="eventtype_burglary">Effrazione</string>
+    <string name="eventtype_carjacking">Furto d\'auto</string>
+    <string name="eventtype_robbery">Rapina</string>
+    <string name="eventtype_scammers">Truffatori</string>
+    <string name="eventtype_shady_people">Persone losche</string>
+    <string name="eventtype_theft">Furto</string>
+    <string name="title_activity_event_detail">Dettagli evento</string>
+    <string name="event_voted">Voto aggiunto</string>
+    <string name="event_voted_undo">Annulla</string>
+</resources>

@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -77,7 +78,9 @@ public class TestRestAPI extends AppCompatActivity {
         service.getEventById(eventId, new NSService.MyCallback<Event>() {
             @Override
             public void onSuccess(Event event) {
-                Toast.makeText(getApplicationContext(), event.getDate() + " " + event.getEventType() + " " + event.getVotes(), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(TestRestAPI.this, EventDetailActivity.class);
+                i.putExtra("event", event);
+                startActivity(i);
 
             }
 
