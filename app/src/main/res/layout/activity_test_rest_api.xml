@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_test_rest_api"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.TestRestAPI">
+
+        <!-- Get event by area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="4"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="getEventsByAreaClicked"
+                android:text="Get Events By Area" />
+
+            <EditText
+                android:id="@+id/latMin"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="45"
+                android:hint="latMin"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/latMax"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="46"
+                android:hint="latMax"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/lonMin"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="9"
+                android:hint="lonMin"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/lonMax"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="10"
+                android:hint="lonMax"
+                android:inputType="numberDecimal" />
+
+        </LinearLayout>
+
+        <!-- Get event by id-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="getEventClicked"
+                android:backgroundTint="@color/colorAccent"
+
+                android:text="Get Event" />
+
+            <EditText
+                android:id="@+id/eventId"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="19"
+                android:hint="id"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <!-- Get user-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="getThisUserClicked"
+                android:layout_weight="1"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="UserInfo" />
+            <Button
+                android:id="@+id/button13"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="getUserClicked"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_weight="1"
+                android:text="GetUserById " />
+            <EditText
+                android:id="@+id/userId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="SiqffdcZXAZpY0AIC98N2T9BdSO2"
+                android:hint="id"
+                android:inputType="text" />
+
+        </LinearLayout>
+
+        <!-- Post event -->
+
+        <Button
+            android:id="@+id/button6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="postEventClicked"
+            android:backgroundTint="@color/colorAccent"
+
+            android:text="Post event" />
+
+
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/et">
+
+        </Spinner>
+
+        <EditText
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Prova"
+            android:hint="Description"
+            android:inputType="text" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/lat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="45.5"
+                android:hint="Lat"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/lon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="9.5"
+                android:hint="Long"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <!--  login, logout -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="loginClassicClicked"
+                android:backgroundTint="@color/colorPrimary"
+
+                android:text="Email" />
+            <Button
+                android:id="@+id/button14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="signupClassicClicked"
+                android:backgroundTint="@color/colorPrimary"
+
+                android:text="EmailSignup" />
+
+            <Button
+                android:id="@+id/button9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="logoutClicked"
+                android:backgroundTint="@color/colorPrimary"
+
+                android:text="Logout" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Username"
+                android:text="ripa1993"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/mail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:text="simone.ripamonti.1993@gmail.com"
+                android:inputType="textEmailAddress" />
+        </LinearLayout>
+
+        <!-- Delete event by id -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button10"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="delEventClicked"
+                android:backgroundTint="@color/colorAccent"
+
+                android:text="Delete event By ID" />
+
+            <EditText
+                android:id="@+id/dEid"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:hint="id"
+                android:text="19"
+                android:inputType="number" />
+
+        </LinearLayout>
+        <!-- Vote / unvote event by id -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button11"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="votePlusClicked"
+                android:backgroundTint="@color/colorAccent"
+
+                android:text="Vote +" />
+
+            <Button
+                android:id="@+id/button12"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="voteMinusClicked"
+                android:backgroundTint="@color/colorAccent"
+
+                android:text="Vote -" />
+
+            <EditText
+                android:id="@+id/vEid"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+
+                android:text="19"
+                android:hint="id"
+                android:inputType="number" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button15"
+                android:text="Update FCM Token"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="updateFcmClicked"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button16"
+                android:text="Subscribe"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="postSubscriptionClicked"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/latS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:text="45"
+                    android:hint="lat"
+                    android:inputType="numberDecimal" />
+                <EditText
+                    android:id="@+id/lonS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:text="9"
+                    android:hint="lon"
+                    android:inputType="numberDecimal" />
+                <EditText
+                    android:id="@+id/radS"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:text="1"
+                    android:hint="rad"
+                    android:inputType="number" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
