@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 public class SplashActivity extends AppCompatActivity {
 
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 2000;
+    private static int SPLASH_TIME_OUT = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,8 +19,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // Start SplashActivity once the timer is over
-                //Intent intent = new Intent(SplashActivity.this, HomePage.class);
-                Intent intent = new Intent(SplashActivity.this, MapsMarkerActivity.class);
+                Intent intent = new Intent(SplashActivity.this, TestRestAPI.class);
                 startActivity(intent);
 
                 // Close this Activity

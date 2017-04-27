@@ -340,4 +340,14 @@ public class TestRestAPI extends AppCompatActivity {
             }
         });
     }
+
+    public void goToMap(View view){
+
+        // Start MapsMarkerActivity
+        Intent intent = new Intent(this, MapsMarkerActivity.class);
+        startActivity(intent);
+
+        // Close this Activity
+        // finish();
+    }
 }

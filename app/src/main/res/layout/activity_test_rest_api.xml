@@ -360,5 +360,18 @@
             </LinearLayout>
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonGoToMap"
+                android:text="Go To Map"
+                android:backgroundTint="@color/colorAccent"
+                android:onClick="goToMap"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

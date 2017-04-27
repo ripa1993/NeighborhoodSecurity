@@ -33,13 +33,7 @@
         </activity>
         <activity android:name=".activity.HomePage" />
         <activity android:name=".activity.MapsMarkerActivity" />
-        <activity android:name=".activity.TestRestAPI">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.TestRestAPI" />
 
         <service android:name=".services.MyFirebaseInstanceIDService">
             <intent-filter>
