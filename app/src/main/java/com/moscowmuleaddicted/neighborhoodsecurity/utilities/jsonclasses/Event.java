@@ -35,10 +35,10 @@ public class Event implements Serializable{
     private String street;
     @SerializedName("latitude")
     @Expose
-    private Float latitude;
+    private Double latitude;
     @SerializedName("longitude")
     @Expose
-    private Float longitude;
+    private Double longitude;
     @SerializedName("votes")
     @Expose
     private int votes;
@@ -109,19 +109,19 @@ public class Event implements Serializable{
         this.street = street;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public Float getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Float longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -149,14 +149,14 @@ public class Event implements Serializable{
         event.setDate(new Date());
         event.setDescription("desc");
         event.setEventType(EventType.BURGLARY);
-        event.setLatitude(45.7238097f);
-        event.setLongitude(9.0098383f);
+        event.setLatitude(45.7238097d);
+        event.setLongitude(9.0098383d);
         event.setId(19);
         event.setSubmitterId("sub");
         return event;
     }
 
-    public Event(int id, Date date, EventType eventType, String description, String country, String city, String street, Float latitude, Float longitude, int votes, String submitterId) {
+    public Event(int id, Date date, EventType eventType, String description, String country, String city, String street, Double latitude, Double longitude, int votes, String submitterId) {
         this.id = id;
         this.date = date;
         this.eventType = eventType;

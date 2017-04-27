@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity;
+package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventDetailRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 

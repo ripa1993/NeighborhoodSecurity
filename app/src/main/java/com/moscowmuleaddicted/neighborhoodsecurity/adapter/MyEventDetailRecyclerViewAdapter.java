@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity;
+package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.EventDetailListFragment.OnListFragmentInteractionListener;
+import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment.OnListFragmentInteractionListener;
 import com.moscowmuleaddicted.neighborhoodsecurity.dummy.DummyContent.DummyItem;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
 
@@ -25,6 +26,13 @@ public class MyEventDetailRecyclerViewAdapter extends RecyclerView.Adapter<MyEve
     public MyEventDetailRecyclerViewAdapter(List<Details> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
+    }
+
+    public void updateVotes(int i){
+        int votes = Integer.valueOf(mValues.get(mValues.size() - 1).getContent());
+        votes += i;
+        mValues.get(mValues.size() - 1).setContent(String.valueOf(votes));
+        notifyItemChanged(mValues.size() -1);
     }
 
     @Override

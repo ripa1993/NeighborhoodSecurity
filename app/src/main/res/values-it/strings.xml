@@ -14,4 +14,7 @@
     <string name="eventtype_scammers">Truffatori</string>
     <string name="eventtype_shady_people">Persone losche</string>
     <string name="eventtype_theft">Furto</string>
+    <string name="title_activity_event_detail">Dettagli evento</string>
+    <string name="event_voted">Voto aggiunto</string>
+    <string name="event_voted_undo">Annulla</string>
 </resources>

@@ -6,12 +6,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
@@ -19,7 +18,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.moscowmuleaddicted.neighborhoodsecurity.EventDetailListFragment;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventDetailRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -94,9 +94,11 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                     public void onSuccess(String s) {
                         fab.setEnabled(false);
                         fab.setImageDrawable(getDrawable(R.drawable.ic_star));
-                        final Snackbar snack = Snackbar.make(view, "Event voted", Snackbar.LENGTH_INDEFINITE);
+                        final MyEventDetailRecyclerViewAdapter adapter =(MyEventDetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
+                        adapter.updateVotes(1);
+                        final Snackbar snack = Snackbar.make(view, getString(R.string.event_voted), Snackbar.LENGTH_INDEFINITE);
                         snack.show();
-                        snack.setAction("Undo", new View.OnClickListener() {
+                        snack.setAction(getString(R.string.event_voted_undo), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 NSService.getInstance(getApplicationContext()).unvoteEvent(eventId, new NSService.MyCallback<String>() {
@@ -105,6 +107,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                                         snack.dismiss();
                                         fab.setEnabled(true);
                                         fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
+                                        adapter.updateVotes(-1);
                                     }
 
                                     @Override

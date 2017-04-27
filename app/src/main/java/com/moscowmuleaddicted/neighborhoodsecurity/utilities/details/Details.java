@@ -51,7 +51,7 @@ public class Details {
         list.add(new Details(DetailsEnum.EVENT_TYPE.toString(), e.getEventType().toString()));
         list.add(new Details(DetailsEnum.DESCRIPTION.toString(), e.getDescription()));
         list.add(new Details(DetailsEnum.ADDRESS.toString(), e.getCountry() +", "+e.getCity()+", "+e.getStreet()));
-        list.add(new Details(DetailsEnum.COORDINATES.toString(), "("+e.getLatitude()+", "+e.getLongitude()+")"));
+//        list.add(new Details(DetailsEnum.COORDINATES.toString(), "("+e.getLatitude()+", "+e.getLongitude()+")"));
         list.add(new Details(DetailsEnum.VOTES.toString(), String.valueOf(e.getVotes())));
 
 //        list.add(new Details("dummy", "dummy"));
