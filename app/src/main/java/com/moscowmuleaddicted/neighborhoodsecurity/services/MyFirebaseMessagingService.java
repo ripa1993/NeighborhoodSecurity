@@ -52,8 +52,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String eCountry = remoteMessage.getData().get("country");
             String eCity = remoteMessage.getData().get("city");
             String eStreet = remoteMessage.getData().get("street");
-            float eLatitude = NumberUtils.toFloat(remoteMessage.getData().get("latitude"), 0);
-            float eLongitude = NumberUtils.toFloat(remoteMessage.getData().get("longitude"), 0);
+            Double eLatitude = NumberUtils.toDouble(remoteMessage.getData().get("latitude"), 0);
+            Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
             int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
             String eSubmitterId = remoteMessage.getData().get("submitterId");
 
