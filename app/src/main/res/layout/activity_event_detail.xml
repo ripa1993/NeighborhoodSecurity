@@ -7,10 +7,12 @@
     android:fitsSystemWindows="true"
     tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity">
 
+
+    <!-- android:layout_height="@dimen/app_bar_height" -->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="240dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -21,13 +23,25 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-            
 
-            <FrameLayout
-                android:id="@+id/eventDetailMapFragment"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_collapseMode="pin"></FrameLayout>
+                app:layout_collapseMode="parallax">
+
+                <FrameLayout
+                    android:id="@+id/eventDetailMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_collapseMode="pin"/>
+
+                <!--A view that draws a semi tranparent black overlay so that title is visible once expanded -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/black_transparent" />
+            </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -35,14 +49,14 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
-
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout android:id="@+id/eventDetailListFragment"
+    <FrameLayout
+        android:id="@+id/eventDetailListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
