@@ -3,10 +3,16 @@ package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -23,14 +29,16 @@ import java.util.Arrays;
  * create an instance of this fragment.
  */
 public class EventCreateFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
+    private static final String ARG_LATITUDE = "latitude";
+    private static final String ARG_LONGITUDE = "longitude";
+    private static final String ARG_COUNTRY = "country";
+    private static final String ARG_CITY = "city";
+    private static final String ARG_STREET = "street";
+
+
+    private Double latitude, longitude;
+    private String country, city, street;
 
     private OnFragmentInteractionListener mListener;
 
@@ -38,20 +46,21 @@ public class EventCreateFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment EventCreateFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EventCreateFragment newInstance(String param1, String param2) {
+    public static EventCreateFragment newInstanceWithCoordinates(Double lat, Double lon) {
         EventCreateFragment fragment = new EventCreateFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
+        args.putDouble(ARG_LATITUDE, lat);
+        args.putDouble(ARG_LONGITUDE, lon);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static EventCreateFragment newInstanceWithAddress(String country, String city, String street){
+        EventCreateFragment fragment = new EventCreateFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_COUNTRY, country);
+        args.putString(ARG_CITY, city);
+        args.putString(ARG_STREET, street);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,8 +69,14 @@ public class EventCreateFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            if (getArguments().containsKey(ARG_LONGITUDE) && getArguments().containsKey(ARG_LATITUDE)){
+                latitude = getArguments().getDouble(ARG_LATITUDE);
+                longitude = getArguments().getDouble(ARG_LONGITUDE);
+            } else if(getArguments().containsKey(ARG_COUNTRY) && getArguments().containsKey(ARG_CITY) && getArguments().containsKey(ARG_STREET) ){
+                country = getArguments().getString(ARG_COUNTRY);
+                city = getArguments().getString(ARG_CITY);
+                street = getArguments().getString(ARG_STREET);
+            }
         }
     }
 
@@ -70,25 +85,65 @@ public class EventCreateFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_event_create, container, false);
-//        ClickToSelectEditText<EventType> ctseEventType = (ClickToSelectEditText<EventType>) view.findViewById(R.id.input_event_type);
-//        ctseEventType.setItems(Arrays.asList(EventType.values()));
-//        ctseEventType.setOnItemSelectedListener(new ClickToSelectEditText.OnItemSelectedListener<EventType>() {
-//            @Override
-//            public void onItemSelectedListener(EventType item, int selectedIndex) {
-//
-//            }
-//        });
+        final View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 
+        // setup spinner
         LabelledSpinner eventTypeSpinnner = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
         eventTypeSpinnner.setItemsArray(Arrays.asList(EventType.values()));
         eventTypeSpinnner.setColor(android.R.color.tertiary_text_dark); // todo: check color
-//        eventTypeSpinnner.getDivider().setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+
+        // setup radio
+        final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupEventCreate);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                RadioButton radioButtonAddress = (RadioButton) group.findViewById(R.id.radioAddress);
+                LinearLayout addressGroup = (LinearLayout) view.findViewById(R.id.layout_address_group);
+                RelativeLayout coordinatesGroup = (RelativeLayout) view.findViewById(R.id.layout_coordinates_group);
+
+                if(radioButtonAddress.isChecked()){
+                    // enable address input
+                    coordinatesGroup.setVisibility(RelativeLayout.GONE);
+                    addressGroup.setVisibility(LinearLayout.VISIBLE);
+                } else {
+                    // enable coordinates input
+                    addressGroup.setVisibility(LinearLayout.GONE);
+                    coordinatesGroup.setVisibility(RelativeLayout.VISIBLE);
+
+                }
+            }
+        });
+        // set default radio according to provided values
+        if (latitude != null && longitude != null){
+            RadioButton radioButtonCoordinates = (RadioButton) view.findViewById(R.id.radioCoordinates);
+            radioButtonCoordinates.setChecked(true);
+
+            EditText editTextLatitude = (EditText) view.findViewById(R.id.input_latitude);
+            EditText editTextLongitude = (EditText) view.findViewById(R.id.input_longitude);
+
+            editTextLatitude.setText(latitude.toString());
+            editTextLongitude.setText(longitude.toString());
+
+        } else {
+            RadioButton radioButtonAddress = (RadioButton) view.findViewById(R.id.radioAddress);
+            radioButtonAddress.setChecked(true);
+
+            if (country != null && city != null && street != null){
+                EditText editTextCountry = (EditText) view.findViewById(R.id.input_country);
+                EditText editTextCity = (EditText) view.findViewById(R.id.input_city);
+                EditText editTextStreet = (EditText) view.findViewById(R.id.input_street);
+
+                editTextCountry.setText(country);
+                editTextCity.setText(city);
+                editTextStreet.setText(street);
+            }
+
+        }
+
 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
