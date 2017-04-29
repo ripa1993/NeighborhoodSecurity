@@ -20,4 +20,13 @@
     <string name="title_activity_event_detail">Event Detail</string>
     <string name="event_voted">Event voted</string>
     <string name="event_voted_undo">Undo</string>
+    <string name="dialog_close_button">Close</string>
+
+    <!-- Hints -->
+    <string name="hint_event_type">Event type</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_country">Country</string>
+    <string name="hint_city">City</string>
+    <string name="hint_street">Street</string>
+
 </resources>
