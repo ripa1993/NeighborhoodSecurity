@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +15,14 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.satsuware.usefulviews.LabelledSpinner;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +33,10 @@ import java.util.Arrays;
  * create an instance of this fragment.
  */
 public class EventCreateFragment extends Fragment {
+
+    private EditText etDescription, etCountry, etCity, etStreet, etLatitude, etLongitude;
+    private LabelledSpinner lsEventType;
+    private RadioButton rbAddress;
 
     private static final String ARG_LATITUDE = "latitude";
     private static final String ARG_LONGITUDE = "longitude";
@@ -87,10 +95,19 @@ public class EventCreateFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 
+        // assign local variables
+        etCountry = (EditText) view.findViewById(R.id.input_country);
+        etCity = (EditText) view.findViewById(R.id.input_city);
+        etStreet = (EditText) view.findViewById(R.id.input_street);
+        etDescription = (EditText) view.findViewById(R.id.input_description);
+        etLatitude = (EditText) view.findViewById(R.id.input_latitude);
+        etLongitude = (EditText) view.findViewById(R.id.input_longitude);
+        lsEventType = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
+        rbAddress = (RadioButton) view.findViewById(R.id.radioAddress);
+
         // setup spinner
-        LabelledSpinner eventTypeSpinnner = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
-        eventTypeSpinnner.setItemsArray(Arrays.asList(EventType.values()));
-        eventTypeSpinnner.setColor(android.R.color.tertiary_text_dark); // todo: check color
+        lsEventType.setItemsArray(Arrays.asList(EventType.values()));
+        lsEventType.setColor(android.R.color.tertiary_text_dark); // todo: check color
 
         // setup radio
         final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupEventCreate);
@@ -166,6 +183,28 @@ public class EventCreateFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    public Event getEvent(){
+        Event e = new Event();
+        e.setDate(new Date());
+        e.setDescription(etDescription.getText().toString());
+        e.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
+        e.setCountry(etCountry.getText().toString());
+        e.setCity(etCity.getText().toString());
+        e.setStreet(etStreet.getText().toString());
+        e.setLatitude(NumberUtils.toDouble(etLatitude.getText().toString(), 0));
+        e.setLongitude(NumberUtils.toDouble(etLongitude.getText().toString(), 0));
+        return e;
+    }
+
+    public boolean eventUsesAddress(){
+        if (rbAddress.isChecked()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this
