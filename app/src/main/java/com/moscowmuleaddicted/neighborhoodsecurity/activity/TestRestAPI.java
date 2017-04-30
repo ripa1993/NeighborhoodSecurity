@@ -47,11 +47,11 @@ public class TestRestAPI extends AppCompatActivity {
     }
 
     public void getEventsByAreaClicked(View view) {
-        float latMin = 0, latMax = 0, lonMin = 0, lonMax = 0;
-        latMin = NumberUtils.toFloat(((EditText) findViewById(R.id.latMin)).getText().toString(), 0);
-        latMax = NumberUtils.toFloat(((EditText) findViewById(R.id.latMax)).getText().toString(), 0);
-        lonMin = NumberUtils.toFloat(((EditText) findViewById(R.id.lonMin)).getText().toString(), 0);
-        lonMax = NumberUtils.toFloat(((EditText) findViewById(R.id.lonMax)).getText().toString(), 0);
+        Double latMin = 0d, latMax = 0d, lonMin = 0d, lonMax = 0d;
+        latMin = NumberUtils.toDouble(((EditText) findViewById(R.id.latMin)).getText().toString(), 0);
+        latMax = NumberUtils.toDouble(((EditText) findViewById(R.id.latMax)).getText().toString(), 0);
+        lonMin = NumberUtils.toDouble(((EditText) findViewById(R.id.lonMin)).getText().toString(), 0);
+        lonMax = NumberUtils.toDouble(((EditText) findViewById(R.id.lonMax)).getText().toString(), 0);
 
         service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
             @Override
@@ -137,11 +137,11 @@ public class TestRestAPI extends AppCompatActivity {
     public void postEventClicked(View view) {
         EventType eventType;
         String description = "";
-        float lat = 0, lon = 0;
+        Double lat = 0d, lon = 0d;
         eventType = (EventType) etSpinner.getSelectedItem();
         description = ((EditText) findViewById(R.id.desc)).getText().toString();
-        lat = NumberUtils.toFloat(((EditText) findViewById(R.id.lat)).getText().toString(), 0);
-        lon = NumberUtils.toFloat(((EditText) findViewById(R.id.lon)).getText().toString(), 0);
+        lat = NumberUtils.toDouble(((EditText) findViewById(R.id.lat)).getText().toString(), 0);
+        lon = NumberUtils.toDouble(((EditText) findViewById(R.id.lon)).getText().toString(), 0);
 
         service.postEventWithCoordinates(eventType, description, lat, lon, new NSService.MyCallback<String>() {
 
@@ -319,10 +319,10 @@ public class TestRestAPI extends AppCompatActivity {
 
     public void postSubscriptionClicked(View view){
         int radius = 0;
-        float lat, lon;
+        Double lat, lon;
         radius = NumberUtils.toInt(((EditText) findViewById(R.id.radS)).getText().toString(), 1);
-        lat = NumberUtils.toFloat(((EditText) findViewById(R.id.latS)).getText().toString(), 45);
-        lon = NumberUtils.toFloat(((EditText) findViewById(R.id.lonS)).getText().toString(), 9);
+        lat = NumberUtils.toDouble(((EditText) findViewById(R.id.latS)).getText().toString(), 45);
+        lon = NumberUtils.toDouble(((EditText) findViewById(R.id.lonS)).getText().toString(), 9);
         service.postSubscriptionCenterAndRadius(lat, lon, radius, new NSService.MyCallback<MyMessage>() {
             @Override
             public void onSuccess(MyMessage myMessage) {
