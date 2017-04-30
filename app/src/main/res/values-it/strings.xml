@@ -17,4 +17,16 @@
     <string name="title_activity_event_detail">Dettagli evento</string>
     <string name="event_voted">Voto aggiunto</string>
     <string name="event_voted_undo">Annulla</string>
+    <string name="dialog_close_button">Chiudi</string>
+    <string name="action_create_event">Crea evento</string>
+    <string name="hint_city">Città</string>
+    <string name="hint_country">Nazione</string>
+    <string name="hint_description">Descrizione</string>
+    <string name="hint_event_type">Tipo di evento</string>
+    <string name="hint_latitude">Latitudine</string>
+    <string name="hint_longitude">Longitudine</string>
+    <string name="hint_street">Indirizzo</string>
+    <string name="radio_address">Indirizzo</string>
+    <string name="radio_coordinates">Coordinate</string>
+    <string name="title_activity_event_create">Crea evento</string>
 </resources>

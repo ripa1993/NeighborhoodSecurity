@@ -33,4 +33,8 @@ public enum EventType {
         EnumFormat ef = EnumFormat.getInstance();
         return ef.format(this);
     }
+
+    public String toStringNotLocalized(){
+        return super.toString();
+    }
 }
