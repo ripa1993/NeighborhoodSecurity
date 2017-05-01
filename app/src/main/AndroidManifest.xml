@@ -32,8 +32,16 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.HomePage" />
-        <activity android:name=".activity.MapsActivity" />
-        <activity android:name=".activity.TestRestAPI" />
+        <activity android:name=".activity.MapActivity" />
+        <activity
+            android:name=".activity.TestRestAPI"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service android:name=".services.MyFirebaseInstanceIDService">
             <intent-filter>

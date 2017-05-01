@@ -19,7 +19,8 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // Start SplashActivity once the timer is over
-                Intent intent = new Intent(SplashActivity.this, TestRestAPI.class);
+                //Intent intent = new Intent(SplashActivity.this, TestRestAPI.class);
+                Intent intent = new Intent(SplashActivity.this, MapActivity.class);
                 startActivity(intent);
 
                 // Close this Activity

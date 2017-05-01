@@ -341,8 +341,8 @@ public class TestRestAPI extends AppCompatActivity {
 
     public void goToMap(View view){
 
-        // Start MapsActivity
-        Intent intent = new Intent(this, MapsActivity.class);
+        // Start MapActivity
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
 
         // Close this Activity
