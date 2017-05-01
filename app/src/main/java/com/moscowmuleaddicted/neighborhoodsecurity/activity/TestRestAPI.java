@@ -10,11 +10,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
@@ -343,8 +341,8 @@ public class TestRestAPI extends AppCompatActivity {
 
     public void goToMap(View view){
 
-        // Start MapsMarkerActivity
-        Intent intent = new Intent(this, MapsMarkerActivity.class);
+        // Start MapsActivity
+        Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
 
         // Close this Activity

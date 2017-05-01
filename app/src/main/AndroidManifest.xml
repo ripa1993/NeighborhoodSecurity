@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.HomePage" />
-        <activity android:name=".activity.MapsMarkerActivity" />
+        <activity android:name=".activity.MapsActivity" />
         <activity android:name=".activity.TestRestAPI" />
 
         <service android:name=".services.MyFirebaseInstanceIDService">

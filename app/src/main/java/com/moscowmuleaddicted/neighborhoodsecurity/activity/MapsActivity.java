@@ -14,7 +14,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 /**
  * An activity that displays a Google map with a marker (pin) to indicate a particular location.
  */
-public class MapsMarkerActivity extends AppCompatActivity
+public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback {
 
     @Override
