@@ -10,6 +10,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
@@ -29,46 +30,40 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
     private GoogleMap currentMap;
     private NSService service;
 
-    private LatLng computeCenterEventList(List<Event> events){
+    // Initial position or events
+    private LatLng initialPosition;
+    private List<Event> initialEvents;
+    private int initialOptions = 0;
 
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        int count = events.size();
-
-        for (Event event : events) {
-            double latitude = event.getLatitude() * Math.PI / 180;
-            double longitude = event.getLongitude() * Math.PI / 180;
-
-            x += Math.cos(latitude) * Math.cos(longitude);
-            y += Math.cos(latitude) * Math.sin(longitude);
-            z += Math.sin(latitude);
-        }
-
-        x = x / count;
-        y = y / count;
-        z = z / count;
-
-        double centralLongitude = Math.atan2(y, x);
-        double centralSquareRoot = Math.sqrt(x * x + y * y);
-        double centralLatitude = Math.atan2(z, centralSquareRoot);
-
-        LatLng center_coords = new LatLng(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
-        return center_coords;
+    public void setInitialPosition(LatLng initialPosition) {
+        this.initialPosition = initialPosition;
+        initialOptions = 1;
     }
+
+    public void setInitialEvents(List<Event> initialEvents) {
+        this.initialEvents = initialEvents;
+        initialOptions = 2;
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         // Set local map variable
         currentMap = googleMap;
-
         // Set a listener for marker click.
         currentMap.setOnMarkerClickListener(this);
 
-        this.test();
+        if(initialOptions == 1){
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
+        } else if(initialOptions == 2){
+            addEventListMarkers(initialEvents);
+            centerCameraToContainAllEvents(initialEvents);
+        } else{
+            test();
+        }
     }
 
+    // Add marker of an event
     public void addEventMarker(Event event) {
         LatLng coords = new LatLng(event.getLatitude(), event.getLongitude());
         String title = event.getId() + ") " + event.getEventType().toString();
@@ -108,6 +103,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         newMarker.setTag(event);
     }
 
+    // Add all markers from a list of events
     public void addEventListMarkers(List<Event> events) {
 
         for (Event event : events) {
@@ -132,6 +128,50 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         return false;
     }
 
+    private LatLng computeCenterEventList(List<Event> events) {
+
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        int count = events.size();
+
+        for (Event event : events) {
+            double latitude = event.getLatitude() * Math.PI / 180;
+            double longitude = event.getLongitude() * Math.PI / 180;
+
+            x += Math.cos(latitude) * Math.cos(longitude);
+            y += Math.cos(latitude) * Math.sin(longitude);
+            z += Math.sin(latitude);
+        }
+
+        x = x / count;
+        y = y / count;
+        z = z / count;
+
+        double centralLongitude = Math.atan2(y, x);
+        double centralSquareRoot = Math.sqrt(x * x + y * y);
+        double centralLatitude = Math.atan2(z, centralSquareRoot);
+
+        LatLng center_coords = new LatLng(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
+        return center_coords;
+    }
+
+    void centerCameraInBarycenterOfEvents(List<Event> events) {
+        currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+    }
+
+    void centerCameraToContainAllEvents(List<Event> events) {
+        //Calculate the markers to get their position
+        LatLngBounds.Builder b = new LatLngBounds.Builder();
+        for (Event event : events) {
+            b.include(new LatLng(event.getLatitude(), event.getLongitude()));
+        }
+        LatLngBounds bounds = b.build();
+
+        //Change the padding as per needed
+        currentMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
+    }
+
     public void test() {
         float latMin = 0, latMax = 0, lonMin = 0, lonMax = 0;
         latMin = 45;
@@ -145,7 +185,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
             @Override
             public void onSuccess(List<Event> events) {
                 addEventListMarkers(events);
-                currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+                centerCameraToContainAllEvents(events);
             }
 
             @Override
