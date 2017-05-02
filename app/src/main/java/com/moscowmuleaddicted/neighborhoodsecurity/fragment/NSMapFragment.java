@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
+import android.content.Intent;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -7,11 +8,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.TestRestAPI;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
@@ -68,7 +73,36 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         LatLng coords = new LatLng(event.getLatitude(), event.getLongitude());
         String title = event.getId() + ") " + event.getEventType().toString();
 
-        Marker newMarker = currentMap.addMarker(new MarkerOptions().position(coords).title(title));
+        MarkerOptions options = new MarkerOptions();
+        options.position(new LatLng(event.getLatitude(), event.getLongitude()));
+        options.title(title);
+
+        // Select icon
+        switch (event.getEventType()) {
+            case CARJACKING:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
+                break;
+            case BURGLARY:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
+                break;
+            case ROBBERY:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
+                break;
+            case THEFT:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
+                break;
+            case SHADY_PEOPLE:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
+                break;
+            case SCAMMERS:
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
+                break;
+            default:
+                break;
+        }
+
+        // Add the marker
+        Marker newMarker = currentMap.addMarker(options);
 
         // Save the Event object in marker's Tag
         newMarker.setTag(event);
@@ -79,7 +113,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         for (Event event : events) {
             addEventMarker(event);
         }
-        
+
     }
 
     @Override
@@ -88,7 +122,9 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         // Retrieve Event object.
         Event event = (Event) marker.getTag();
 
-        Toast.makeText(getActivity(), "Event Id: " + event.getId(), Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(getActivity(), EventDetailActivity.class);
+        i.putExtra("event", event);
+        startActivity(i);
 
         // Return false to indicate that we have not consumed the event and that we wish
         // for the default behavior to occur (which is for the camera to move such that the
