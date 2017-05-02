@@ -4,11 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
@@ -831,6 +834,44 @@ public class NSService {
         });
     }
 
+    public void sendPasswordResetEmail(String email, final MySimpleCallback callback){
+        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "sendPasswordResetEmail: success");
+                    callback.onSuccess("success");
+                } else {
+                    Log.w(TAG, "sendPasswordResetEmail: failure");
+                    callback.onFailure(task.getException().getMessage());
+                }
+
+            }
+        });
+    }
+
+    public void signInWithGoogle(GoogleSignInAccount acct, final MySimpleCallback callback){
+        Log.d(TAG, "signInWithGoogle: " + acct.getId());
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential: success");
+                            callback.onSuccess("success");
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential: failure", task.getException());
+                            callback.onFailure("failure");
+
+                        }
+                    }
+                });
+
+    }
+
+
     public static interface CallbackMessage {
         /**
          * an exception has occurred
@@ -849,6 +890,11 @@ public class NSService {
 
     public static interface MyCallback<T> extends CallbackMessage {
         public void onSuccess(T t);
+    }
+
+    public static interface MySimpleCallback{
+        public void onSuccess(String s);
+        public void onFailure(String s);
     }
 
     private void logResponse(Response<?> response) {
