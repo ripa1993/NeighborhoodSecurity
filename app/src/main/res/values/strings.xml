@@ -35,6 +35,7 @@
     <string name="forgot_password">Forgot your password?</string>
     <string name="register_now">Not a member? Register now!</string>
     <string name="title_authentication">Authentication</string>
+    <string name="button_email_auth">Email Authentication</string>
 
     <!-- Hints -->
     <string name="hint_event_type">Event type</string>

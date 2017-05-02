@@ -1,7 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -106,6 +105,7 @@ public class EmailPasswordFragment extends Fragment {
                 @Override
                 public void onSuccess(String s) {
                     Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    mListener.loggedIn();
                 }
 
                 @Override
@@ -255,5 +255,6 @@ public class EmailPasswordFragment extends Fragment {
     public interface OnFragmentInteractionListener {
 
         void closeFragment();
+        void loggedIn();
     }
 }

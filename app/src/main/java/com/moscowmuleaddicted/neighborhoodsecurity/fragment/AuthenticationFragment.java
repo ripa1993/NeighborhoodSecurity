@@ -25,12 +25,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.EmailPasswordActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class AuthenticationFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "AuthenticationFragment";
     private static final int RC_SIGN_IN = 1;
+    private static final int EMAIL_LOGIN = 2;
 
     GoogleApiClient mGoogleApiClient;
     SignInButton googleLoginButton;
@@ -68,6 +70,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_authentication, container, false);
 
+        // Google sign in button setup
         googleLoginButton = (SignInButton) view.findViewById(R.id.sign_in_button);
         googleLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +79,9 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
             }
         });
 
-
+        // Facebook login button setup
         facebookLoginButton = (LoginButton) view.findViewById(R.id.login_button);
         facebookLoginButton.setReadPermissions("email", "public_profile");
-        // If using in a fragment
         facebookLoginButton.setFragment(this);
 
         callbackManager = CallbackManager.Factory.create();
@@ -157,7 +159,17 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
             handleSignInResult(result);
         }
 
+        // Facebook
         callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // Email
+        if (requestCode == EMAIL_LOGIN){
+            // handle exit status
+            if (data.getBooleanExtra("LOGGED_IN", false)){
+                // logged in
+                mListener.loggedIn();
+            }
+        }
 
     }
 
@@ -170,6 +182,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
                 @Override
                 public void onSuccess(String s) {
                     Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    mListener.loggedIn();
                 }
 
                 @Override
@@ -188,7 +201,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
             @Override
             public void onSuccess(String s) {
                 Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-
+                mListener.loggedIn();
             }
 
             @Override
@@ -199,6 +212,11 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         });
     }
 
+
+    public void useEmailClicked(View view){
+        Intent emailPasswordLogin = new Intent(getActivity(), EmailPasswordActivity.class);
+        startActivityForResult(emailPasswordLogin, EMAIL_LOGIN);
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -211,7 +229,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-
+        void loggedIn();
     }
 
 }

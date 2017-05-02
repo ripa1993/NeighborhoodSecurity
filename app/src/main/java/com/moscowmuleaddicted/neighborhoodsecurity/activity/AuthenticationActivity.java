@@ -32,4 +32,10 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
 
 
     }
+
+    @Override
+    public void loggedIn() {
+        // a user is logged in
+        finish();
+    }
 }
