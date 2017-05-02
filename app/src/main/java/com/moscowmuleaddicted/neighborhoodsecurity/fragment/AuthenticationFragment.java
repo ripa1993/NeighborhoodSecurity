@@ -22,27 +22,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link AuthenticationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AuthenticationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AuthenticationFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = "AuthenticationFragment";
-    final int RC_SIGN_IN = 1;
+    private static final int RC_SIGN_IN = 1;
 
     GoogleApiClient mGoogleApiClient;
-    LoginButton loginButton;
+    SignInButton googleLoginButton;
+    LoginButton facebookLoginButton;
     CallbackManager callbackManager;
 
 
@@ -76,16 +68,25 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_authentication, container, false);
 
-        loginButton = (LoginButton) view.findViewById(R.id.login_button);
-        loginButton.setReadPermissions("email", "public_profile");
+        googleLoginButton = (SignInButton) view.findViewById(R.id.sign_in_button);
+        googleLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                googleSignIn(v);
+            }
+        });
+
+
+        facebookLoginButton = (LoginButton) view.findViewById(R.id.login_button);
+        facebookLoginButton.setReadPermissions("email", "public_profile");
         // If using in a fragment
-        loginButton.setFragment(this);
+        facebookLoginButton.setFragment(this);
 
         callbackManager = CallbackManager.Factory.create();
 
 
         // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
@@ -112,7 +113,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
     }
 
     public LoginButton getLoginButtonFB(){
-        return loginButton;
+        return facebookLoginButton;
     }
 
 
@@ -141,6 +142,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
 
     public void googleSignIn(View view){
+        Log.d(TAG, "googleSignIn: button clicked");
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
