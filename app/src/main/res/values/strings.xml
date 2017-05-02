@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Neighborhood Security</string>
     <string name="web_client_id">822387448086-becf94hab3hbcq5h0irme0hij0kq6d45.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">1895370760703633</string>
 
     <!-- Enum Format -->
     <string name="eventtype_carjacking">Carjacking</string>
