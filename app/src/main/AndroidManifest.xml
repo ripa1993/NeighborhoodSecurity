@@ -74,7 +74,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.AuthenticationActivity"></activity>
+        <activity android:name=".activity.AuthenticationActivity"
+            android:label="@string/title_authentication">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name="com.facebook.CustomTabActivity"

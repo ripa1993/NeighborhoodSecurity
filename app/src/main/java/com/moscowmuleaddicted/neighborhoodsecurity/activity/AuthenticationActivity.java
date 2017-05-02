@@ -11,8 +11,9 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.AuthenticationFragment;
+import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EmailPasswordFragment;
 
-public class AuthenticationActivity extends AppCompatActivity {
+public class AuthenticationActivity extends AppCompatActivity implements AuthenticationFragment.OnFragmentInteractionListener {
     AuthenticationFragment mFragment;
 
     @Override
