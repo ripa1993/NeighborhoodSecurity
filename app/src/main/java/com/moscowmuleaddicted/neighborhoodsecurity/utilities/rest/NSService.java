@@ -862,46 +862,79 @@ public class NSService {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential: success");
 
-                            String id = mAuth.getCurrentUser().getUid();
-                            String email = mAuth.getCurrentUser().getEmail();
-                            String name = mAuth.getCurrentUser().getDisplayName();
+                            final String id = mAuth.getCurrentUser().getUid();
+                            final String email = mAuth.getCurrentUser().getEmail();
+                            final String name = mAuth.getCurrentUser().getDisplayName();
+                            final String fcmToken = FirebaseInstanceId.getInstance().getToken();
 
-                            // update profile on REST user db
-                            postUser(id, name, email, new MyCallback<String>() {
+                            getUserById(id, new MyCallback<User>() {
                                 @Override
-                                public void onSuccess(String msg) {
-                                    Log.d(TAG, "signInWithGoogle: user posted on rest service");
+                                public void onSuccess(User user) {
+                                    // user already exists in the rest db, simply update the fcm token
+
+                                    updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                        @Override
+                                        public void onSuccess(MyMessage myMessage) {
+                                            Log.d(TAG, "signInWithGoogle: registered fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithGoogle: failed to register fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithGoogle: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                        }
+                                    });
+
                                 }
 
                                 @Override
                                 public void onFailure() {
-                                    Log.w(TAG, "signInWithGoogle: failure in posting user on rest service");
+                                    // post profile on REST user db and update fcm token
+                                    postUser(id, name, email, new MyCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String msg) {
+                                            Log.d(TAG, "signInWithGoogle: user posted on rest service");
+
+                                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                                @Override
+                                                public void onSuccess(MyMessage myMessage) {
+                                                    Log.d(TAG, "signInWithGoogle: registered fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    Log.w(TAG, "signInWithGoogle: failed to register fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onMessageLoad(MyMessage message, int status) {
+                                                    Log.w(TAG, "signInWithGoogle: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithGoogle: failure in posting user on rest service");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithGoogle: (" + status + ") " + message);
+                                        }
+                                    });
                                 }
 
                                 @Override
                                 public void onMessageLoad(MyMessage message, int status) {
-                                    Log.w(TAG, "signInWithGoogle: (" + status + ") " + message);
+                                    // try anyway
+                                    onFailure();
                                 }
                             });
-
-                            String fcmToken = FirebaseInstanceId.getInstance().getToken();
-                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
-                                @Override
-                                public void onSuccess(MyMessage myMessage) {
-                                    Log.d(TAG, "signInWithGoogle: registered fcm token with server");
-                                }
-
-                                @Override
-                                public void onFailure() {
-                                    Log.w(TAG, "signInWithGoogle: failed to register fcm token with server");
-                                }
-
-                                @Override
-                                public void onMessageLoad(MyMessage message, int status) {
-                                    Log.w(TAG, "signInWithGoogle: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
-                                }
-                            });
-
                             callback.onSuccess("success");
                         } else {
                             // If sign in fails, display a message to the user.
@@ -926,52 +959,84 @@ public class NSService {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential: success");
 
-                            String id = mAuth.getCurrentUser().getUid();
-                            String email = mAuth.getCurrentUser().getEmail();
-                            String name = mAuth.getCurrentUser().getDisplayName();
+                            final String id = mAuth.getCurrentUser().getUid();
+                            final String email = mAuth.getCurrentUser().getEmail();
+                            final String name = mAuth.getCurrentUser().getDisplayName();
+                            final String fcmToken = FirebaseInstanceId.getInstance().getToken();
 
-                            // update profile on REST user db
-                            postUser(id, name, email, new MyCallback<String>() {
+                            getUserById(id, new MyCallback<User>() {
                                 @Override
-                                public void onSuccess(String msg) {
-                                    Log.d(TAG, "signInWithFacebook: user posted on rest service");
+                                public void onSuccess(User user) {
+                                    // user already exists in the rest db
+
+                                    updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                        @Override
+                                        public void onSuccess(MyMessage myMessage) {
+                                            Log.d(TAG, "signInWithFacebook: registered fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithFacebook: failed to register fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithFacebook: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                        }
+                                    });
+
                                 }
 
                                 @Override
                                 public void onFailure() {
-                                    Log.w(TAG, "signInWithFacebook: failure in posting user on rest service");
+                                    // update profile on REST user db
+                                    postUser(id, name, email, new MyCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String msg) {
+                                            Log.d(TAG, "signInWithFacebook: user posted on rest service");
+                                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                                @Override
+                                                public void onSuccess(MyMessage myMessage) {
+                                                    Log.d(TAG, "signInWithFacebook: registered fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    Log.w(TAG, "signInWithFacebook: failed to register fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onMessageLoad(MyMessage message, int status) {
+                                                    Log.w(TAG, "signInWithFacebook: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithFacebook: failure in posting user on rest service");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithFacebook: (" + status + ") " + message);
+                                        }
+                                    });
                                 }
 
                                 @Override
                                 public void onMessageLoad(MyMessage message, int status) {
-                                    Log.w(TAG, "signInWithFacebook: (" + status + ") " + message);
+                                    // try anyway
+                                    onFailure();
                                 }
                             });
-
-                            String fcmToken = FirebaseInstanceId.getInstance().getToken();
-                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
-                                @Override
-                                public void onSuccess(MyMessage myMessage) {
-                                    Log.d(TAG, "signInWithFacebook: registered fcm token with server");
-                                }
-
-                                @Override
-                                public void onFailure() {
-                                    Log.w(TAG, "signInWithFacebook: failed to register fcm token with server");
-                                }
-
-                                @Override
-                                public void onMessageLoad(MyMessage message, int status) {
-                                    Log.w(TAG, "signInWithFacebook: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
-                                }
-                            });
-
                             callback.onSuccess("success");
 
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential: failure", task.getException());
-                            callback.onFailure("success");
+                            callback.onFailure("failure");
 
                         }
                     }
