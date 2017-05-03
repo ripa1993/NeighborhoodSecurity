@@ -15,15 +15,37 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-
+/**
+ * Adapter for an ArrayList of Events
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
 
+    /**
+     * Application context, used to retrieve localized strings for the events
+     */
     private Context mContext;
+    /**
+     * List of events to display
+     */
     private final List<Event> mValues;
+    /**
+     * Listener for element click
+     */
     private final OnListFragmentInteractionListener mListener;
-
+    /**
+     * Formatter for the date, to match user's locale
+     */
     private final SimpleDateFormat mSimpleDateFormat;
 
+    /**
+     * Constructor
+     * @param items events to display
+     * @param listener the listener to perform callback
+     * @param context the application context
+     */
     public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, Context context) {
         mValues = items;
         mListener = listener;
@@ -95,6 +117,9 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         return mValues.size();
     }
 
+    /**
+     * View Holder to contain the events data
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
         public final TextView mEventType;

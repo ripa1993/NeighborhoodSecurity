@@ -17,17 +17,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * Fragment to show a list of events
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 public class EventListFragment extends Fragment {
 
+    /**
+     * column number arg
+     */
     private static final String ARG_COLUMN_COUNT = "column-count";
+    /**
+     * event list arg
+     */
     private static final String ARG_LIST_EVENT = "event-list";
+    /**
+     * number of columns to show
+     */
     private int mColumnCount = 1;
+    /**
+     * list of events
+     */
     private List<Event> mListEvents = new ArrayList<>();
+    /**
+     * listener
+     */
     private OnListFragmentInteractionListener mListener;
 
     /**
@@ -37,6 +52,12 @@ public class EventListFragment extends Fragment {
     public EventListFragment() {
     }
 
+    /**
+     * constructor that receives a list of events to show
+     * @param columnCount
+     * @param events
+     * @return
+     */
     public static EventListFragment newInstance(int columnCount, ArrayList<Event> events) {
         EventListFragment fragment = new EventListFragment();
         Bundle args = new Bundle();
