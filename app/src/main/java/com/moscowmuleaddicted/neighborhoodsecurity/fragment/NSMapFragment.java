@@ -173,11 +173,11 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
     }
 
     public void test() {
-        float latMin = 0, latMax = 0, lonMin = 0, lonMax = 0;
-        latMin = 45;
-        latMax = 46;
-        lonMin = 9;
-        lonMax = 10;
+        Double latMin = 0d, latMax = 0d, lonMin = 0d, lonMax = 0d;
+        latMin = 45d;
+        latMax = 46d;
+        lonMin = 9d;
+        lonMax = 10d;
 
         service = NSService.getInstance(getActivity());
 

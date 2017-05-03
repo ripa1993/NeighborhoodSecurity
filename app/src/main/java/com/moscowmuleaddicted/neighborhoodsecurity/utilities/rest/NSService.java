@@ -5,11 +5,16 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
@@ -90,7 +95,7 @@ public class NSService {
      *                     onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                     onFailure if exception
      */
-    public void getEventsByArea(float latitudeMin, float latitudeMax, float longitudeMin, float longitudeMax, final MyCallback<List<Event>> callback) {
+    public void getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -130,7 +135,7 @@ public class NSService {
      *                  onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                  onFailure if exception
      */
-    public void getEventsByRadius(float latitude, float longitude, float radius, final MyCallback<List<Event>> callback) {
+    public void getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByRadius(latitude, longitude, radius).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -249,7 +254,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithCoordinates(EventType eventType, String description, float latitude, float longitude, final MyCallback<String> callback) {
+    public void postEventWithCoordinates(EventType eventType, String description, Double latitude, Double longitude, final MyCallback<String> callback) {
         restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -728,7 +733,7 @@ public class NSService {
      * @param maxLon
      * @param callback
      */
-    public void postSubscriptionArea(float minLat, float maxLat, float minLon, float maxLon, final MyCallback<MyMessage> callback) {
+    public void postSubscriptionArea(Double minLat, Double maxLat, Double minLon, Double maxLon, final MyCallback<MyMessage> callback) {
         restInterface.postSubscriptionArea(minLat, maxLat, minLon, maxLon).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -765,7 +770,7 @@ public class NSService {
      * @param radius
      * @param callback
      */
-    public void postSubscriptionCenterAndRadius(float lat, float lon, int radius, final MyCallback<MyMessage> callback){
+    public void postSubscriptionCenterAndRadius(Double lat, Double lon, int radius, final MyCallback<MyMessage> callback){
         restInterface.postSubscriptionCenterAndRadius(lat, lon, radius).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -832,6 +837,214 @@ public class NSService {
         });
     }
 
+    public void sendPasswordResetEmail(String email, final MySimpleCallback callback){
+        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "sendPasswordResetEmail: success");
+                    callback.onSuccess("success");
+                } else {
+                    Log.w(TAG, "sendPasswordResetEmail: failure");
+                    callback.onFailure(task.getException().getMessage());
+                }
+
+            }
+        });
+    }
+
+    public void signInWithGoogle(GoogleSignInAccount acct, final MySimpleCallback callback){
+        Log.d(TAG, "signInWithGoogle: " + acct.getId());
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential: success");
+
+                            final String id = mAuth.getCurrentUser().getUid();
+                            final String email = mAuth.getCurrentUser().getEmail();
+                            final String name = mAuth.getCurrentUser().getDisplayName();
+                            final String fcmToken = FirebaseInstanceId.getInstance().getToken();
+
+                            getUserById(id, new MyCallback<User>() {
+                                @Override
+                                public void onSuccess(User user) {
+                                    // user already exists in the rest db, simply update the fcm token
+
+                                    updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                        @Override
+                                        public void onSuccess(MyMessage myMessage) {
+                                            Log.d(TAG, "signInWithGoogle: registered fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithGoogle: failed to register fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithGoogle: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onFailure() {
+                                    // post profile on REST user db and update fcm token
+                                    postUser(id, name, email, new MyCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String msg) {
+                                            Log.d(TAG, "signInWithGoogle: user posted on rest service");
+
+                                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                                @Override
+                                                public void onSuccess(MyMessage myMessage) {
+                                                    Log.d(TAG, "signInWithGoogle: registered fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    Log.w(TAG, "signInWithGoogle: failed to register fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onMessageLoad(MyMessage message, int status) {
+                                                    Log.w(TAG, "signInWithGoogle: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithGoogle: failure in posting user on rest service");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithGoogle: (" + status + ") " + message);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onMessageLoad(MyMessage message, int status) {
+                                    // try anyway
+                                    onFailure();
+                                }
+                            });
+                            callback.onSuccess("success");
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential: failure", task.getException());
+                            callback.onFailure("failure");
+
+                        }
+                    }
+                });
+
+    }
+
+    public void signInWithFacebook(AccessToken token, final MySimpleCallback callback){
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential: success");
+
+                            final String id = mAuth.getCurrentUser().getUid();
+                            final String email = mAuth.getCurrentUser().getEmail();
+                            final String name = mAuth.getCurrentUser().getDisplayName();
+                            final String fcmToken = FirebaseInstanceId.getInstance().getToken();
+
+                            getUserById(id, new MyCallback<User>() {
+                                @Override
+                                public void onSuccess(User user) {
+                                    // user already exists in the rest db
+
+                                    updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                        @Override
+                                        public void onSuccess(MyMessage myMessage) {
+                                            Log.d(TAG, "signInWithFacebook: registered fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithFacebook: failed to register fcm token with server");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithFacebook: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onFailure() {
+                                    // update profile on REST user db
+                                    postUser(id, name, email, new MyCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String msg) {
+                                            Log.d(TAG, "signInWithFacebook: user posted on rest service");
+                                            updateFcm(fcmToken, new MyCallback<MyMessage>() {
+                                                @Override
+                                                public void onSuccess(MyMessage myMessage) {
+                                                    Log.d(TAG, "signInWithFacebook: registered fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    Log.w(TAG, "signInWithFacebook: failed to register fcm token with server");
+                                                }
+
+                                                @Override
+                                                public void onMessageLoad(MyMessage message, int status) {
+                                                    Log.w(TAG, "signInWithFacebook: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "signInWithFacebook: failure in posting user on rest service");
+                                        }
+
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "signInWithFacebook: (" + status + ") " + message);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onMessageLoad(MyMessage message, int status) {
+                                    // try anyway
+                                    onFailure();
+                                }
+                            });
+                            callback.onSuccess("success");
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential: failure", task.getException());
+                            callback.onFailure("failure");
+
+                        }
+                    }
+                });
+    }
+
+
     public static interface CallbackMessage {
         /**
          * an exception has occurred
@@ -850,6 +1063,11 @@ public class NSService {
 
     public static interface MyCallback<T> extends CallbackMessage {
         public void onSuccess(T t);
+    }
+
+    public static interface MySimpleCallback{
+        public void onSuccess(String s);
+        public void onFailure(String s);
     }
 
     private void logResponse(Response<?> response) {
