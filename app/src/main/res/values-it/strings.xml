@@ -29,4 +29,15 @@
     <string name="radio_address">Indirizzo</string>
     <string name="radio_coordinates">Coordinate</string>
     <string name="title_activity_event_create">Crea evento</string>
+    <string name="button_email_auth">Accedi con Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_username">Nome utente</string>
+    <string name="register">Registrati</string>
+    <string name="register_now">Non sei registrato? Fallo ora!</string>
+    <string name="reset_password">Reimposta password</string>
+    <string name="signin">Accedi</string>
+    <string name="signup">Registrati</string>
+    <string name="title_authentication">Autenticazione</string>
+    <string name="forgot_password">Hai dimenticato la password?</string>
+    <string name="hint_email">Email</string>
 </resources>
