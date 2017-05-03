@@ -14,7 +14,16 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.AuthenticationFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EmailPasswordFragment;
 
+/**
+ * Activity containing a fragment that allows the user to choose between the available login methods
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class AuthenticationActivity extends AppCompatActivity implements AuthenticationFragment.OnFragmentInteractionListener {
+    /**
+     * The contained fragment
+     */
     AuthenticationFragment mFragment;
 
     @Override

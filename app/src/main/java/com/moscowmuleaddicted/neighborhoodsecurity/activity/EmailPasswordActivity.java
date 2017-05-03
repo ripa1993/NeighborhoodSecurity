@@ -7,8 +7,21 @@ import android.os.Bundle;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EmailPasswordFragment;
 
+/**
+ * Activity that contains a fragment to allow user to register, signin or reset password using
+ * the email authentication system provided by Firebase
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class EmailPasswordActivity extends AppCompatActivity implements EmailPasswordFragment.OnFragmentInteractionListener {
+    /**
+     * Request code for Email signin
+     */
     private final static int EMAIL_LOGIN = 2;
+    /**
+     * The fragment
+     */
     EmailPasswordFragment mFragment;
 
     @Override
@@ -28,18 +41,14 @@ public class EmailPasswordActivity extends AppCompatActivity implements EmailPas
     public void closeFragment() {
         Intent intent = new Intent();
         intent.putExtra("LOGGED_IN", false);
-//        intent.putExtra("REGISTERED", false);
-//        intent.putExtra("FORGOT_MAIL", false);
         setResult(EMAIL_LOGIN, intent);
         finish();
     }
 
     @Override
-    public void loggedIn(){
+    public void loggedInWithEmail(){
         Intent intent = new Intent();
         intent.putExtra("LOGGED_IN", true);
-//        intent.putExtra("REGISTERED", false);
-//        intent.putExtra("FORGOT_MAIL", false);
         setResult(EMAIL_LOGIN, intent);
         finish();
     }

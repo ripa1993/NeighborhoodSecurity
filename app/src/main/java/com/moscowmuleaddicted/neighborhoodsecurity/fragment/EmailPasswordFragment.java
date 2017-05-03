@@ -17,30 +17,31 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessa
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EmailPasswordFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EmailPasswordFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment containing login / registration / password reset for email authentication
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
-enum FragmentState{
-    LOGIN, REGISTER, PASSWORD_RESET;
-}
-
-
 public class EmailPasswordFragment extends Fragment {
-
-    FragmentState state;
-
-    TextInputLayout inputLayoutUsername, inputLayoutPassword, inputLayoutEmail;
-    EditText etUsername, etPassword, etEmail;
-    Button buttonSignin, buttonSignup, buttonResetPassword;
-    TextView tvForgotPassword, tvRegister;
-
+    /**
+     * The fragment state
+     */
+    private FragmentState state;
+    /**
+     * Layout components
+     */
+    private TextInputLayout inputLayoutUsername, inputLayoutPassword, inputLayoutEmail;
+    private EditText etUsername, etPassword, etEmail;
+    private Button buttonSignin, buttonSignup, buttonResetPassword;
+    private TextView tvForgotPassword, tvRegister;
+    /**
+     * Fragment listener
+     */
     private OnFragmentInteractionListener mListener;
 
+    /**
+     * Empty constructor
+     */
     public EmailPasswordFragment() {
         // Required empty public constructor
     }
@@ -131,6 +132,10 @@ public class EmailPasswordFragment extends Fragment {
         mListener = null;
     }
 
+    /**
+     * Perform login via email if possibile. If success, loggedInWithEmail callback
+     * @param view
+     */
     public void signInClicked(View view){
         String email, password;
         email = etEmail.getText().toString();
@@ -140,7 +145,7 @@ public class EmailPasswordFragment extends Fragment {
                 @Override
                 public void onSuccess(String s) {
                     Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
-                    mListener.loggedIn();
+                    mListener.loggedInWithEmail();
                 }
 
                 @Override
@@ -158,6 +163,10 @@ public class EmailPasswordFragment extends Fragment {
         }
     }
 
+    /**
+     * Perform registration via email if possible.
+     * @param view
+     */
     public void signUpClicked(View view){
         String email, password, username;
         email = etEmail.getText().toString();
@@ -187,6 +196,10 @@ public class EmailPasswordFragment extends Fragment {
         }
     }
 
+    /**
+     * Send password reset email, if possible
+     * @param view
+     */
     public void resetPasswordClicked(View view){
         String email;
         email = etEmail.getText().toString();
@@ -208,7 +221,7 @@ public class EmailPasswordFragment extends Fragment {
     }
 
     /**
-     * Change layout to "RESET_PASSWORD"
+     * Change layout to "password reset"
      * @param view
      */
     public void changeLayoutForgotPassword(View view){
@@ -227,7 +240,7 @@ public class EmailPasswordFragment extends Fragment {
     }
 
     /**
-     * Change layout to "REGISTER"
+     * Change layout to "registration"
      * @param view
      */
     public void changeLayoutRegister(View view){
@@ -246,7 +259,7 @@ public class EmailPasswordFragment extends Fragment {
     }
 
     /**
-     * Change layout to "LOGIN"
+     * Change layout to "login"
      * @param view
      */
     public void changeLayoutLogin(View view){
@@ -285,11 +298,19 @@ public class EmailPasswordFragment extends Fragment {
 
 
     /**
-     * closeFragment(): called when asked to change the view
+     * closeFragment(): when exiting the fragment without having logged in
+     * loggedInWithEmail(): when exiting after having logged in
      */
     public interface OnFragmentInteractionListener {
 
         void closeFragment();
-        void loggedIn();
+        void loggedInWithEmail();
     }
+}
+
+/**
+ * Fragment state to handle the behaviour of back button
+ */
+enum FragmentState{
+    LOGIN, REGISTER, PASSWORD_RESET;
 }

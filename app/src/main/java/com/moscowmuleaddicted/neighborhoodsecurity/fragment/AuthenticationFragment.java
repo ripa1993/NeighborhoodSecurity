@@ -29,20 +29,49 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EmailPasswordActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+/**
+ * Authentication fragment, provides Facebook, Google and Email authentication
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class AuthenticationFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
-
+    /**
+     * Tag used in logger
+     */
     private static final String TAG = "AuthenticationFragment";
+    /**
+     * Request code for Google Signin
+     */
     private static final int RC_SIGN_IN = 1;
+    /**
+     * Request code for email signin
+     */
     private static final int EMAIL_LOGIN = 2;
-
-    GoogleApiClient mGoogleApiClient;
-    SignInButton googleLoginButton;
-    LoginButton facebookLoginButton;
-    CallbackManager callbackManager;
-
-
+    /**
+     * The Google API client
+     */
+    private GoogleApiClient mGoogleApiClient;
+    /**
+     * Google Signin button
+     */
+    private SignInButton googleLoginButton;
+    /**
+     * Facebook Login button
+     */
+    private LoginButton facebookLoginButton;
+    /**
+     * Facebook callback manager
+     */
+    private CallbackManager callbackManager;
+    /**
+     * Fragment listener
+     */
     private OnFragmentInteractionListener mListener;
 
+    /**
+     * Empty constructor
+     */
     public AuthenticationFragment() {
         // Required empty public constructor
     }
@@ -127,6 +156,10 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         return view;
     }
 
+    /**
+     * Obtain the Facebook login button
+     * @return Facebook LoginButton instance
+     */
     public LoginButton getLoginButtonFB() {
         return facebookLoginButton;
     }
@@ -154,7 +187,10 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
     }
 
-
+    /**
+     * Perform Google signin
+     * @param view
+     */
     public void googleSignIn(View view) {
         Log.d(TAG, "googleSignIn: button clicked");
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
@@ -185,6 +221,10 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
     }
 
+    /**
+     * Handle the result of Google Signin
+     * @param result GoogleSignInResult provided by the GoogleAPIClient
+     */
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -207,6 +247,10 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         }
     }
 
+    /**
+     * Handles the facebook access token
+     * @param token AccessToken provided by LoginButton
+     */
     public void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         NSService.getInstance(getContext()).signInWithFacebook(token, new NSService.MySimpleCallback() {
@@ -226,14 +270,8 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Fragment callbacks. loggedInWithEmail() is called when user successfully authenticates via one of the
+     * provided authentication method
      */
     public interface OnFragmentInteractionListener {
         void loggedIn();
