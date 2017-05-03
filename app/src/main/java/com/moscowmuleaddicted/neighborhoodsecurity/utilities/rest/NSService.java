@@ -95,7 +95,7 @@ public class NSService {
      *                     onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                     onFailure if exception
      */
-    public void getEventsByArea(float latitudeMin, float latitudeMax, float longitudeMin, float longitudeMax, final MyCallback<List<Event>> callback) {
+    public void getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -135,7 +135,7 @@ public class NSService {
      *                  onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                  onFailure if exception
      */
-    public void getEventsByRadius(float latitude, float longitude, float radius, final MyCallback<List<Event>> callback) {
+    public void getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByRadius(latitude, longitude, radius).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -254,7 +254,7 @@ public class NSService {
      *                    onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 500 INTERNAL SERVER ERROR,
      *                    onFailure if exception
      */
-    public void postEventWithCoordinates(EventType eventType, String description, float latitude, float longitude, final MyCallback<String> callback) {
+    public void postEventWithCoordinates(EventType eventType, String description, Double latitude, Double longitude, final MyCallback<String> callback) {
         restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -733,7 +733,7 @@ public class NSService {
      * @param maxLon
      * @param callback
      */
-    public void postSubscriptionArea(float minLat, float maxLat, float minLon, float maxLon, final MyCallback<MyMessage> callback) {
+    public void postSubscriptionArea(Double minLat, Double maxLat, Double minLon, Double maxLon, final MyCallback<MyMessage> callback) {
         restInterface.postSubscriptionArea(minLat, maxLat, minLon, maxLon).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -770,7 +770,7 @@ public class NSService {
      * @param radius
      * @param callback
      */
-    public void postSubscriptionCenterAndRadius(float lat, float lon, int radius, final MyCallback<MyMessage> callback){
+    public void postSubscriptionCenterAndRadius(Double lat, Double lon, int radius, final MyCallback<MyMessage> callback){
         restInterface.postSubscriptionCenterAndRadius(lat, lon, radius).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {

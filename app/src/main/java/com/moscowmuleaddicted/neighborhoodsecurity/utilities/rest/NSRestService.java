@@ -28,12 +28,12 @@ public interface NSRestService {
     // events
 
     @GET("events")
-    public Call<List<Event>> getEventsByArea(@Query("latMin") float latitutdeMin, @Query("latMax") float latitudeMax,
-                                             @Query("lonMin") float longitudeMin, @Query("lonMax") float longitudeMax);
+    public Call<List<Event>> getEventsByArea(@Query("latMin") Double latitutdeMin, @Query("latMax") Double latitudeMax,
+                                             @Query("lonMin") Double longitudeMin, @Query("lonMax") Double longitudeMax);
 
     @GET("events")
-    public Call<List<Event>> getEventsByRadius(@Query("lat") float latitude, @Query("lon") float longitude,
-                                               @Query("rad") float radius);
+    public Call<List<Event>> getEventsByRadius(@Query("lat") Double latitude, @Query("lon") Double longitude,
+                                               @Query("rad") int radius);
 
     @GET("events/{id}")
     public Call<Event> getEventById(@Path("id") int eventId);
@@ -46,7 +46,7 @@ public interface NSRestService {
     @FormUrlEncoded
     @POST("events")
     public Call<MyMessage> postEventWithCoordinates(@Field("eventType") EventType eventType, @Field("description") String description,
-                                                    @Field("latitude") float latitude, @Field("longitude") float longitude);
+                                                    @Field("latitude") Double latitude, @Field("longitude") Double longitude);
 
     @DELETE("events/{id}")
     public Call<MyMessage> deleteEvent(@Path("id") int eventId);
@@ -88,15 +88,15 @@ public interface NSRestService {
 
     @POST("subscriptions")
     @FormUrlEncoded
-    public Call<MyMessage> postSubscriptionArea(@Field("minLat") float minLat,
-                                                   @Field("maxLat") float maxLat,
-                                                   @Field("minLon") float minLon,
-                                                   @Field("maxLon") float maxLon);
+    public Call<MyMessage> postSubscriptionArea(@Field("minLat") Double minLat,
+                                                   @Field("maxLat") Double maxLat,
+                                                   @Field("minLon") Double minLon,
+                                                   @Field("maxLon") Double maxLon);
 
     @POST("subscriptions")
     @FormUrlEncoded
-    public Call<MyMessage> postSubscriptionCenterAndRadius(@Field("lat") float lat,
-                                                                @Field("lon") float lon,
+    public Call<MyMessage> postSubscriptionCenterAndRadius(@Field("lat") Double lat,
+                                                                @Field("lon") Double lon,
                                                                 @Field("radius") int radius);
 
     @POST("subscriptions")
