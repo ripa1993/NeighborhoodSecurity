@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Neighborhood Security</string>
+    <string name="web_client_id" translatable="false">822387448086-becf94hab3hbcq5h0irme0hij0kq6d45.apps.googleusercontent.com</string>
+    <string name="facebook_app_id" translatable="false">1895370760703633</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1895370760703633</string>
 
     <!-- Enum Format -->
     <string name="eventtype_carjacking">Carjacking</string>
@@ -20,4 +23,29 @@
     <string name="title_activity_event_detail">Event Detail</string>
     <string name="event_voted">Event voted</string>
     <string name="event_voted_undo">Undo</string>
+
+    <string name="dialog_close_button">Close</string>
+    <string name="radio_address">Address</string>
+    <string name="radio_coordinates">Coordinates</string>
+    <string name="signin">Sign In</string>
+    <string name="signup">Sign Up</string>
+    <string name="reset_password">Reset password</string>
+    <string name="register">Register</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="register_now">Not a member? Register now!</string>
+    <string name="title_authentication">Authentication</string>
+    <string name="button_email_auth">Login with Email</string>
+
+    <!-- Hints -->
+    <string name="hint_event_type">Event type</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_country">Country</string>
+    <string name="hint_city">City</string>
+    <string name="hint_street">Street</string>
+    <string name="hint_longitude">Longitude</string>
+    <string name="hint_latitude">Latitude</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+
 </resources>
