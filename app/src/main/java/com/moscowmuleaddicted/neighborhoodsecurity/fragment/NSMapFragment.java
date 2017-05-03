@@ -1,7 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.content.Intent;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,93 +14,103 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.activity.TestRestAPI;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
 
     private GoogleMap currentMap;
     private NSService service;
+    private Set<Integer> idsAlreadyIn;
 
     // Initial position or events
     private LatLng initialPosition;
+    private boolean initialPositionSet = false;
     private List<Event> initialEvents;
-    private int initialOptions = 0;
+    private boolean initialEventsSet = false;
 
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
-        initialOptions = 1;
+        initialPositionSet = true;
     }
 
     public void setInitialEvents(List<Event> initialEvents) {
         this.initialEvents = initialEvents;
-        initialOptions = 2;
+        initialEventsSet = true;
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        idsAlreadyIn = new HashSet<Integer>();
         // Set local map variable
         currentMap = googleMap;
         // Set a listener for marker click.
         currentMap.setOnMarkerClickListener(this);
 
-        if(initialOptions == 1){
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
-        } else if(initialOptions == 2){
+        if (initialEventsSet) {
             addEventListMarkers(initialEvents);
-            centerCameraToContainAllEvents(initialEvents);
+            if (initialPositionSet)
+                currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
+            else
+                centerCameraToContainAllEvents(initialEvents, false);
+        } else if(initialPositionSet){
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
         } else{
             test();
         }
     }
 
+
     // Add marker of an event
-    public void addEventMarker(Event event) {
-        LatLng coords = new LatLng(event.getLatitude(), event.getLongitude());
-        String title = event.getId() + ") " + event.getEventType().toString();
+    private void addEventMarker(Event event) {
 
-        MarkerOptions options = new MarkerOptions();
-        options.position(new LatLng(event.getLatitude(), event.getLongitude()));
-        options.title(title);
+        if(idsAlreadyIn.add(event.getId())) { // true if this set did not already contain the specified element
 
-        // Select icon
-        switch (event.getEventType()) {
-            case CARJACKING:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
-                break;
-            case BURGLARY:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
-                break;
-            case ROBBERY:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
-                break;
-            case THEFT:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
-                break;
-            case SHADY_PEOPLE:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
-                break;
-            case SCAMMERS:
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
-                break;
-            default:
-                break;
+            LatLng coords = new LatLng(event.getLatitude(), event.getLongitude());
+            String title = event.getId() + ") " + event.getEventType().toString();
+
+            MarkerOptions options = new MarkerOptions();
+            options.position(new LatLng(event.getLatitude(), event.getLongitude()));
+            options.title(title);
+
+            // Select icon
+            switch (event.getEventType()) {
+                case CARJACKING:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
+                    break;
+                case BURGLARY:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
+                    break;
+                case ROBBERY:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
+                    break;
+                case THEFT:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
+                    break;
+                case SHADY_PEOPLE:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
+                    break;
+                case SCAMMERS:
+                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
+                    break;
+                default:
+                    break;
+            }
+
+            // Add the marker
+            Marker newMarker = currentMap.addMarker(options);
+
+            // Save the Event object in marker's Tag
+            newMarker.setTag(event);
         }
-
-        // Add the marker
-        Marker newMarker = currentMap.addMarker(options);
-
-        // Save the Event object in marker's Tag
-        newMarker.setTag(event);
     }
+
 
     // Add all markers from a list of events
     public void addEventListMarkers(List<Event> events) {
@@ -111,6 +120,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         }
 
     }
+
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
@@ -127,6 +137,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
     }
+
 
     private LatLng computeCenterEventList(List<Event> events) {
 
@@ -152,15 +163,18 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         double centralSquareRoot = Math.sqrt(x * x + y * y);
         double centralLatitude = Math.atan2(z, centralSquareRoot);
 
-        LatLng center_coords = new LatLng(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
-        return center_coords;
+        return new LatLng(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
     }
 
-    void centerCameraInBarycenterOfEvents(List<Event> events) {
-        currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+
+    private void centerCameraInBarycenterOfEvents(List<Event> events, boolean animate) {
+        if(animate)
+            currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+        else
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
     }
 
-    void centerCameraToContainAllEvents(List<Event> events) {
+    private void centerCameraToContainAllEvents(List<Event> events, boolean animate) {
         //Calculate the markers to get their position
         LatLngBounds.Builder b = new LatLngBounds.Builder();
         for (Event event : events) {
@@ -168,11 +182,14 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         }
         LatLngBounds bounds = b.build();
 
-        //Change the padding as per needed
-        currentMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
+        if(animate)
+            currentMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
+        else
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
     }
 
-    public void test() {
+
+    private void test() {
         Double latMin = 0d, latMax = 0d, lonMin = 0d, lonMax = 0d;
         latMin = 45d;
         latMax = 46d;
@@ -185,7 +202,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
             @Override
             public void onSuccess(List<Event> events) {
                 addEventListMarkers(events);
-                centerCameraToContainAllEvents(events);
+                centerCameraToContainAllEvents(events, true);
             }
 
             @Override
