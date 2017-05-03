@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -111,10 +112,22 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         });
 
 
+        // Setup email button
+        Button email = (Button) view.findViewById(R.id.auth_email_btn);
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent emailPasswordLogin = new Intent(getActivity(), EmailPasswordActivity.class);
+                startActivityForResult(emailPasswordLogin, EMAIL_LOGIN);
+
+            }
+        });
+
         return view;
     }
 
-    public LoginButton getLoginButtonFB(){
+    public LoginButton getLoginButtonFB() {
         return facebookLoginButton;
     }
 
@@ -142,15 +155,14 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
     }
 
 
-
-    public void googleSignIn(View view){
+    public void googleSignIn(View view) {
         Log.d(TAG, "googleSignIn: button clicked");
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -163,9 +175,9 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Email
-        if (requestCode == EMAIL_LOGIN){
+        if (requestCode == EMAIL_LOGIN) {
             // handle exit status
-            if (data.getBooleanExtra("LOGGED_IN", false)){
+            if (data.getBooleanExtra("LOGGED_IN", false)) {
                 // logged in
                 mListener.loggedIn();
             }
@@ -195,7 +207,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         }
     }
 
-    public void handleFacebookAccessToken(AccessToken token){
+    public void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         NSService.getInstance(getContext()).signInWithFacebook(token, new NSService.MySimpleCallback() {
             @Override
@@ -212,11 +224,6 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         });
     }
 
-
-    public void useEmailClicked(View view){
-        Intent emailPasswordLogin = new Intent(getActivity(), EmailPasswordActivity.class);
-        startActivityForResult(emailPasswordLogin, EMAIL_LOGIN);
-    }
 
     /**
      * This interface must be implemented by activities that contain this

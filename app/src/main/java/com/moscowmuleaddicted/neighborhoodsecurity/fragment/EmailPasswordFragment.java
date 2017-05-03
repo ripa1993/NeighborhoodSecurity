@@ -75,6 +75,41 @@ public class EmailPasswordFragment extends Fragment {
 
         state = FragmentState.LOGIN;
 
+        buttonSignin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInClicked(v);
+            }
+        });
+
+        buttonSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signUpClicked(v);
+            }
+        });
+
+        buttonResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetPasswordClicked(v);
+            }
+        });
+
+        tvForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeLayoutForgotPassword(v);
+            }
+        });
+
+        tvRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeLayoutRegister(v);
+            }
+        });
+
         return view;
     }
 

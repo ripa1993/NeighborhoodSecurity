@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -36,6 +37,7 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
     @Override
     public void loggedIn() {
         // a user is logged in
+        Toast.makeText(getApplicationContext(), "user logged in", Toast.LENGTH_SHORT).show();
         finish();
     }
 }
