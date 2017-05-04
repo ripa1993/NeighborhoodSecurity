@@ -23,7 +23,6 @@
     <string name="title_activity_event_detail">Event Detail</string>
     <string name="event_voted">Event voted</string>
     <string name="event_voted_undo">Undo</string>
-
     <string name="dialog_close_button">Close</string>
     <string name="radio_address">Address</string>
     <string name="radio_coordinates">Coordinates</string>
@@ -35,6 +34,7 @@
     <string name="register_now">Not a member? Register now!</string>
     <string name="title_authentication">Authentication</string>
     <string name="button_email_auth">Login with Email</string>
+    <string name="title_activity_event_list">Event list</string>
 
     <!-- Hints -->
     <string name="hint_event_type">Event type</string>
@@ -48,4 +48,14 @@
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
 
+    <string name="single_vote">1 vote</string>
+    <string name="multiple_vote">%1$d votes</string>
+    <string name="action_create_event">Create event</string>
+    <string name="title_activity_event_create">Create event</string>
+    <string name="title_activity_subscription_create">Create subscription</string>
+
+    <string name="metres_singular">%1$d metre</string>
+    <string name="metres_plural">%1$d metres</string>
+    <string name="radius">Radius:</string>
+    <string name="action_create_subscription">Create subscription</string>
 </resources>
