@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 
 import java.util.ArrayList;

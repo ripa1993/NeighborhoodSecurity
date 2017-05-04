@@ -52,5 +52,10 @@
     <string name="multiple_vote">%1$d votes</string>
     <string name="action_create_event">Create event</string>
     <string name="title_activity_event_create">Create event</string>
+    <string name="title_activity_subscription_create">Create subscription</string>
 
+    <string name="metres_singular">%1$d metre</string>
+    <string name="metres_plural">%1$d metres</string>
+    <string name="radius">Radius:</string>
+    <string name="action_create_subscription">Create subscription</string>
 </resources>
