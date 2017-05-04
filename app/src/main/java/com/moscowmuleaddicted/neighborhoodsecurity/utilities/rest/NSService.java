@@ -215,7 +215,7 @@ public class NSService {
      *                    onFailure if exception
      */
     public void postEventWithAddress(EventType eventType, String description, String country, String city, String street, final MyCallback<String> callback) {
-        restInterface.postEventWithAddress(eventType, description, country, city, street).enqueue(new retrofit2.Callback<MyMessage>() {
+        restInterface.postEventWithAddress(eventType.toStringNotLocalized(), description, country, city, street).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
 
@@ -255,7 +255,7 @@ public class NSService {
      *                    onFailure if exception
      */
     public void postEventWithCoordinates(EventType eventType, String description, Double latitude, Double longitude, final MyCallback<String> callback) {
-        restInterface.postEventWithCoordinates(eventType, description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
+        restInterface.postEventWithCoordinates(eventType.toStringNotLocalized(), description, latitude, longitude).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);

@@ -40,12 +40,12 @@ public interface NSRestService {
 
     @FormUrlEncoded
     @POST("events")
-    public Call<MyMessage>  postEventWithAddress(@Field("eventType") EventType eventType, @Field("description") String description,
+    public Call<MyMessage>  postEventWithAddress(@Field("eventType") String eventType, @Field("description") String description,
                                                  @Field("country") String country, @Field("city") String city, @Field("street") String street);
 
     @FormUrlEncoded
     @POST("events")
-    public Call<MyMessage> postEventWithCoordinates(@Field("eventType") EventType eventType, @Field("description") String description,
+    public Call<MyMessage> postEventWithCoordinates(@Field("eventType") String eventType, @Field("description") String description,
                                                     @Field("latitude") Double latitude, @Field("longitude") Double longitude);
 
     @DELETE("events/{id}")
