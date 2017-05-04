@@ -44,4 +44,8 @@
     <string name="multiple_vote">%1$d voti</string>
     <string name="single_vote">1 voto</string>
     <string name="title_activity_event_list">Lista eventi</string>
+    <string name="metres_plural">%1$d metri</string>
+    <string name="metres_singular">%1$d metro</string>
+    <string name="title_activity_subscription_create">Crea notifica</string>
+    <string name="radius">Raggio:</string>
 </resources>

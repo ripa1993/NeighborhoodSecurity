@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
+package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
