@@ -10,18 +10,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <!--
-             The API key for Google Maps-based APIs.
-        -->
+        <!--              The API key for Google Maps-based APIs. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -68,9 +64,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.EmailPasswordActivity"></activity>
-
+        <activity android:name=".activity.EmailPasswordActivity" />
         <activity
             android:name=".activity.AuthenticationActivity"
             android:label="@string/title_authentication">
@@ -92,7 +86,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.EventCreateActivity"
             android:label="@string/title_activity_event_create">
@@ -105,9 +98,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.EventListActivity"
+            android:label="@string/title_activity_event_list">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

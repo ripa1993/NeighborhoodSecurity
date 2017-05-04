@@ -2,6 +2,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment.OnListFragmentInteractionListener;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -36,10 +36,9 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
      */
     private final OnListFragmentInteractionListener mListener;
     /**
-     * Formatter for the date, to match user's locale
+     * Date formatter
      */
-    private final SimpleDateFormat mSimpleDateFormat;
-
+    private java.text.DateFormat mDateFormat;
     /**
      * Constructor
      * @param items events to display
@@ -49,8 +48,8 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, Context context) {
         mValues = items;
         mListener = listener;
-        mSimpleDateFormat = new SimpleDateFormat();
         mContext = context;
+        mDateFormat = DateFormat.getDateFormat(mContext);
     }
 
     @Override
@@ -68,14 +67,14 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         holder.mItem = mValues.get(position);
         holder.mEventType.setText(e.getEventType().toString());
         holder.mEventLocation.setText(e.getStreet()+", "+e.getCity());
-        holder.mEventDate.setText(mSimpleDateFormat.format(e.getDate()));
+        holder.mEventDate.setText(mDateFormat.format(e.getDate()));
 
-        String singleVote = mContext.getResources().getString(R.string.single_vote);
-        String multipleVotes = mContext.getResources().getString(R.string.multiple_vote);
-        if(e.getVotes() == 1){
-            holder.mEventVotes.setText(singleVote);
+//        String singleVote = mContext.getResources().getString(R.string.single_vote);
+//        String multipleVotes = mContext.getResources().getString(R.string.multiple_vote);
+        if(e.getVotes() > 99){
+            holder.mEventVotes.setText("99+");
         } else {
-            holder.mEventVotes.setText(String.format(multipleVotes, e.getVotes()));
+            holder.mEventVotes.setText(String.valueOf(e.getVotes()));
         }
 
         switch (e.getEventType()){

@@ -8,16 +8,11 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.dummy.DummyContent.DummyItem;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+
 public class MyEventDetailRecyclerViewAdapter extends RecyclerView.Adapter<MyEventDetailRecyclerViewAdapter.ViewHolder> {
 
     private final List<Details> mValues;

@@ -34,6 +34,7 @@
     <string name="register_now">Not a member? Register now!</string>
     <string name="title_authentication">Authentication</string>
     <string name="button_email_auth">Login with Email</string>
+    <string name="title_activity_event_list">Event list</string>
 
     <!-- Hints -->
     <string name="hint_event_type">Event type</string>
@@ -49,5 +50,7 @@
 
     <string name="single_vote">1 vote</string>
     <string name="multiple_vote">%1$d votes</string>
+    <string name="action_create_event">Create event</string>
+    <string name="title_activity_event_create">Create event</string>
 
 </resources>
