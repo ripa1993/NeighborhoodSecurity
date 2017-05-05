@@ -107,8 +107,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.SubscriptionCreateActivity"
+        <activity
+            android:name=".activity.SubscriptionCreateActivity"
             android:label="@string/title_activity_subscription_create">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.SubscriptionListActivity"
+            android:label="@string/title_activity_subscription_list">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
