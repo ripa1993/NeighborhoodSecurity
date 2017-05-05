@@ -3,11 +3,13 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by Simone Ripamonti on 24/04/2017.
  */
 
-public class Subscription {
+public class Subscription implements Serializable{
     @SerializedName("id")
     @Expose
     private int id;
@@ -16,16 +18,16 @@ public class Subscription {
     private String userId;
     @SerializedName("minLat")
     @Expose
-    private float minLat;
+    private Double minLat;
     @SerializedName("maxLat")
     @Expose
-    private float maxLat;
+    private Double maxLat;
     @SerializedName("minLon")
     @Expose
-    private float minLon;
+    private Double minLon;
     @SerializedName("maxLon")
     @Expose
-    private float maxLon;
+    private Double maxLon;
     @SerializedName("radius")
     @Expose
     private int radius;
@@ -55,35 +57,35 @@ public class Subscription {
         this.userId = userId;
     }
 
-    public float getMinLat() {
+    public Double getMinLat() {
         return minLat;
     }
 
-    public void setMinLat(float minLat) {
+    public void setMinLat(Double minLat) {
         this.minLat = minLat;
     }
 
-    public float getMaxLat() {
+    public Double getMaxLat() {
         return maxLat;
     }
 
-    public void setMaxLat(float maxLat) {
+    public void setMaxLat(Double maxLat) {
         this.maxLat = maxLat;
     }
 
-    public float getMinLon() {
+    public Double getMinLon() {
         return minLon;
     }
 
-    public void setMinLon(float minLon) {
+    public void setMinLon(Double minLon) {
         this.minLon = minLon;
     }
 
-    public float getMaxLon() {
+    public Double getMaxLon() {
         return maxLon;
     }
 
-    public void setMaxLon(float maxLon) {
+    public void setMaxLon(Double maxLon) {
         this.maxLon = maxLon;
     }
 
