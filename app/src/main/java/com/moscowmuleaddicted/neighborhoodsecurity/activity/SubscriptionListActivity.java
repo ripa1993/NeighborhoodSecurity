@@ -16,12 +16,13 @@ import android.widget.Toast;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 
 public class SubscriptionListActivity extends AppCompatActivity implements SubscriptionListFragment.OnListFragmentInteractionListener {
 
-    private FloatingActionButton mFab;
+    private ActionButton mFab;
     private SubscriptionListFragment mFragment;
     private ArrayList<Subscription> mSubscriptions;
 
@@ -54,7 +55,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
 
 
-        mFab = (FloatingActionButton) findViewById(R.id.subscription_create_fab);
+        mFab = (ActionButton) findViewById(R.id.subscription_create_fab);
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override

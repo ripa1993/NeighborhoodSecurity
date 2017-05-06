@@ -11,16 +11,21 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventCreateFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EventListActivity extends AppCompatActivity implements EventListFragment.OnListFragmentInteractionListener {
+
+    private EventListFragment mFragment;
+    private ActionButton mFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         if(sample){
             generateSampleList();
         } else {
-            EventListFragment mFragment = EventListFragment.newInstance(1, events);
+            mFragment = EventListFragment.newInstance(1, events);
 
             // initialize the fragment
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -48,6 +53,15 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             fragmentTransaction.commit();
         }
 
+        mFab = (ActionButton) findViewById(R.id.event_create_fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
     }
