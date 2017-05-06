@@ -100,6 +100,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <fragment
+                android:id="@+id/place_autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+                />
 
             <RelativeLayout
                 android:layout_width="wrap_content"

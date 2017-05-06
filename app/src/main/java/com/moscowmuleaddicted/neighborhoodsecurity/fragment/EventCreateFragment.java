@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -24,16 +29,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 import java.util.Date;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EventCreateFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EventCreateFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EventCreateFragment extends Fragment {
 
+    private static final String TAG = "EventCreateFragment";
     private EditText etDescription, etCountry, etCity, etStreet, etLatitude, etLongitude;
     private LabelledSpinner lsEventType;
     private RadioButton rbAddress;
@@ -49,6 +47,8 @@ public class EventCreateFragment extends Fragment {
     private String country, city, street;
 
     private OnFragmentInteractionListener mListener;
+
+    private PlaceAutocompleteFragment placeAutocompleteFragment;
 
     public EventCreateFragment() {
         // Required empty public constructor
@@ -104,6 +104,7 @@ public class EventCreateFragment extends Fragment {
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
         lsEventType = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
         rbAddress = (RadioButton) view.findViewById(R.id.radioAddress);
+        placeAutocompleteFragment = (PlaceAutocompleteFragment) getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         // setup spinner
         lsEventType.setItemsArray(Arrays.asList(EventType.values()));
@@ -156,6 +157,20 @@ public class EventCreateFragment extends Fragment {
             }
 
         }
+
+        placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
 
 
         return view;
