@@ -102,4 +102,19 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             }
         });
     }
+
+    @Override
+    public void scrollingUp() {
+        if (!mFab.isHidden()) {
+            mFab.hide();
+        }
+    }
+
+    @Override
+    public void scrollingDown() {
+        if (mFab.isHidden()) {
+            mFab.show();
+        }
+    }
+
 }
