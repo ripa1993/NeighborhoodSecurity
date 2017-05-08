@@ -35,7 +35,7 @@ public class EventCreateFragment extends Fragment {
     final private Event event;
 
     private static final String TAG = "EventCreateFragment";
-    private EditText etDescription, etCountry, etCity, etStreet, etLatitude, etLongitude;
+    private EditText etDescription, etLatitude, etLongitude;
     private LabelledSpinner lsEventType;
     private RadioButton rbAddress;
 
@@ -134,11 +134,8 @@ public class EventCreateFragment extends Fragment {
             RadioButton radioButtonCoordinates = (RadioButton) view.findViewById(R.id.radioCoordinates);
             radioButtonCoordinates.setChecked(true);
 
-            EditText editTextLatitude = (EditText) view.findViewById(R.id.input_latitude);
-            EditText editTextLongitude = (EditText) view.findViewById(R.id.input_longitude);
-
-            editTextLatitude.setText(latitude.toString());
-            editTextLongitude.setText(longitude.toString());
+            etLatitude.setText(latitude.toString());
+            etLongitude.setText(longitude.toString());
 
         } else {
             RadioButton radioButtonAddress = (RadioButton) view.findViewById(R.id.radioAddress);
