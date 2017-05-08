@@ -23,14 +23,15 @@
             android:layout_weight="1">
             <Button
                 android:id="@+id/button_map"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp"
+                android:paddingTop="48dp"
+                android:paddingBottom="48dp"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:text="Map"/>
             <Button
                 android:id="@+id/button_profile"
+                android:visibility="gone"
                 android:paddingTop="32dp"
                 android:paddingBottom="32dp"
                 android:layout_width="0dp"
@@ -48,6 +49,7 @@
 
             <Button
                 android:id="@+id/button_events"
+                android:visibility="gone"
                 android:paddingTop="32dp"
                 android:paddingBottom="32dp"
                 android:layout_width="0dp"
@@ -56,8 +58,8 @@
                 android:text="Events"/>
             <Button
                 android:id="@+id/button_subscriptions"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp"
+                android:paddingTop="48dp"
+                android:paddingBottom="48dp"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
