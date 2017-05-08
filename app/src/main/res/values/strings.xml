@@ -47,6 +47,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
+    <string name="hint_address">Address</string>
 
     <string name="single_vote">1 vote</string>
     <string name="multiple_vote">%1$d votes</string>
