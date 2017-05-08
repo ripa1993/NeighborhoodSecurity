@@ -10,4 +10,61 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.HomePage">
 
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        >
+
+        <TableRow
+            android:id="@+id/row_1"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/button_map"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="Map"/>
+            <Button
+                android:id="@+id/button_profile"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="Profile"/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/row_2"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/button_events"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="Events"/>
+            <Button
+                android:id="@+id/button_subscriptions"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:text="Subscriptions"/>
+
+        </TableRow>
+
+    </TableLayout>
+
 </RelativeLayout>
