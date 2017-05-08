@@ -68,6 +68,22 @@ public class SubscriptionListFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             recyclerView.setAdapter(new MySubscriptionRecyclerViewAdapter(mSubscriptions, mListener));
+
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+
+                    if (dy > 0){
+                        //scrolling up
+                        mListener.scrollingUp();
+                    } else {
+                        // scrolling down
+                        mListener.scrollingDown();
+                    }
+                }
+            });
+
         }
         return view;
     }
@@ -92,5 +108,7 @@ public class SubscriptionListFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Subscription item);
+        void scrollingUp();
+        void scrollingDown();
     }
 }
