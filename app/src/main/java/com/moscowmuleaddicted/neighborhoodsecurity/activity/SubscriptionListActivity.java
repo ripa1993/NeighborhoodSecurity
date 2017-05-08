@@ -98,4 +98,19 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         mSubscriptions.add(b);
         mSubscriptions.add(c);
     }
+
+    @Override
+    public void scrollingUp() {
+        if (!mFab.isHidden()) {
+            mFab.hide();
+        }
+    }
+
+    @Override
+    public void scrollingDown() {
+        if (mFab.isHidden()) {
+            mFab.show();
+        }
+    }
+
 }
