@@ -84,10 +84,6 @@ public class EventCreateFragment extends Fragment {
             if (getArguments().containsKey(ARG_LONGITUDE) && getArguments().containsKey(ARG_LATITUDE)){
                 latitude = getArguments().getDouble(ARG_LATITUDE);
                 longitude = getArguments().getDouble(ARG_LONGITUDE);
-            } else if(getArguments().containsKey(ARG_COUNTRY) && getArguments().containsKey(ARG_CITY) && getArguments().containsKey(ARG_STREET) ){
-                country = getArguments().getString(ARG_COUNTRY);
-                city = getArguments().getString(ARG_CITY);
-                street = getArguments().getString(ARG_STREET);
             }
         }
     }
@@ -100,9 +96,7 @@ public class EventCreateFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_event_create, container, false);
 
         // assign local variables
-        etCountry = (EditText) view.findViewById(R.id.input_country);
-        etCity = (EditText) view.findViewById(R.id.input_city);
-        etStreet = (EditText) view.findViewById(R.id.input_street);
+
         etDescription = (EditText) view.findViewById(R.id.input_description);
         etLatitude = (EditText) view.findViewById(R.id.input_latitude);
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
@@ -149,16 +143,6 @@ public class EventCreateFragment extends Fragment {
         } else {
             RadioButton radioButtonAddress = (RadioButton) view.findViewById(R.id.radioAddress);
             radioButtonAddress.setChecked(true);
-
-            if (country != null && city != null && street != null){
-                EditText editTextCountry = (EditText) view.findViewById(R.id.input_country);
-                EditText editTextCity = (EditText) view.findViewById(R.id.input_city);
-                EditText editTextStreet = (EditText) view.findViewById(R.id.input_street);
-
-                editTextCountry.setText(country);
-                editTextCity.setText(city);
-                editTextStreet.setText(street);
-            }
 
         }
 
