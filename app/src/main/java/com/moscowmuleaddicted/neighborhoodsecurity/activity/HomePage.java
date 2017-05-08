@@ -8,9 +8,11 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -19,6 +21,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
@@ -37,6 +41,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     GoogleApiClient mGoogleApiClient;
     FirebaseAuth mAuth;
     Location mLastLocation;
+
+    Drawer mDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +122,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(mAuth.getCurrentUser().getUid(), new NSService.MyCallback<List<Subscription>>() {
                         @Override
                         public void onSuccess(List<Subscription> subscriptions) {
-                            Log.d(TAG, "found "+subscriptions.size()+" subscriptions");
+                            Log.d(TAG, "found " + subscriptions.size() + " subscriptions");
                             subscriptionIntent.putExtra("subscription-list", new ArrayList<Subscription>(subscriptions));
                             startActivity(subscriptionIntent);
                         }
@@ -141,6 +147,19 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             }
         });
 
+
+        mDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withTranslucentStatusBar(false)
+                .withActionBarDrawerToggle(false)
+                .withActionBarDrawerToggleAnimated(true)
+                .build();
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer.getDrawerLayout(), R.string.open, R.string.close);
+        mDrawer.setActionBarDrawerToggle(mDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerToggle.syncState();
 
     }
 
@@ -198,5 +217,22 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.w(TAG, "onConnectionFailed: " + connectionResult.getErrorMessage());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Log.d(TAG, "onOptionsItemSelected: changing drawer state (open/close)");
+                if (mDrawer.isDrawerOpen()) {
+                    mDrawer.closeDrawer();
+                } else {
+                    mDrawer.openDrawer();
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

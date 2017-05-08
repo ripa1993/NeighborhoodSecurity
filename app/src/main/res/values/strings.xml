@@ -62,4 +62,7 @@
     <string name="action_create_subscription">Create subscription</string>
 
     <string name="login_required_toast">You need an account to access this functionality!</string>
+
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
