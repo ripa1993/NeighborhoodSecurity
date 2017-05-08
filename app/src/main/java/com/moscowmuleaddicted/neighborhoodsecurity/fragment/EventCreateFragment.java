@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -51,7 +52,7 @@ public class EventCreateFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private PlaceAutocompleteFragment placeAutocompleteFragment;
+    private SupportPlaceAutocompleteFragment placeAutocompleteFragment;
 
     public EventCreateFragment() {
         // Required empty public constructor
@@ -102,7 +103,7 @@ public class EventCreateFragment extends Fragment {
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
         lsEventType = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
         rbAddress = (RadioButton) view.findViewById(R.id.radioAddress);
-        placeAutocompleteFragment = (PlaceAutocompleteFragment) getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        placeAutocompleteFragment = (SupportPlaceAutocompleteFragment) getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         // setup spinner
         lsEventType.setItemsArray(Arrays.asList(EventType.values()));

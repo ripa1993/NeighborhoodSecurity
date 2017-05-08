@@ -27,7 +27,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 //        Toolbar myToolbar = (Toolbar) findViewById(R.id.event_create_toolbar);
 //        setSupportActionBar(myToolbar);
 
-        mEventCreateFragment = (EventCreateFragment) getFragmentManager().findFragmentById(R.id.eventCreateFragment);
+        mEventCreateFragment = (EventCreateFragment) getSupportFragmentManager().findFragmentById(R.id.eventCreateFragment);
     }
 
     @Override
