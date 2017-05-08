@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -30,6 +31,8 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class EventCreateFragment extends Fragment {
+
+    final private Event event;
 
     private static final String TAG = "EventCreateFragment";
     private EditText etDescription, etCountry, etCity, etStreet, etLatitude, etLongitude;
@@ -52,6 +55,7 @@ public class EventCreateFragment extends Fragment {
 
     public EventCreateFragment() {
         // Required empty public constructor
+        event = new Event();
     }
 
     public static EventCreateFragment newInstanceWithCoordinates(Double lat, Double lon) {
@@ -161,13 +165,14 @@ public class EventCreateFragment extends Fragment {
         placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName());
+                LatLng ll = place.getLatLng();
+                event.setLatitude(ll.latitude);
+                event.setLongitude(ll.longitude);
             }
 
             @Override
             public void onError(Status status) {
-                // TODO: Handle the error.
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
@@ -200,16 +205,10 @@ public class EventCreateFragment extends Fragment {
     }
 
     public Event getEvent(){
-        Event e = new Event();
-        e.setDate(new Date());
-        e.setDescription(etDescription.getText().toString());
-        e.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
-        e.setCountry(etCountry.getText().toString());
-        e.setCity(etCity.getText().toString());
-        e.setStreet(etStreet.getText().toString());
-        e.setLatitude(NumberUtils.toDouble(etLatitude.getText().toString(), 0));
-        e.setLongitude(NumberUtils.toDouble(etLongitude.getText().toString(), 0));
-        return e;
+        event.setDate(new Date());
+        event.setDescription(etDescription.getText().toString());
+        event.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
+        return event;
     }
 
     public boolean eventUsesAddress(){

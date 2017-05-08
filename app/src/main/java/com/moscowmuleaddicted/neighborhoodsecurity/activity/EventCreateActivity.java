@@ -46,25 +46,6 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
         switch(item.getItemId()){
             case R.id.action_create_event:
                 Event e = mEventCreateFragment.getEvent();
-                if(mEventCreateFragment.eventUsesAddress()){
-                    NSService.getInstance(getApplicationContext()).postEventWithAddress(e.getEventType(), e.getDescription(), e.getCountry(), e.getCity(), e.getStreet(), new NSService.MyCallback<String>() {
-                        @Override
-                        public void onSuccess(String s) {
-                            Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            Toast.makeText(getApplicationContext(), "failure", Toast.LENGTH_SHORT).show();
-
-                        }
-
-                        @Override
-                        public void onMessageLoad(MyMessage message, int status) {
-                            Toast.makeText(getApplicationContext(), "("+status+") ["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
                     NSService.getInstance(getApplicationContext()).postEventWithCoordinates(e.getEventType(), e.getDescription(), e.getLatitude(), e.getLongitude(), new NSService.MyCallback<String>() {
                         @Override
                         public void onSuccess(String s) {
@@ -82,7 +63,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                             Toast.makeText(getApplicationContext(), "("+status+") ["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                }
+//                }
 
 
                 return true;
