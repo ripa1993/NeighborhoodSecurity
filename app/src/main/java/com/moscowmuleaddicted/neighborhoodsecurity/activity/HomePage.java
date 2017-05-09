@@ -2,7 +2,9 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,6 +13,7 @@ import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,14 +24,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,12 +155,26 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             }
         });
 
+        AccountHeaderBuilder mHeaderBuilder = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.account_background);
+
+        if (mAuth.getCurrentUser()!=null){
+            mHeaderBuilder.addProfiles(
+                    new ProfileDrawerItem()
+                    .withEmail(mAuth.getCurrentUser().getEmail())
+                    .withName(mAuth.getCurrentUser().getDisplayName()));
+        }
+
+        AccountHeader mHeader = mHeaderBuilder.build();
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
+                .withDrawerLayout(R.layout.material_drawer_fits_not)
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggle(false)
                 .withActionBarDrawerToggleAnimated(true)
+                .withAccountHeader(mHeader)
                 .build();
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer.getDrawerLayout(), R.string.open, R.string.close);
