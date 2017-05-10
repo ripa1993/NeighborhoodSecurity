@@ -32,10 +32,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
@@ -63,6 +61,9 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     Drawer mDrawer;
     AccountHeader mAccountHeader;
     PrimaryDrawerItem logoutItem, authItem;
+    private PrimaryDrawerItem myEventsItem;
+    private PrimaryDrawerItem newEventItem;
+    private PrimaryDrawerItem newSubscriptionItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,6 +208,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withSelectionListEnabled(false);
 
         if (mAuth.getCurrentUser() != null) {
+            Log.d(TAG, "initializing profile: mail="+mAuth.getCurrentUser().getEmail()+", name="+mAuth.getCurrentUser().getDisplayName()+", photo="+mAuth.getCurrentUser().getPhotoUrl());
             mHeaderBuilder.addProfiles(
                     new ProfileDrawerItem()
                             .withEmail(mAuth.getCurrentUser().getEmail())
@@ -259,7 +261,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     }
                 });
 
-        PrimaryDrawerItem newEventItem = new PrimaryDrawerItem()
+        newEventItem = new PrimaryDrawerItem()
                 .withIdentifier(2000)
                 .withName("New Event")
                 .withSelectable(false)
@@ -269,7 +271,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                         return false;
                     }
                 });
-        PrimaryDrawerItem newSubscriptionItem = new PrimaryDrawerItem()
+        newSubscriptionItem = new PrimaryDrawerItem()
                 .withIdentifier(2001)
                 .withName("New Subscription")
                 .withSelectable(false)
@@ -280,7 +282,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     }
                 });
 
-        PrimaryDrawerItem myEventsItem = new PrimaryDrawerItem()
+        myEventsItem = new PrimaryDrawerItem()
                 .withIdentifier(2002)
                 .withName("My Events")
                 .withSelectable(false)
@@ -308,9 +310,9 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .build();
 
         if(mAuth.getCurrentUser() == null){
-            showLogin();
+            updateDrawerLoggedOut();
         } else {
-            showLogout();
+            updateDrawerLoggedIn();
         }
 
 
@@ -399,7 +401,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
-            showLogout();
             if (mAccountHeader.getProfiles().size() > 0) {
                 // update profile
                 mAccountHeader.updateProfile(
@@ -410,6 +411,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 );
             } else {
                 // add new profile
+                updateDrawerLoggedIn();
                 mAccountHeader.addProfiles(
                         new ProfileDrawerItem()
                                 .withEmail(user.getEmail())
@@ -418,9 +420,9 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 );
             }
         } else {
-            showLogin();
             if (mAccountHeader.getProfiles().size() > 0) {
                 // remove user profile
+                updateDrawerLoggedOut();
                 mAccountHeader.removeProfile(mAccountHeader.getActiveProfile());
             } else {
                 // do nothing
@@ -442,14 +444,23 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void showLogin(){
+    private void updateDrawerLoggedOut(){
         mDrawer.removeAllStickyFooterItems();
         mDrawer.addStickyFooterItem(authItem);
+
+        mDrawer.removeAllItems();
+
+        mDrawer.removeHeader();
     }
 
-    private void showLogout(){
+    private void updateDrawerLoggedIn(){
         mDrawer.removeAllStickyFooterItems();
         mDrawer.addStickyFooterItem(logoutItem);
+
+        mDrawer.removeAllItems();
+        mDrawer.addItems(newEventItem, newSubscriptionItem, myEventsItem);
+
+        mDrawer.setHeader(mAccountHeader.getView());
     }
 
 }
