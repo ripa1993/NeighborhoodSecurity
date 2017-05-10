@@ -139,29 +139,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         bSubscriptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent subscriptionIntent = new Intent(getApplicationContext(), SubscriptionListActivity.class);
                 if (mAuth.getCurrentUser() != null) {
-                    NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(mAuth.getCurrentUser().getUid(), new NSService.MyCallback<List<Subscription>>() {
-                        @Override
-                        public void onSuccess(List<Subscription> subscriptions) {
-                            Log.d(TAG, "found " + subscriptions.size() + " subscriptions");
-                            subscriptionIntent.putExtra("subscription-list", new ArrayList<Subscription>(subscriptions));
-                            startActivity(subscriptionIntent);
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            Log.w(TAG, "unknown failure");
-                            startActivity(subscriptionIntent);
-                        }
-
-                        @Override
-                        public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, message.getArgument() + " - " + message.getMessage());
-                            startActivity(subscriptionIntent);
-                        }
-                    });
-
+                    Intent subscriptionIntent = new Intent(getApplicationContext(), SubscriptionListActivity.class);
+                    subscriptionIntent.putExtra("UID", mAuth.getCurrentUser().getUid());
+                    startActivity(subscriptionIntent);
                 } else {
                     Log.d(TAG, "user is not logged in, this is required when accessing subscription list!");
                     Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
