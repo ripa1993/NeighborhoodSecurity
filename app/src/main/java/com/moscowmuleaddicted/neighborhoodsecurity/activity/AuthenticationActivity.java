@@ -47,6 +47,10 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
     public void loggedIn() {
         // a user is logged in
         Toast.makeText(getApplicationContext(), "user logged in", Toast.LENGTH_SHORT).show();
+
+        Intent data = new Intent();
+        data.putExtra("LOGGED_IN", true);
+        setResult(RESULT_OK, data);
         finish();
     }
 }

@@ -1,11 +1,12 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -13,37 +14,44 @@ import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener {
+public class HomePage extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
 
     private static final int REQUEST_PERMISSION_LOCATION = 100;
     private static final String TAG = "HomePageActivity";
+    private static final int REQUEST_AUTH = 101;
 
     Button bMap, bProfile, bEvents, bSubscriptions;
     GoogleApiClient mGoogleApiClient;
@@ -51,6 +59,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     Location mLastLocation;
 
     Drawer mDrawer;
+    AccountHeader mAccountHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         }
 
         mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(this);
 
         bMap = (Button) findViewById(R.id.button_map);
         bProfile = (Button) findViewById(R.id.button_profile);
@@ -155,18 +165,68 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             }
         });
 
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+                Glide.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Glide.clear(imageView);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+                    return DrawerUIUtils.getPlaceHolder(ctx);
+                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+                } else if ("customUrlItem".equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+                }
+
+                //we use the default one for
+                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+
+                return super.placeholder(ctx, tag);
+            }
+        });
+
+
         AccountHeaderBuilder mHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.account_background);
+                .withHeaderBackground(R.drawable.account_background)
+                .withAlternativeProfileHeaderSwitching(false)
+                .withSelectionListEnabled(false);
 
-        if (mAuth.getCurrentUser()!=null){
+        if (mAuth.getCurrentUser() != null) {
             mHeaderBuilder.addProfiles(
                     new ProfileDrawerItem()
-                    .withEmail(mAuth.getCurrentUser().getEmail())
-                    .withName(mAuth.getCurrentUser().getDisplayName()));
+                            .withEmail(mAuth.getCurrentUser().getEmail())
+                            .withName(mAuth.getCurrentUser().getDisplayName())
+                            .withIcon(mAuth.getCurrentUser().getPhotoUrl()));
         }
 
-        AccountHeader mHeader = mHeaderBuilder.build();
+
+        mAccountHeader = mHeaderBuilder.build();
+
+
+        PrimaryDrawerItem authItem = new PrimaryDrawerItem()
+                .withIdentifier(1000)
+                .withName("Login / Register")
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent authIntent = new Intent(HomePage.this, AuthenticationActivity.class);
+                        startActivityForResult(authIntent, REQUEST_AUTH);
+                        return false;
+                    }
+                });
+
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -174,7 +234,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withTranslucentStatusBar(false)
                 .withActionBarDrawerToggle(false)
                 .withActionBarDrawerToggleAnimated(true)
-                .withAccountHeader(mHeader)
+                .withAccountHeader(mAccountHeader)
+                .addDrawerItems(
+                        authItem
+                )
                 .build();
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer.getDrawerLayout(), R.string.open, R.string.close);
@@ -257,4 +320,51 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            if (mAccountHeader.getProfiles().size() > 0) {
+                // update profile
+                mAccountHeader.updateProfile(
+                        new ProfileDrawerItem()
+                                .withEmail(user.getEmail())
+                                .withName(user.getDisplayName())
+                                .withIcon(user.getPhotoUrl())
+                );
+            } else {
+                // add new profile
+                mAccountHeader.addProfiles(
+                        new ProfileDrawerItem()
+                                .withEmail(user.getEmail())
+                                .withName(user.getDisplayName())
+                                .withIcon(user.getPhotoUrl())
+                );
+            }
+        } else {
+            if (mAccountHeader.getProfiles().size() > 0) {
+                // remove user profile
+                mAccountHeader.removeProfile(mAccountHeader.getActiveProfile());
+            } else {
+                // do nothing
+
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
+            boolean loggedIn = data.getBooleanExtra("LOGGED_IN", false);
+            boolean loggedOut = data.getBooleanExtra("LOGGED_OUT", false);
+
+            if( loggedIn || loggedOut ){
+                onAuthStateChanged(mAuth);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
 }
