@@ -20,7 +20,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 // Start SplashActivity once the timer is over
                 //Intent intent = new Intent(SplashActivity.this, TestRestAPI.class);
-                Intent intent = new Intent(SplashActivity.this, MapActivity.class);
+                Intent intent = new Intent(SplashActivity.this, HomePage.class);
                 startActivity(intent);
 
                 // Close this Activity
