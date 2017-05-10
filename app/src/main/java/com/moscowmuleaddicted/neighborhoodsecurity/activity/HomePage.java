@@ -268,6 +268,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent intentNewEvent = new Intent(HomePage.this, EventCreateActivity.class);
+                        startActivity(intentNewEvent);
                         return false;
                     }
                 });
@@ -278,6 +280,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent intentNewSubscription = new Intent(HomePage.this, SubscriptionCreateActivity.class);
+                        startActivity(intentNewSubscription);
                         return false;
                     }
                 });
@@ -289,6 +293,9 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Intent intentMyEvents = new Intent(HomePage.this, EventListActivity.class);
+                        intentMyEvents.putExtra("UID", mAuth.getCurrentUser().getUid());
+                        startActivity(intentMyEvents);
                         return false;
                     }
                 });
