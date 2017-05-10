@@ -62,6 +62,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
     Drawer mDrawer;
     AccountHeader mAccountHeader;
+    PrimaryDrawerItem logoutItem, authItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,7 +218,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mAccountHeader = mHeaderBuilder.build();
 
 
-        PrimaryDrawerItem authItem = new PrimaryDrawerItem()
+        authItem = new PrimaryDrawerItem()
                 .withIdentifier(1000)
                 .withName("Login / Register")
                 .withSelectable(false)
@@ -226,6 +227,34 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         Intent authIntent = new Intent(HomePage.this, AuthenticationActivity.class);
                         startActivityForResult(authIntent, REQUEST_AUTH);
+                        return false;
+                    }
+                });
+
+        logoutItem = new PrimaryDrawerItem()
+                .withIdentifier(1001)
+                .withName("Logout")
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        NSService.getInstance(getApplicationContext()).logout(new NSService.MyCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onMessageLoad(MyMessage message, int status) {
+                                Toast.makeText(getApplicationContext(), "["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         return false;
                     }
                 });
@@ -271,14 +300,19 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withActionBarDrawerToggleAnimated(true)
                 .withAccountHeader(mAccountHeader)
                 .addDrawerItems(
-                        authItem,
-                        new DividerDrawerItem(),
                         newEventItem,
                         newSubscriptionItem,
                         myEventsItem
                 )
                 .withSelectedItemByPosition(-1)
                 .build();
+
+        if(mAuth.getCurrentUser() == null){
+            showLogin();
+        } else {
+            showLogout();
+        }
+
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer.getDrawerLayout(), R.string.open, R.string.close);
         mDrawer.setActionBarDrawerToggle(mDrawerToggle);
@@ -365,6 +399,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
+            showLogout();
             if (mAccountHeader.getProfiles().size() > 0) {
                 // update profile
                 mAccountHeader.updateProfile(
@@ -383,6 +418,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 );
             }
         } else {
+            showLogin();
             if (mAccountHeader.getProfiles().size() > 0) {
                 // remove user profile
                 mAccountHeader.removeProfile(mAccountHeader.getActiveProfile());
@@ -406,5 +442,14 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void showLogin(){
+        mDrawer.removeAllStickyFooterItems();
+        mDrawer.addStickyFooterItem(authItem);
+    }
+
+    private void showLogout(){
+        mDrawer.removeAllStickyFooterItems();
+        mDrawer.addStickyFooterItem(logoutItem);
+    }
 
 }
