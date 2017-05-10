@@ -32,8 +32,10 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
@@ -218,11 +220,44 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         PrimaryDrawerItem authItem = new PrimaryDrawerItem()
                 .withIdentifier(1000)
                 .withName("Login / Register")
+                .withSelectable(false)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         Intent authIntent = new Intent(HomePage.this, AuthenticationActivity.class);
                         startActivityForResult(authIntent, REQUEST_AUTH);
+                        return false;
+                    }
+                });
+
+        PrimaryDrawerItem newEventItem = new PrimaryDrawerItem()
+                .withIdentifier(2000)
+                .withName("New Event")
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        return false;
+                    }
+                });
+        PrimaryDrawerItem newSubscriptionItem = new PrimaryDrawerItem()
+                .withIdentifier(2001)
+                .withName("New Subscription")
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        return false;
+                    }
+                });
+
+        PrimaryDrawerItem myEventsItem = new PrimaryDrawerItem()
+                .withIdentifier(2002)
+                .withName("My Events")
+                .withSelectable(false)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         return false;
                     }
                 });
@@ -236,8 +271,13 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withActionBarDrawerToggleAnimated(true)
                 .withAccountHeader(mAccountHeader)
                 .addDrawerItems(
-                        authItem
+                        authItem,
+                        new DividerDrawerItem(),
+                        newEventItem,
+                        newSubscriptionItem,
+                        myEventsItem
                 )
+                .withSelectedItemByPosition(-1)
                 .build();
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawer.getDrawerLayout(), R.string.open, R.string.close);
