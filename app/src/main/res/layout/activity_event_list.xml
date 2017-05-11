@@ -9,10 +9,17 @@
     android:layout_height="match_parent"
     tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.EventListActivity">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_event_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <FrameLayout
         android:id="@+id/event_list_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></FrameLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <com.scalified.fab.ActionButton
         android:id="@+id/event_create_fab"

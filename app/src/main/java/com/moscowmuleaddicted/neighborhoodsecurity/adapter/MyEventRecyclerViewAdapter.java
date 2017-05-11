@@ -13,6 +13,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment.OnListFragmentInteractionListener;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -69,8 +71,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         holder.mEventLocation.setText(e.getStreet()+", "+e.getCity());
         holder.mEventDate.setText(mDateFormat.format(e.getDate()));
 
-//        String singleVote = mContext.getResources().getString(R.string.single_vote);
-//        String multipleVotes = mContext.getResources().getString(R.string.multiple_vote);
+
         if(e.getVotes() > 99){
             holder.mEventVotes.setText("99+");
         } else {
@@ -143,5 +144,16 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         public String toString() {
             return super.toString() + " '" + mEventType.getText() + " "+ mEventDate.getText() + "'";
         }
+    }
+
+    public synchronized void addEvents(Collection<Event> events){
+        int oldSize = mValues.size();
+        // remove events already present
+        ArrayList<Event> tempEvents = new ArrayList<Event>(events);
+        tempEvents.removeAll(mValues);
+        // add remaining ones
+        mValues.addAll(tempEvents);
+        // notify changes
+        notifyItemRangeInserted(oldSize, tempEvents.size());
     }
 }

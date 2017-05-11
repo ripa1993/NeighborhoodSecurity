@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.internal.view.SupportSubMenu;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
     private static final String TAG = "SubscriptionListAct";
     private ActionButton mFab;
     private SubscriptionListFragment mFragment;
+    private SwipeRefreshLayout mSwipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,9 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         setContentView(R.layout.activity_subscription_list);
 
         Bundle extras = getIntent().getExtras();
+
+        mSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_subscription_list);
+        mSwipe.setEnabled(false);
 
         ArrayList<Subscription> mSubscriptions = new ArrayList<>();
 
@@ -54,29 +59,26 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             } else if (extras.containsKey("UID")){
                 // if UID is provided
                 mFragment = new SubscriptionListFragment();
-                final ProgressDialog progress = new ProgressDialog(this);
-                progress.setTitle("Loading");
-                progress.setMessage("Wait while loading...");
-                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-                progress.show();
+                mSwipe.setRefreshing(true);
                 NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(extras.getString("UID"), new NSService.MyCallback<List<Subscription>>() {
                     @Override
                     public void onSuccess(List<Subscription> subscriptions) {
                         Log.d(TAG, "subscriptions from UID: found "+subscriptions.size()+" subscriptions");
-                        mFragment.showData(subscriptions);
-                        progress.cancel();
+                        RecyclerView recyclerView = mFragment.getRecyclerView();
+                        ((MySubscriptionRecyclerViewAdapter) recyclerView.getAdapter()).addSubscriptions(subscriptions);
+                        mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onFailure() {
                         Log.w(TAG, "subscriptions from UID: failure");
-                        progress.cancel();
+                        mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "subscriptions from UID: "+message);
-                        progress.cancel();
+                        mSwipe.setRefreshing(false);
                     }
                 });
             }

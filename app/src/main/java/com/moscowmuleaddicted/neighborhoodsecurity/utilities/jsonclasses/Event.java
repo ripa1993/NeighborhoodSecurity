@@ -169,4 +169,21 @@ public class Event implements Serializable{
         this.votes = votes;
         this.submitterId = submitterId;
     }
+
+    // assume unique event id
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Event)) return false;
+
+        Event event = (Event) o;
+
+        return id == event.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }

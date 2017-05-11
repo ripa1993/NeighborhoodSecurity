@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -33,12 +34,17 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     private static final String TAG = "EventListActivity";
     private EventListFragment mFragment;
     private ActionButton mFab;
+    private SwipeRefreshLayout mSwipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_list);
         Bundle extras = getIntent().getExtras();
+
+
+        mSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_event_list);
+        mSwipe.setEnabled(false);
 
         ArrayList<Event> events = new ArrayList<>();
         if(extras != null) {
@@ -50,30 +56,26 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             } else if (extras.containsKey("UID")){
                 // if an uid is provided
                 mFragment = new EventListFragment();
-                final ProgressDialog progress = new ProgressDialog(this);
-                progress.setTitle("Loading");
-                progress.setMessage("Wait while loading...");
-                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-                progress.show();
+                mSwipe.setRefreshing(true);
                 NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
                     @Override
                     public void onSuccess(List<Event> events) {
                         Log.d(TAG, "events from UID: found "+events.size()+ " events");
                         RecyclerView recyclerView = mFragment.getRecyclerView();
-                        recyclerView.swapAdapter(new MyEventRecyclerViewAdapter(events, EventListActivity.this, getContext()), false);
-                        progress.cancel();
+                        ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                        mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onFailure() {
                         Log.w(TAG, "events from UID: failure");
-                        progress.cancel();
+                        mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "events from UID: "+message);
-                        progress.cancel();
+                        mSwipe.setRefreshing(false);
                     }
                 });
             }

@@ -8,8 +8,11 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment.OnListFragmentInteractionListener;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MySubscriptionRecyclerViewAdapter extends RecyclerView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
@@ -71,5 +74,15 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerView.Adapter<MySu
         public String toString() {
             return super.toString() + " '" + mCity.getText() +" " +mStreet.getText()+" "+mRadius.getText()+ "'";
         }
+    }
+    public synchronized void addSubscriptions(Collection<Subscription> subscriptions){
+        int oldSize = mValues.size();
+        // remove events already present
+        ArrayList<Subscription> tempSubscriptions = new ArrayList<Subscription>(subscriptions);
+        tempSubscriptions.removeAll(mValues);
+        // add remaining ones
+        mValues.addAll(tempSubscriptions);
+        // notify changes
+        notifyItemRangeInserted(oldSize, tempSubscriptions.size());
     }
 }

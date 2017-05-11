@@ -125,4 +125,20 @@ public class Subscription implements Serializable{
 
 
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Subscription)) return false;
+
+        Subscription that = (Subscription) o;
+
+        return id == that.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
