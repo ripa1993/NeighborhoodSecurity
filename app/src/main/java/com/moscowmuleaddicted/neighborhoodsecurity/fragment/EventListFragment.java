@@ -46,6 +46,8 @@ public class EventListFragment extends Fragment {
      */
     private OnListFragmentInteractionListener mListener;
 
+    private RecyclerView mRecyclerView;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -87,6 +89,7 @@ public class EventListFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = recyclerView;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -135,4 +138,10 @@ public class EventListFragment extends Fragment {
         void scrollingUp();
         void scrollingDown();
     }
+
+    public RecyclerView getRecyclerView(){
+        return mRecyclerView;
+    }
+
+
 }

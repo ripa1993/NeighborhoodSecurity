@@ -22,9 +22,11 @@ public class SubscriptionListFragment extends Fragment {
     private static final String ARG_SUBSCRIPTION = "subscriptions";
     private static final String ARG_COLUMN_COUNT = "column-count";
 
-    private List<Subscription> mSubscriptions;
+    private List<Subscription> mSubscriptions = new ArrayList<>();
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private RecyclerView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -62,6 +64,7 @@ public class SubscriptionListFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = recyclerView;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -111,4 +114,14 @@ public class SubscriptionListFragment extends Fragment {
         void scrollingUp();
         void scrollingDown();
     }
+
+    public RecyclerView getRecyclerView() {
+
+        return mRecyclerView;
+    }
+
+    public void showData(List<Subscription> subscriptions){
+        mRecyclerView.swapAdapter(new MySubscriptionRecyclerViewAdapter(subscriptions, mListener), false);
+    }
+
 }

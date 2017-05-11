@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -10,21 +11,28 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.internal.view.SupportSubMenu;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SubscriptionListActivity extends AppCompatActivity implements SubscriptionListFragment.OnListFragmentInteractionListener {
 
+    private static final String TAG = "SubscriptionListAct";
     private ActionButton mFab;
     private SubscriptionListFragment mFragment;
-    private ArrayList<Subscription> mSubscriptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,19 +41,49 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
         Bundle extras = getIntent().getExtras();
 
-        boolean sample = true;
+        ArrayList<Subscription> mSubscriptions = new ArrayList<>();
+
+        mFragment = new SubscriptionListFragment();
 
         if (extras != null) {
             if (extras.containsKey("subscription-list")) {
+                // if subscription list is provided
                 mSubscriptions = (ArrayList<Subscription>) extras.getSerializable("subscription-list");
-                sample = false;
-            }
-        }
+                mFragment.showData(mSubscriptions);
 
-        if (sample) {
-            generateSampleList();
+            } else if (extras.containsKey("UID")){
+                // if UID is provided
+                mFragment = new SubscriptionListFragment();
+                final ProgressDialog progress = new ProgressDialog(this);
+                progress.setTitle("Loading");
+                progress.setMessage("Wait while loading...");
+                progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                progress.show();
+                NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(extras.getString("UID"), new NSService.MyCallback<List<Subscription>>() {
+                    @Override
+                    public void onSuccess(List<Subscription> subscriptions) {
+                        Log.d(TAG, "subscriptions from UID: found "+subscriptions.size()+" subscriptions");
+                        mFragment.showData(subscriptions);
+                        progress.cancel();
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Log.w(TAG, "subscriptions from UID: failure");
+                        progress.cancel();
+                    }
+
+                    @Override
+                    public void onMessageLoad(MyMessage message, int status) {
+                        Log.w(TAG, "subscriptions from UID: "+message);
+                        progress.cancel();
+                    }
+                });
+            }
+        } else {
+            // nothing to show....
+            Log.d(TAG, "no subscriptions to show");
         }
-        mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
 
         // initialize fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -72,31 +110,6 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
     @Override
     public void onListFragmentInteraction(Subscription item) {
         Toast.makeText(getApplicationContext(), String.valueOf(item.getId()), Toast.LENGTH_SHORT).show();
-    }
-
-    private void generateSampleList() {
-        mSubscriptions = new ArrayList<>();
-        Subscription a = new Subscription();
-        a.setId(1);
-        a.setCity("Guanzate");
-        a.setCountry("Italy");
-        a.setStreet("Via Roma 3");
-        a.setRadius(1000);
-        Subscription b = new Subscription();
-        b.setId(2);
-        b.setCity("Como");
-        b.setCountry("Italy");
-        b.setStreet("Via Innocenzo 23");
-        b.setRadius(500);
-        Subscription c = new Subscription();
-        c.setId(3);
-        c.setCity("Milano");
-        c.setCountry("Italy");
-        c.setStreet("Via Golgi 20");
-        c.setRadius(2000);
-        mSubscriptions.add(a);
-        mSubscriptions.add(b);
-        mSubscriptions.add(c);
     }
 
     @Override
