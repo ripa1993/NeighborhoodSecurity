@@ -48,19 +48,19 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
         ArrayList<Subscription> mSubscriptions = new ArrayList<>();
 
-        mFragment = new SubscriptionListFragment();
 
         if (extras != null) {
             if (extras.containsKey("subscription-list")) {
                 // if subscription list is provided
                 mSubscriptions = (ArrayList<Subscription>) extras.getSerializable("subscription-list");
-                mFragment.showData(mSubscriptions);
+                mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
+                Log.d(TAG, "fragment created");
 
             } else if (extras.containsKey("UID")){
                 // if UID is provided
-                mFragment = new SubscriptionListFragment();
+                Log.d(TAG, "contains UID");
                 mSwipe.setRefreshing(true);
-                NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(extras.getString("UID"), new NSService.MyCallback<List<Subscription>>() {
+               mSubscriptions.addAll( NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(extras.getString("UID"), new NSService.MyCallback<List<Subscription>>() {
                     @Override
                     public void onSuccess(List<Subscription> subscriptions) {
                         Log.d(TAG, "subscriptions from UID: found "+subscriptions.size()+" subscriptions");
@@ -80,11 +80,14 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                         Log.w(TAG, "subscriptions from UID: "+message);
                         mSwipe.setRefreshing(false);
                     }
-                });
+                }));
+                mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
+                Log.d(TAG, "fragment created");
             }
         } else {
             // nothing to show....
             Log.d(TAG, "no subscriptions to show");
+            mFragment = new SubscriptionListFragment();
         }
 
         // initialize fragment
@@ -111,7 +114,9 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
     @Override
     public void onListFragmentInteraction(Subscription item) {
-        Toast.makeText(getApplicationContext(), String.valueOf(item.getId()), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(SubscriptionListActivity.this, EventListActivity.class);
+        intent.putExtra("subscription", item);
+        startActivity(intent);
     }
 
     @Override
