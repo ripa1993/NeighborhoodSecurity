@@ -151,7 +151,6 @@ public class EventDB extends SQLiteOpenHelper {
         return e;
     }
 
-
-    private class NoEventFoundException extends Exception {
+    public class NoEventFoundException extends Exception {
     }
 }
