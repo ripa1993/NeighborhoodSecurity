@@ -114,7 +114,9 @@ public class NSService {
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
 
-                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
 
                     callback.onSuccess(eventList);
                 } else {
@@ -157,7 +159,9 @@ public class NSService {
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
 
-                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
 
                     callback.onSuccess(eventList);
                 } else {
@@ -460,7 +464,9 @@ public class NSService {
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
 
-                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
 
                     callback.onSuccess(eventList);
                 } else {
@@ -608,6 +614,7 @@ public class NSService {
      * @param callback
      */
     public void getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
+
         restInterface.getSubscriptionsByUser(id).enqueue(new retrofit2.Callback<List<Subscription>>() {
             @Override
             public void onResponse(Call<List<Subscription>> call, Response<List<Subscription>> response) {
@@ -617,7 +624,9 @@ public class NSService {
                 if (response.isSuccessful()) {
                     List<Subscription> subs = response.body();
 
-                    new StoreSubscriptionsTask().execute((Subscription[]) subs.toArray());
+                    Subscription[] subscriptionArray = new Subscription[subs.size()];
+                    subscriptionArray = subs.toArray(subscriptionArray);
+                    new StoreSubscriptionsTask().execute(subscriptionArray);
 
                     callback.onSuccess(subs);
                 } else {
