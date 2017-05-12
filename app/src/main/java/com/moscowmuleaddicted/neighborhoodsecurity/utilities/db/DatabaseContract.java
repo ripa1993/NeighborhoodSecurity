@@ -4,7 +4,7 @@ import android.provider.BaseColumns;
 
 /**
  * Helper class to hold prepared statements and table / column names
- *
+ * <p>
  * Created by Simone Ripamonti on 11/05/2017.
  */
 
@@ -25,6 +25,7 @@ public class DatabaseContract {
         public static final String COLUMN_NAME_LATITUDE = "latitude";
         public static final String COLUMN_NAME_LONGITUDE = "longitude";
         public static final String COLUMN_NAME_SUBMITTERID = "submitterid";
+        public static final String COLUMN_NAME_VOTES = "votes";
     }
 
     public static class SubscriptionEntry implements BaseColumns {
@@ -52,11 +53,26 @@ public class DatabaseContract {
                         + EventEntry.COLUMN_NAME_STREET + " TEXT, "
                         + EventEntry.COLUMN_NAME_LATITUDE + " DOUBLE, "
                         + EventEntry.COLUMN_NAME_LONGITUDE + " DOUBLE, "
-                        + EventEntry.COLUMN_NAME_SUBMITTERID + " TEXT )";
+                        + EventEntry.COLUMN_NAME_SUBMITTERID + " TEXT,"
+                        + EventEntry.COLUMN_NAME_VOTES + " INTEGER )";
 
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + EventEntry.TABLE_NAME;
 
+        public static final String SQL_SELECT_BY_UID =
+                "SELECT * FROM " + EventEntry.TABLE_NAME + " WHERE "
+                        + EventEntry.COLUMN_NAME_SUBMITTERID + " = ?s";
+
+        public static final String SQL_SELECT_BY_AREA =
+                "SELECT * FROM " + EventEntry.TABLE_NAME + " WHERE "
+                + EventEntry.COLUMN_NAME_LATITUDE + " > ?s AND "
+                + EventEntry.COLUMN_NAME_LATITUDE + " < ?s AND "
+                + EventEntry.COLUMN_NAME_LONGITUDE + " > ?s AND "
+                + EventEntry.COLUMN_NAME_LONGITUDE + " < ?s";
+
+        public static final String SQL_SELECT_BY_ID =
+                "SELECT * FROM "+ EventEntry.TABLE_NAME + " WHERE "
+                + EventEntry._ID + " = ?s";
     }
 
     public static class SubscriptionStatements {
@@ -75,6 +91,10 @@ public class DatabaseContract {
 
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + SubscriptionEntry.TABLE_NAME;
+
+        public static final String SQL_SELECT_BY_UID =
+                "SELECT * FROM " + SubscriptionEntry.TABLE_NAME + " WHERE "
+                + SubscriptionEntry.COLUMN_NAME_USERID + " = ?s";
 
     }
 }
