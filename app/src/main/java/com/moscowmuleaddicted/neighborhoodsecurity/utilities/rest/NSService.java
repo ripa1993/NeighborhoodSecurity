@@ -1,6 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -53,6 +56,9 @@ public class NSService {
     private static NSRestService restInterface;
     private static Converter<ResponseBody, MyMessage> converter;
 
+    private static EventDB eventDB;
+    private static SubscriptionDB subscriptionDB;
+
     private NSService(Context context) {
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -73,6 +79,9 @@ public class NSService {
         converter = retrofit.responseBodyConverter(MyMessage.class, new Annotation[0]);
 
         mAuth = FirebaseAuth.getInstance();
+
+        eventDB = new EventDB(context);
+        subscriptionDB = new SubscriptionDB(context);
 
     }
 
@@ -95,7 +104,7 @@ public class NSService {
      *                     onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                     onFailure if exception
      */
-    public void getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -104,6 +113,11 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -122,6 +136,7 @@ public class NSService {
             }
 
         });
+        return eventDB.getByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax);
     }
 
     /**
@@ -135,7 +150,7 @@ public class NSService {
      *                  onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                  onFailure if exception
      */
-    public void getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByRadius(latitude, longitude, radius).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -144,6 +159,11 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -161,18 +181,21 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+        return eventDB.getByRadius(latitude, longitude, radius);
     }
 
     /**
      * Retrieves an event given the id
      * GET /events/{id}
      *
+     * @throws com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB.NoEventFoundException if the event is not available locally
      * @param id
      * @param callback onEventLoad if 200 OK,
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventById(int id, final MyCallback<Event> callback) {
+    public Event getEventById(int id, final MyCallback<Event> callback) throws EventDB.NoEventFoundException {
         Log.i(TAG, "getEventById: querying for event " + id);
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>() {
             @Override
@@ -182,6 +205,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     Event event = response.body();
+
+                    new StoreEventsTask().execute(event);
+
                     callback.onSuccess(event);
                 } else {
                     try {
@@ -199,6 +225,10 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+
+        return eventDB.getById(id);
+
     }
 
     /**
@@ -289,7 +319,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void deleteEvent(int id, final MyCallback<String> callback) {
+    public void deleteEvent(final int id, final MyCallback<String> callback) {
         restInterface.deleteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
 
             @Override
@@ -297,6 +327,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    eventDB.deleteById(id);
                     callback.onSuccess("ok");
                 } else {
                     try {
@@ -325,14 +356,22 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void voteEvent(int id, final MyCallback<String> callback) {
+    public void voteEvent(final int id, final MyCallback<String> callback) {
         restInterface.voteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    if(response.code() == 200){
+                        try {
+                            eventDB.modifyVote(id, 1);
+                        } catch (EventDB.NoEventFoundException e) {
+                            // do nothing
+                        }
+                    }
                     callback.onSuccess("ok");
+
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -360,13 +399,20 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void unvoteEvent(int id, final MyCallback<String> callback) {
+    public void unvoteEvent(final int id, final MyCallback<String> callback) {
         restInterface.unvoteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    if(response.code() == 200){
+                        try {
+                            eventDB.modifyVote(id, -1);
+                        } catch (EventDB.NoEventFoundException e) {
+                            // do nothing
+                        }
+                    }
                     callback.onSuccess("ok");
                 } else {
                     try {
@@ -433,7 +479,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventsByUser(String id, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByUser(String id, final MyCallback<List<Event>> callback) {
         restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -441,6 +487,11 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    Event[] eventArray = new Event[eventList.size()];
+                    eventArray = eventList.toArray(eventArray);
+                    new StoreEventsTask().execute(eventArray);
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -459,6 +510,8 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+        return eventDB.getByUID(id);
     }
 
     /**
@@ -586,7 +639,8 @@ public class NSService {
      * @param id
      * @param callback
      */
-    public void getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
+    public List<Subscription> getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
+
         restInterface.getSubscriptionsByUser(id).enqueue(new retrofit2.Callback<List<Subscription>>() {
             @Override
             public void onResponse(Call<List<Subscription>> call, Response<List<Subscription>> response) {
@@ -595,6 +649,11 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Subscription> subs = response.body();
+
+                    Subscription[] subscriptionArray = new Subscription[subs.size()];
+                    subscriptionArray = subs.toArray(subscriptionArray);
+                    new StoreSubscriptionsTask().execute(subscriptionArray);
+
                     callback.onSuccess(subs);
                 } else {
                     try {
@@ -613,6 +672,8 @@ public class NSService {
                 callback.onFailure();
             }
         });
+        Log.d(TAG, "finding data on db");
+        return subscriptionDB.getByUID(id);
     }
 
     /**
@@ -668,6 +729,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     Subscription sub = response.body();
+
+                    new StoreSubscriptionsTask().execute(sub);
+
                     callback.onSuccess(sub);
                 } else {
                     try {
@@ -1103,5 +1167,53 @@ public class NSService {
 
     }
 
+    public class StoreEventsTask extends AsyncTask<Event, Integer, Integer> {
+
+        public static final String TAG = "StoreEventsTask";
+
+        @Override
+        protected Integer doInBackground(Event... params) {
+            int count = params.length;
+            int i;
+            for (i = 0; i < count; i++){
+                eventDB.addEvent(params[i]);
+                publishProgress((int) ((i / (float) count) * 100));
+                if (isCancelled()) break;
+            }
+            return i;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            Log.d(TAG, "storing events: "+progress[0]+"%");
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.d(TAG, "finished storing "+result+" events");
+        }
+    }
+
+    public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
+        public static final String TAG = "StoreSubsTask";
+
+        @Override
+        protected Integer doInBackground(Subscription... params) {
+            int count = params.length;
+            int i;
+            for (i = 0; i < count; i++){
+                subscriptionDB.addSubscription(params[i]);
+                publishProgress((int) ((i / (float) count) * 100));
+                if (isCancelled()) break;
+            }
+            return i;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            Log.d(TAG, "storing subscriptions: "+progress[0]+"%");
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.d(TAG, "finished storing "+result+" subscriptions");
+        }
+    }
 
 }

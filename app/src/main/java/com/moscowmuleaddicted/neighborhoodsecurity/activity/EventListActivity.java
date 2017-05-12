@@ -21,6 +21,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.scalified.fab.ActionButton;
 
@@ -55,9 +56,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
             } else if (extras.containsKey("UID")){
                 // if an uid is provided
-                mFragment = new EventListFragment();
                 mSwipe.setRefreshing(true);
-                NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
+                events.addAll(NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
                     @Override
                     public void onSuccess(List<Event> events) {
                         Log.d(TAG, "events from UID: found "+events.size()+ " events");
@@ -77,11 +77,46 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         Log.w(TAG, "events from UID: "+message);
                         mSwipe.setRefreshing(false);
                     }
-                });
+                }));
+                mFragment = EventListFragment.newInstance(1, events);
+                Log.d(TAG, "fragment created");
+
+            } else if (extras.containsKey("subscription")){
+                // if a subscription is provided
+                Subscription sub = (Subscription) extras.getSerializable("subscription");
+
+                mSwipe.setRefreshing(true);
+
+                events.addAll(NSService.getInstance(getContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
+                    @Override
+                    public void onSuccess(List<Event> events) {
+                        Log.d(TAG, "events from sub: found "+events.size()+ " events");
+                        RecyclerView recyclerView = mFragment.getRecyclerView();
+                        ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                        mSwipe.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        Log.w(TAG, "events from sub: failure");
+                        mSwipe.setRefreshing(false);
+                    }
+
+                    @Override
+                    public void onMessageLoad(MyMessage message, int status) {
+                        Log.w(TAG, "events from sub: "+message);
+                        mSwipe.setRefreshing(false);
+                    }
+                }));
+                mFragment = EventListFragment.newInstance(1, events);
+                Log.d(TAG, "fragment created");
+
             }
         } else {
             // if nothing is provided
             mFragment = new EventListFragment();
+            Log.d(TAG, "fragment created");
+
         }
 
         // initialize the fragment
@@ -105,6 +140,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     public void onListFragmentInteraction(Event event) {
+        Log.d(TAG, event.toString());
+
         Intent intent = new Intent(this, EventDetailActivity.class);
         intent.putExtra("event", event);
         startActivity(intent);

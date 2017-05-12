@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
@@ -73,26 +74,30 @@ public class TestRestAPI extends AppCompatActivity {
         int eventId = 0;
         eventId = NumberUtils.toInt(((EditText) findViewById(R.id.eventId)).getText().toString(), 0);
 
-        service.getEventById(eventId, new NSService.MyCallback<Event>() {
-            @Override
-            public void onSuccess(Event event) {
-                Intent i = new Intent(TestRestAPI.this, EventDetailActivity.class);
-                i.putExtra("event", event);
-                startActivity(i);
+        try {
+            service.getEventById(eventId, new NSService.MyCallback<Event>() {
+                @Override
+                public void onSuccess(Event event) {
+                    Intent i = new Intent(TestRestAPI.this, EventDetailActivity.class);
+                    i.putExtra("event", event);
+                    startActivity(i);
 
-            }
+                }
 
 
-            @Override
-            public void onFailure() {
-                Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure() {
+                    Toast.makeText(getApplicationContext(), "Failure", Toast.LENGTH_SHORT).show();
+                }
 
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+                @Override
+                public void onMessageLoad(MyMessage message, int status) {
+                    Toast.makeText(getApplicationContext(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (EventDB.NoEventFoundException e) {
+            Toast.makeText(getApplicationContext(), "event not found locally, fetching remotely...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void getUserClicked(View view) {
