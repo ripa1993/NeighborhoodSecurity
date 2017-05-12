@@ -104,7 +104,7 @@ public class NSService {
      *                     onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                     onFailure if exception
      */
-    public void getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByArea(Double latitudeMin, Double latitudeMax, Double longitudeMin, Double longitudeMax, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -136,6 +136,7 @@ public class NSService {
             }
 
         });
+        return eventDB.getByArea(latitudeMin, latitudeMax, longitudeMin, longitudeMax);
     }
 
     /**
@@ -149,7 +150,7 @@ public class NSService {
      *                  onMessageLoad if 400 BAD REQUEST or 500 INTERNAL SERVER ERROR,
      *                  onFailure if exception
      */
-    public void getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByRadius(Double latitude, Double longitude, int radius, final MyCallback<List<Event>> callback) {
         restInterface.getEventsByRadius(latitude, longitude, radius).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -180,18 +181,21 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+        return eventDB.getByRadius(latitude, longitude, radius);
     }
 
     /**
      * Retrieves an event given the id
      * GET /events/{id}
      *
+     * @throws com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB.NoEventFoundException if the event is not available locally
      * @param id
      * @param callback onEventLoad if 200 OK,
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventById(int id, final MyCallback<Event> callback) {
+    public Event getEventById(int id, final MyCallback<Event> callback) throws EventDB.NoEventFoundException {
         Log.i(TAG, "getEventById: querying for event " + id);
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>() {
             @Override
@@ -221,6 +225,10 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+
+        return eventDB.getById(id);
+
     }
 
     /**
@@ -311,7 +319,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void deleteEvent(int id, final MyCallback<String> callback) {
+    public void deleteEvent(final int id, final MyCallback<String> callback) {
         restInterface.deleteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
 
             @Override
@@ -319,6 +327,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    eventDB.deleteById(id);
                     callback.onSuccess("ok");
                 } else {
                     try {
@@ -347,14 +356,22 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void voteEvent(int id, final MyCallback<String> callback) {
+    public void voteEvent(final int id, final MyCallback<String> callback) {
         restInterface.voteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    if(response.body().getMessage().equals("Voted")){
+                        try {
+                            eventDB.modifyVote(id, 1);
+                        } catch (EventDB.NoEventFoundException e) {
+                            // do nothing
+                        }
+                    }
                     callback.onSuccess("ok");
+
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -382,13 +399,20 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void unvoteEvent(int id, final MyCallback<String> callback) {
+    public void unvoteEvent(final int id, final MyCallback<String> callback) {
         restInterface.unvoteEvent(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    if(response.body().getMessage().equals("Vote deleted")){
+                        try {
+                            eventDB.modifyVote(id, -1);
+                        } catch (EventDB.NoEventFoundException e) {
+                            // do nothing
+                        }
+                    }
                     callback.onSuccess("ok");
                 } else {
                     try {
@@ -455,7 +479,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public void getEventsByUser(String id, final MyCallback<List<Event>> callback) {
+    public List<Event> getEventsByUser(String id, final MyCallback<List<Event>> callback) {
         restInterface.getEventByUser(id).enqueue(new retrofit2.Callback<List<Event>>() {
             @Override
             public void onResponse(Call<List<Event>> call, Response<List<Event>> response) {
@@ -486,6 +510,8 @@ public class NSService {
                 callback.onFailure();
             }
         });
+
+        return eventDB.getByUID(id);
     }
 
     /**
