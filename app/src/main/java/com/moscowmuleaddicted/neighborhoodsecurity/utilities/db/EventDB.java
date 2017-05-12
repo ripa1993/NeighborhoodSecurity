@@ -130,6 +130,16 @@ public class EventDB extends SQLiteOpenHelper {
         }
     }
 
+    public void deleteById(int eventId){
+        getWritableDatabase().delete(EventEntry.TABLE_NAME, EventEntry._ID + " = ?", new String[]{String.valueOf(eventId)});
+    }
+
+    public void modifyVote(int eventId, int vote) throws NoEventFoundException {
+        Event event = getById(eventId);
+        event.setVotes(event.getVotes()+vote);
+        addEvent(event);
+    }
+
     /**
      * Convert a cursor row into an Event
      * @param cursor
