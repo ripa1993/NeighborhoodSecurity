@@ -363,7 +363,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
-                    if(response.body().getMessage().equals("Voted")){
+                    if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, 1);
                         } catch (EventDB.NoEventFoundException e) {
@@ -406,7 +406,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
-                    if(response.body().getMessage().equals("Vote deleted")){
+                    if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, -1);
                         } catch (EventDB.NoEventFoundException e) {
