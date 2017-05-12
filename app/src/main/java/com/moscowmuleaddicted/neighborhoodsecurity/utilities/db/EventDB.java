@@ -73,6 +73,7 @@ public class EventDB extends SQLiteOpenHelper {
             events.add(toEvent(cursor));
             cursor.moveToNext();
         }
+        cursor.close();
         return events;
     }
 
@@ -93,6 +94,7 @@ public class EventDB extends SQLiteOpenHelper {
             events.add(toEvent(cursor));
             cursor.moveToNext();
         }
+        cursor.close();
         return events;
     }
 
@@ -119,9 +121,12 @@ public class EventDB extends SQLiteOpenHelper {
                 new String[]{String.valueOf(eventId)});
         cursor.moveToFirst();
         if(cursor.isAfterLast()){
+            cursor.close();
             throw new NoEventFoundException();
         } else {
-            return toEvent(cursor);
+            Event e = toEvent(cursor);
+            cursor.close();
+            return e;
         }
     }
 

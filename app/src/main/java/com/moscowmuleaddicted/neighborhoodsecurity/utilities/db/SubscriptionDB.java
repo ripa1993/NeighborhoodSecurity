@@ -69,6 +69,7 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         while(!cursor.isAfterLast()){
             subscriptions.add(toSubscription(cursor));
         }
+        cursor.close();
         return subscriptions;
     }
 
