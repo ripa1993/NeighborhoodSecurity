@@ -639,7 +639,7 @@ public class NSService {
      * @param id
      * @param callback
      */
-    public void getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
+    public List<Subscription> getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
 
         restInterface.getSubscriptionsByUser(id).enqueue(new retrofit2.Callback<List<Subscription>>() {
             @Override
@@ -672,6 +672,8 @@ public class NSService {
                 callback.onFailure();
             }
         });
+        Log.d(TAG, "finding data on db");
+        return subscriptionDB.getByUID(id);
     }
 
     /**
