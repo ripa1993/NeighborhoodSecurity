@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.services;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -12,6 +13,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 
@@ -59,6 +61,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
                     eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
+
+            // save in local db
+            EventDB db = new EventDB(this);
+            db.addEvent(event);
+            db.close();
 
             Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
             eventDetailIntent.putExtra("event", event);
