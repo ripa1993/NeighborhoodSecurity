@@ -61,18 +61,18 @@ public class DatabaseContract {
 
         public static final String SQL_SELECT_BY_UID =
                 "SELECT * FROM " + EventEntry.TABLE_NAME + " WHERE "
-                        + EventEntry.COLUMN_NAME_SUBMITTERID + " = ?s";
+                        + EventEntry.COLUMN_NAME_SUBMITTERID + " = ?";
 
         public static final String SQL_SELECT_BY_AREA =
                 "SELECT * FROM " + EventEntry.TABLE_NAME + " WHERE "
-                + EventEntry.COLUMN_NAME_LATITUDE + " > ?s AND "
-                + EventEntry.COLUMN_NAME_LATITUDE + " < ?s AND "
-                + EventEntry.COLUMN_NAME_LONGITUDE + " > ?s AND "
-                + EventEntry.COLUMN_NAME_LONGITUDE + " < ?s";
+                + EventEntry.COLUMN_NAME_LATITUDE + " > ? AND "
+                + EventEntry.COLUMN_NAME_LATITUDE + " < ? AND "
+                + EventEntry.COLUMN_NAME_LONGITUDE + " > ? AND "
+                + EventEntry.COLUMN_NAME_LONGITUDE + " < ?";
 
         public static final String SQL_SELECT_BY_ID =
                 "SELECT * FROM "+ EventEntry.TABLE_NAME + " WHERE "
-                + EventEntry._ID + " = ?s";
+                + EventEntry._ID + " = ?";
     }
 
     public static class SubscriptionStatements {
@@ -94,7 +94,7 @@ public class DatabaseContract {
 
         public static final String SQL_SELECT_BY_UID =
                 "SELECT * FROM " + SubscriptionEntry.TABLE_NAME + " WHERE "
-                + SubscriptionEntry.COLUMN_NAME_USERID + " = ?s";
+                + SubscriptionEntry.COLUMN_NAME_USERID + " = ?";
 
     }
 }
