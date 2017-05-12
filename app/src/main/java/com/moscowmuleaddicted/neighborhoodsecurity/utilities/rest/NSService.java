@@ -1,6 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -53,6 +56,9 @@ public class NSService {
     private static NSRestService restInterface;
     private static Converter<ResponseBody, MyMessage> converter;
 
+    private static EventDB eventDB;
+    private static SubscriptionDB subscriptionDB;
+
     private NSService(Context context) {
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -73,6 +79,9 @@ public class NSService {
         converter = retrofit.responseBodyConverter(MyMessage.class, new Annotation[0]);
 
         mAuth = FirebaseAuth.getInstance();
+
+        eventDB = new EventDB(context);
+        subscriptionDB = new SubscriptionDB(context);
 
     }
 
@@ -104,6 +113,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -144,6 +156,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -182,6 +197,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     Event event = response.body();
+
+                    new StoreEventsTask().execute(event);
+
                     callback.onSuccess(event);
                 } else {
                     try {
@@ -441,6 +459,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Event> eventList = response.body();
+
+                    new StoreEventsTask().execute((Event[]) eventList.toArray());
+
                     callback.onSuccess(eventList);
                 } else {
                     try {
@@ -595,6 +616,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     List<Subscription> subs = response.body();
+
+                    new StoreSubscriptionsTask().execute((Subscription[]) subs.toArray());
+
                     callback.onSuccess(subs);
                 } else {
                     try {
@@ -668,6 +692,9 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     Subscription sub = response.body();
+
+                    new StoreSubscriptionsTask().execute(sub);
+
                     callback.onSuccess(sub);
                 } else {
                     try {
@@ -1103,5 +1130,53 @@ public class NSService {
 
     }
 
+    public class StoreEventsTask extends AsyncTask<Event, Integer, Integer> {
+
+        public static final String TAG = "StoreEventsTask";
+
+        @Override
+        protected Integer doInBackground(Event... params) {
+            int count = params.length;
+            int i;
+            for (i = 0; i < count; i++){
+                eventDB.addEvent(params[i]);
+                publishProgress((int) ((i / (float) count) * 100));
+                if (isCancelled()) break;
+            }
+            return i;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            Log.d(TAG, "storing events: "+progress[0]+"%");
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.d(TAG, "finished storing "+result+" events");
+        }
+    }
+
+    public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
+        public static final String TAG = "StoreSubsTask";
+
+        @Override
+        protected Integer doInBackground(Subscription... params) {
+            int count = params.length;
+            int i;
+            for (i = 0; i < count; i++){
+                subscriptionDB.addSubscription(params[i]);
+                publishProgress((int) ((i / (float) count) * 100));
+                if (isCancelled()) break;
+            }
+            return i;
+        }
+
+        protected void onProgressUpdate(Integer... progress) {
+            Log.d(TAG, "storing subscriptions: "+progress[0]+"%");
+        }
+
+        protected void onPostExecute(Integer result) {
+            Log.d(TAG, "finished storing "+result+" subscriptions");
+        }
+    }
 
 }
