@@ -57,7 +57,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 // if an uid is provided
                 mFragment = new EventListFragment();
                 mSwipe.setRefreshing(true);
-                NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
+                events.addAll(NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
                     @Override
                     public void onSuccess(List<Event> events) {
                         Log.d(TAG, "events from UID: found "+events.size()+ " events");
@@ -77,7 +77,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         Log.w(TAG, "events from UID: "+message);
                         mSwipe.setRefreshing(false);
                     }
-                });
+                }));
+                mFragment = EventListFragment.newInstance(1, events);
             }
         } else {
             // if nothing is provided
