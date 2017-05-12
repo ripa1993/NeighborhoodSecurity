@@ -140,6 +140,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     public void onListFragmentInteraction(Event event) {
+        Log.d(TAG, event.toString());
+
         Intent intent = new Intent(this, EventDetailActivity.class);
         intent.putExtra("event", event);
         startActivity(intent);

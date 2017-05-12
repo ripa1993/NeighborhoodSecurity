@@ -186,4 +186,21 @@ public class Event implements Serializable{
     public int hashCode() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", date=" + date +
+                ", eventType=" + eventType +
+                ", description='" + description + '\'' +
+                ", country='" + country + '\'' +
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", votes=" + votes +
+                ", submitterId='" + submitterId + '\'' +
+                '}';
+    }
 }

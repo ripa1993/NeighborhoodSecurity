@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -22,6 +23,7 @@ public class EventDB extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Event.db";
+    public static final String TAG ="EventDB";
 
     public EventDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,7 +59,8 @@ public class EventDB extends SQLiteOpenHelper {
         values.put(EventEntry.COLUMN_NAME_LONGITUDE, e.getLongitude());
         values.put(EventEntry.COLUMN_NAME_SUBMITTERID, e.getSubmitterId());
         values.put(EventEntry.COLUMN_NAME_VOTES, e.getVotes());
-        getWritableDatabase().insertWithOnConflict(EventEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        long rows = getWritableDatabase().insertWithOnConflict(EventEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        Log.d(TAG, "Inserted rows "+String.valueOf(rows));
     }
 
     /**
@@ -157,7 +160,7 @@ public class EventDB extends SQLiteOpenHelper {
         e.setLatitude(cursor.getDouble(7));
         e.setLongitude(cursor.getDouble(8));
         e.setSubmitterId(cursor.getString(9));
-        e.setSubmitterId(cursor.getString(10));
+        e.setVotes(cursor.getInt(10));
         return e;
     }
 
