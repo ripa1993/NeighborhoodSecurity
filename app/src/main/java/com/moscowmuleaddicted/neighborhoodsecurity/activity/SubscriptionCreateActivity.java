@@ -45,6 +45,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
                             public void onSuccess(MyMessage myMessage) {
                                 Log.d(TAG, "subscription created");
                                 Toast.makeText(getApplicationContext(), getString(R.string.msg_success_subscription_create), Toast.LENGTH_SHORT).show();
+                                finish();
 
                             }
 

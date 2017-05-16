@@ -49,6 +49,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                         public void onSuccess(String s) {
                             Log.d(TAG, "event created");
                             Toast.makeText(getApplicationContext(), getString(R.string.msg_success_event_create), Toast.LENGTH_SHORT).show();
+                            finish();
                         }
 
                         @Override
