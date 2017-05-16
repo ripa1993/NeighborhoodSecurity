@@ -68,7 +68,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
 
         holder.mItem = mValues.get(position);
         holder.mEventType.setText(e.getEventType().toString());
-        holder.mEventLocation.setText(e.getStreet()+", "+e.getCity());
+        holder.mEventLocation.setText(e.getCity()+", "+e.getStreet());
         holder.mEventDate.setText(mDateFormat.format(e.getDate()));
 
 

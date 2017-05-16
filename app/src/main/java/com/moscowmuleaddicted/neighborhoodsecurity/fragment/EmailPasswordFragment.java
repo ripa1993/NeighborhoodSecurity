@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 /**
  * Fragment containing login / registration / password reset for email authentication
  *
@@ -23,6 +26,9 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
  * @version 1
  */
 public class EmailPasswordFragment extends Fragment {
+
+    public static final String TAG = "EmailPasswordFragment";
+
     /**
      * The fragment state
      */
@@ -140,26 +146,44 @@ public class EmailPasswordFragment extends Fragment {
         String email, password;
         email = etEmail.getText().toString();
         password = etPassword.getText().toString();
-        if (email.length()>0 && password.length()>0){
+
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        boolean passwordOK = password.length()>=6;
+
+        if (passwordOK && emailOK){
             NSService.getInstance(getContext()).signInWithEmail(email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "logged in with email");
+                    Toast.makeText(getContext(), getString(R.string.msg_success_login), Toast.LENGTH_SHORT).show();
                     mListener.loggedInWithEmail();
                 }
 
                 @Override
                 public void onFailure() {
-                    Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to login");
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_login), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onMessageLoad(MyMessage message, int status) {
-                    Toast.makeText(getContext(), message.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to login with msg: "+message);
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
+
+            if(!passwordOK){
+                inputLayoutPassword.setError(getString(R.string.msg_insert_valid_password));
+            } else {
+                inputLayoutPassword.setError(null);
+            }
+
         }
     }
 
@@ -172,27 +196,51 @@ public class EmailPasswordFragment extends Fragment {
         email = etEmail.getText().toString();
         password = etPassword.getText().toString();
         username = etUsername.getText().toString();
-        if(email.length()>0 && password.length()>0 && username.length()>0){
+
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        boolean passwordOK = password.length()>=6;
+        boolean usernameOK = username.length() > 0;
+
+        if(emailOK && passwordOK && usernameOK){
             NSService.getInstance(getContext()).signUpWithEmail(username, email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "registered successfully");
+                    Toast.makeText(getContext(), getString(R.string.msg_success_register), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure() {
-                    Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to register");
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_register), Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void onMessageLoad(MyMessage message, int status) {
-                    Toast.makeText(getContext(), message.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to register with msg: "+message);
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
 
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
+
+            if(!passwordOK){
+                inputLayoutPassword.setError(getString(R.string.msg_insert_valid_password));
+            } else {
+                inputLayoutPassword.setError(null);
+            }
+
+            if(!usernameOK){
+                inputLayoutUsername.setError(getString(R.string.msg_insert_valid_username));
+            } else {
+                inputLayoutUsername.setError(null);
+            }
         }
     }
 
@@ -203,20 +251,25 @@ public class EmailPasswordFragment extends Fragment {
     public void resetPasswordClicked(View view){
         String email;
         email = etEmail.getText().toString();
-        if (email.length() > 0){
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        if (emailOK){
             NSService.getInstance(getContext()).sendPasswordResetEmail(email, new NSService.MySimpleCallback() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.msg_success_resetpassword), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(String s) {
-                    Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_resetpassword), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
         }
     }
 

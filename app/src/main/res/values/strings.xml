@@ -65,4 +65,52 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+
+    <string name="map_button">Map</string>
+    <string name="subscription_button">Subscriptions</string>
+
+    <string name="msg_network_problem_events_upd">There might be some network problems, we couldn\'t download event updates. Try again later.</string>
+    <string name="msg_network_problem_event_create">There might be some network problems, we couldn\'t create the event. Try again later.</string>
+    <string name="msg_success_event_create">Event created</string>
+    <string name="msg_400_bad_request_events">There\'s a problem with your request. Please check if every required field has been filled.</string>
+    <string name="msg_404_not_found_user_events">You are not logged in or your account isn\'t registered on our remote server. Try to reauthenticate.</string>
+    <string name="msg_500_internal_server_error_events">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_network_problem_subscriptions_upd">There might be some network problems, we couldn\'t download subscription updates. Try again later.</string>
+    <string name="msg_network_problem_subscription_create">There might be some network problems, we couldn\'t create the subscription. Try again later.</string>
+    <string name="msg_success_subscription_create">Subscription created</string>
+    <string name="msg_400_bad_request_subs">There\'s a problem with your request. Please check if every required field has been filled.</string>
+    <string name="msg_401_unauthorized_subs">You need to be logged in to use this feature. Do it now, it\'s free!</string>
+    <string name="msg_404_not_found_user_subs">You are not logged in or your account isn\'t registered on our remote server. Try to reauthenticate.</string>
+    <string name="msg_500_internal_server_error_subs">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_network_problem_event_vote">There might be some network problems, we couldn\'t submit your vote. Try again later.</string>
+    <string name="msg_204_no_content_event_vote">You have already voted this event!</string>
+    <string name="msg_400_bad_request_event_vote">There\'s a problem with your request.</string>
+    <string name="msg_401_unauthorized_event_vote">You need to be logged in to use this feature. Do it now, it\'s free!</string>
+    <string name="msg_404_not_found_event_vote">There\'s a problem with your request. Event might have been deleted.</string>
+    <string name="msg_500_internal_server_error_event_vote">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_network_problem_event_unvote">There might be some network problems, we couldn\'t delete your vote. Try again later.</string>
+    <string name="msg_204_no_content_event_unvote">You have already removed your vote!</string>
+
+    <string name="msg_success_login">Logged in.</string>
+    <string name="msg_problem_login">Login error. Please check your credentials or you might have network problems.</string>
+
+    <string name="msg_success_register">Registered successfully.</string>
+    <string name="msg_problem_register">Registration error. Email is already in use or you might have network problems.</string>
+
+    <string name="msg_success_resetpassword">Email sent, please check your inbox!</string>
+    <string name="msg_problem_resetpassword">Reset password encountered an error. Email is not registered or you might have network problems.</string>
+
+    <string name="msg_unknown_error">An unknown error has occurred. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_insert_valid_email">Email must be valid.</string>
+    <string name="msg_insert_valid_password">Password must be at least 6 characters long.</string>
+    <string name="msg_insert_valid_username">Username cannot be empty.</string>
+
+    <string name="msg_insert_valid_description">Insert a short description of the event</string>
+    <string name="msg_insert_valid_latitude">Insert a valid latitude</string>
+    <string name="msg_insert_valid_longitude">Insert a valid latitude</string>
+    <string name="msg_insert_valid_address">Address</string>
 </resources>

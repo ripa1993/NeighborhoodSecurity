@@ -72,12 +72,26 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                     @Override
                     public void onFailure() {
                         Log.w(TAG, "subscriptions from UID: failure");
+                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscriptions_upd), Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "subscriptions from UID: "+message);
+                        String msg = "";
+                        switch(status){
+                            case 404:
+                                msg = getString(R.string.msg_404_not_found_user_subs);
+                                break;
+                            case 500:
+                                msg = getString(R.string.msg_500_internal_server_error_subs);
+                                break;
+                            default:
+                                msg = getString(R.string.msg_unknown_error);
+                                break;
+                        }
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
                 }));

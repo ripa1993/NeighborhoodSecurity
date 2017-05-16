@@ -20,7 +20,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
@@ -51,7 +50,6 @@ public class NSService {
 
     private static final String baseUrl = "thawing-taiga-87659.herokuapp.com";
     private FirebaseAuth mAuth;
-    private static AuthToken authToken;
     private static NSService instance;
     private static NSRestService restInterface;
     private static Converter<ResponseBody, MyMessage> converter;
@@ -352,7 +350,7 @@ public class NSService {
      * POST /events/{id}/vote
      *
      * @param id
-     * @param callback onSuccess if 204 NO CONTENT (idempotent),
+     * @param callback onSuccess if 200 if created
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
@@ -369,8 +367,10 @@ public class NSService {
                         } catch (EventDB.NoEventFoundException e) {
                             // do nothing
                         }
+                        callback.onSuccess("ok");
+                    } else {
+                        callback.onMessageLoad(new MyMessage(), 204);
                     }
-                    callback.onSuccess("ok");
 
                 } else {
                     try {
@@ -412,8 +412,10 @@ public class NSService {
                         } catch (EventDB.NoEventFoundException e) {
                             // do nothing
                         }
+                        callback.onSuccess("ok");
+                    } else {
+                        callback.onMessageLoad(new MyMessage(), 204);
                     }
-                    callback.onSuccess("ok");
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
@@ -561,8 +563,7 @@ public class NSService {
                             Log.w(TAG, "signUpWithEmail: (" + status + ") " + message);
                         }
                     });
-
-;
+                    callback.onSuccess("success");
                 } else {
                     Log.w(TAG, "signUpWithEmail:failure", task.getException());
                     callback.onFailure();
@@ -606,7 +607,7 @@ public class NSService {
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, "signInWithEmail: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                            Log.w(TAG, "signInWithEmail: fcm registration "+message);
                         }
                     });
 
@@ -637,7 +638,8 @@ public class NSService {
      * GET /subscriptions/{id}
      *
      * @param id
-     * @param callback
+     * @param callback onSuccess if 200,
+     *                 onMessageLoad if 404 or 500
      */
     public List<Subscription> getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
 
@@ -832,7 +834,10 @@ public class NSService {
      * @param lat
      * @param lon
      * @param radius
-     * @param callback
+     * @param callback onSuccess if 201,
+     *                 onMessageLoad if 400 or 500
+     *
+     *
      */
     public void postSubscriptionCenterAndRadius(Double lat, Double lon, int radius, final MyCallback<MyMessage> callback){
         restInterface.postSubscriptionCenterAndRadius(lat, lon, radius).enqueue(new retrofit2.Callback<MyMessage>() {
