@@ -65,4 +65,7 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+
+    <string name="map_button">Map</string>
+    <string name="subscription_button">Subscriptions</string>
 </resources>

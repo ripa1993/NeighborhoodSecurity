@@ -53,7 +53,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     private static final String TAG = "HomePageActivity";
     private static final int REQUEST_AUTH = 101;
 
-    Button bMap, bProfile, bEvents, bSubscriptions;
+    Button bMap, bSubscriptions;
     GoogleApiClient mGoogleApiClient;
     FirebaseAuth mAuth;
     Location mLastLocation;
@@ -83,8 +83,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mAuth.addAuthStateListener(this);
 
         bMap = (Button) findViewById(R.id.button_map);
-        bProfile = (Button) findViewById(R.id.button_profile);
-        bEvents = (Button) findViewById(R.id.button_events);
         bSubscriptions = (Button) findViewById(R.id.button_subscriptions);
 
         bMap.setOnClickListener(new View.OnClickListener() {
@@ -125,14 +123,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     startActivity(mapIntent);
                 }
 
-            }
-        });
-
-        bEvents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent eventIntent = new Intent(getApplicationContext(), EventListActivity.class);
-                startActivity(eventIntent);
             }
         });
 

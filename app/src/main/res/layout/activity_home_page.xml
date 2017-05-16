@@ -28,16 +28,8 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="Map"/>
-            <Button
-                android:id="@+id/button_profile"
-                android:visibility="gone"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:text="Profile"/>
+                android:text="@string/map_button"/>
+
 
         </TableRow>
 
@@ -47,15 +39,7 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <Button
-                android:id="@+id/button_events"
-                android:visibility="gone"
-                android:paddingTop="32dp"
-                android:paddingBottom="32dp"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:text="Events"/>
+
             <Button
                 android:id="@+id/button_subscriptions"
                 android:paddingTop="48dp"
@@ -63,7 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:text="Subscriptions"/>
+                android:text="@string/subscription_button"/>
 
         </TableRow>
 
