@@ -352,7 +352,7 @@ public class NSService {
      * POST /events/{id}/vote
      *
      * @param id
-     * @param callback onSuccess if 204 NO CONTENT (idempotent),
+     * @param callback onSuccess if 200 if created
      *                 onMessageLoad if 400 BAD REQUEST or 401 UNAUTHORIZED or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
@@ -369,8 +369,10 @@ public class NSService {
                         } catch (EventDB.NoEventFoundException e) {
                             // do nothing
                         }
+                        callback.onSuccess("ok");
+                    } else {
+                        callback.onMessageLoad(new MyMessage(), 204);
                     }
-                    callback.onSuccess("ok");
 
                 } else {
                     try {
@@ -412,8 +414,10 @@ public class NSService {
                         } catch (EventDB.NoEventFoundException e) {
                             // do nothing
                         }
+                        callback.onSuccess("ok");
+                    } else {
+                        callback.onMessageLoad(new MyMessage(), 204);
                     }
-                    callback.onSuccess("ok");
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
