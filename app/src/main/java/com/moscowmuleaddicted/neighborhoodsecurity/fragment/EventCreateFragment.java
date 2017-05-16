@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ public class EventCreateFragment extends Fragment {
 
     private static final String TAG = "EventCreateFragment";
     private EditText etDescription, etLatitude, etLongitude;
+    private TextInputLayout ilDescription, ilLatitude, ilLongitude;
     private LabelledSpinner lsEventType;
     private RadioButton rbAddress;
 
@@ -101,6 +103,9 @@ public class EventCreateFragment extends Fragment {
         etDescription = (EditText) view.findViewById(R.id.input_description);
         etLatitude = (EditText) view.findViewById(R.id.input_latitude);
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
+        ilDescription = (TextInputLayout) view.findViewById(R.id.input_layout_description);
+        ilLatitude = (TextInputLayout) view.findViewById(R.id.input_layout_latitude);
+        ilLongitude = (TextInputLayout) view.findViewById(R.id.input_layout_longitude);
         lsEventType = (LabelledSpinner) view.findViewById(R.id.labelled_spinner_event_type);
         rbAddress = (RadioButton) view.findViewById(R.id.radioAddress);
         placeAutocompleteFragment = (SupportPlaceAutocompleteFragment) getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -187,6 +192,12 @@ public class EventCreateFragment extends Fragment {
     }
 
     public Event getEvent(){
+        if(!eventUsesAddress()){
+            event.setLatitude(NumberUtils.toDouble(etLatitude.getText().toString(), Double.NEGATIVE_INFINITY));
+            event.setLongitude(NumberUtils.toDouble(etLongitude.getText().toString(), Double.NEGATIVE_INFINITY));
+
+            placeAutocompleteFragment.setText("");
+        }
         event.setDate(new Date());
         event.setDescription(etDescription.getText().toString());
         event.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
@@ -200,6 +211,36 @@ public class EventCreateFragment extends Fragment {
             return false;
         }
     }
+
+
+    public void showErrors(){
+        if(etDescription.getText().length() == 0){
+            ilDescription.setError(getString(R.string.msg_insert_valid_description));
+        } else {
+            ilDescription.setError(null);
+        }
+
+        if(eventUsesAddress()){
+            placeAutocompleteFragment.setText("");
+
+        } else {
+            if(etLatitude.getText().length() == 0){
+                ilLatitude.setError(getString(R.string.msg_insert_valid_latitude));
+            } else {
+                ilLatitude.setError(null);
+            }
+
+            if(etLongitude.getText().length() == 0){
+                ilLongitude.setError(getString(R.string.msg_insert_valid_longitude));
+            } else {
+                ilLongitude.setError(null);
+            }
+        }
+
+
+    }
+
+
 
 
     /**

@@ -30,7 +30,10 @@
                 android:id="@+id/input_layout_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/descriptionIcon">
+                android:layout_toRightOf="@id/descriptionIcon"
+                ls:errorEnabled="true"
+                ls:counterEnabled="true"
+                ls:counterMaxLength="400">
 
                 <EditText
                     android:id="@+id/input_description"
@@ -96,30 +99,30 @@
 
         <LinearLayout
             android:id="@+id/layout_address_group"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/countryIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:paddingRight="8dp"
-                    android:src="@drawable/ic_map" />
+                <!--<ImageView-->
+                    <!--android:id="@+id/countryIcon"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:paddingRight="8dp"-->
+                    <!--android:src="@drawable/ic_map" />-->
 
                 <fragment
                     android:id="@+id/place_autocomplete_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/countryIcon"
                     android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
                     />
             </RelativeLayout>
@@ -149,7 +152,8 @@
                     android:id="@+id/input_layout_latitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    ls:errorEnabled="true">
 
                     <EditText
                         android:id="@+id/input_latitude"
@@ -164,7 +168,8 @@
                     android:id="@+id/input_layout_longitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    ls:errorEnabled="true">
 
                     <EditText
                         android:id="@+id/input_longitude"

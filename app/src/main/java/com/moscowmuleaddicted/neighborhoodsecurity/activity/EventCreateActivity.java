@@ -24,9 +24,6 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_create);
 
-//        Toolbar myToolbar = (Toolbar) findViewById(R.id.event_create_toolbar);
-//        setSupportActionBar(myToolbar);
-
         mEventCreateFragment = (EventCreateFragment) getSupportFragmentManager().findFragmentById(R.id.eventCreateFragment);
     }
 
@@ -43,9 +40,10 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_create_event:
                 Event e = mEventCreateFragment.getEvent();
+                if (e.getDescription().length() > 0 && !e.getLatitude().equals(Double.NEGATIVE_INFINITY) && !e.getLongitude().equals(Double.NEGATIVE_INFINITY)) {
                     NSService.getInstance(getApplicationContext()).postEventWithCoordinates(e.getEventType(), e.getDescription(), e.getLatitude(), e.getLongitude(), new NSService.MyCallback<String>() {
                         @Override
                         public void onSuccess(String s) {
@@ -62,9 +60,9 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, "failed to create event with message: "+message.toString());
+                            Log.w(TAG, "failed to create event with message: " + message.toString());
                             String msg = "";
-                            switch (status){
+                            switch (status) {
                                 case 400:
                                     msg = getString(R.string.msg_400_bad_request_subs);
                                     break;
@@ -81,7 +79,9 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                             Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                         }
                     });
-//                }
+                } else {
+                    mEventCreateFragment.showErrors();
+                }
 
 
                 return true;

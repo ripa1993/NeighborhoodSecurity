@@ -108,4 +108,9 @@
     <string name="msg_insert_valid_email">Email must be valid.</string>
     <string name="msg_insert_valid_password">Password must be at least 6 characters long.</string>
     <string name="msg_insert_valid_username">Username cannot be empty.</string>
+
+    <string name="msg_insert_valid_description">Insert a short description of the event</string>
+    <string name="msg_insert_valid_latitude">Insert a valid latitude</string>
+    <string name="msg_insert_valid_longitude">Insert a valid latitude</string>
+    <string name="msg_insert_valid_address">Address</string>
 </resources>
