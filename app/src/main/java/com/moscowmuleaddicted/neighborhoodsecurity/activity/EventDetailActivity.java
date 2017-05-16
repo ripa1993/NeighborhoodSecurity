@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,6 +28,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessa
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
+
+    public static final String TAG = "EventDetailAct";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +95,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                 NSService.getInstance(getApplicationContext()).voteEvent(eventId, new NSService.MyCallback<String>() {
                     @Override
                     public void onSuccess(String s) {
+                        Log.d(TAG, "success in voting the event");
                         fab.setEnabled(false);
                         fab.setImageDrawable(getDrawable(R.drawable.ic_star));
                         final MyEventDetailRecyclerViewAdapter adapter =(MyEventDetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
@@ -104,6 +108,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                                 NSService.getInstance(getApplicationContext()).unvoteEvent(eventId, new NSService.MyCallback<String>() {
                                     @Override
                                     public void onSuccess(String s) {
+                                        Log.d(TAG, "success in unvoting the event");
                                         snack.dismiss();
                                         fab.setEnabled(true);
                                         fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
@@ -112,13 +117,35 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
                                     @Override
                                     public void onFailure() {
-                                        // TODO: change here
-                                        Toast.makeText(getApplicationContext(), "There was some problem...", Toast.LENGTH_SHORT).show();
+                                        Log.w(TAG, "failure in unvoting the event");
+                                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_unvote), Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
                                     public void onMessageLoad(MyMessage message, int status) {
-                                        Toast.makeText(getApplicationContext(), "Error: "+message.getMessage(), Toast.LENGTH_SHORT).show();
+                                        Log.w(TAG, "failure in unvoting the event with msg: "+message);
+                                        String msg = "";
+                                        switch(status){
+                                            case 204:
+                                                msg = getString(R.string.msg_204_no_content_event_unvote);
+                                                break;
+                                            case 400:
+                                                msg = getString(R.string.msg_400_bad_request_event_vote);
+                                                break;
+                                            case 401:
+                                                msg = getString(R.string.msg_401_unauthorized_event_vote);
+                                                break;
+                                            case 404:
+                                                msg = getString(R.string.msg_404_not_found_event_vote);
+                                                break;
+                                            case 500:
+                                                msg = getString(R.string.msg_500_internal_server_error_event_vote);
+                                                break;
+                                            default:
+                                                msg = getString(R.string.msg_unknown_error);
+                                                break;
+                                        }
+                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
@@ -127,13 +154,35 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
                     @Override
                     public void onFailure() {
-                        Toast.makeText(getApplicationContext(), "There was some problem...", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "failure in voting the event");
+                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_vote), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
-                        Toast.makeText(getApplicationContext(), "Error: "+message.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                        Log.w(TAG, "failure in voting the event with msg: "+message);
+                        String msg = "";
+                        switch(status){
+                            case 204:
+                                msg = getString(R.string.msg_204_no_content_event_vote);
+                                break;
+                            case 400:
+                                msg = getString(R.string.msg_400_bad_request_event_vote);
+                                break;
+                            case 401:
+                                msg = getString(R.string.msg_401_unauthorized_event_vote);
+                                break;
+                            case 404:
+                                msg = getString(R.string.msg_404_not_found_event_vote);
+                                break;
+                            case 500:
+                                msg = getString(R.string.msg_500_internal_server_error_event_vote);
+                                break;
+                            default:
+                                msg = getString(R.string.msg_unknown_error);
+                                break;
+                        }
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();                    }
                 });
             }
         });

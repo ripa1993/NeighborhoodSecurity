@@ -84,5 +84,17 @@
     <string name="msg_404_not_found_user_subs">You are not logged in or your account isn\'t registered on our remote server. Try to reauthenticate.</string>
     <string name="msg_500_internal_server_error_subs">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
 
+    <string name="msg_network_problem_event_vote">There might be some network problems, we couldn\'t submit your vote. Try again later.</string>
+    <string name="msg_204_no_content_event_vote">You have already voted this event!</string>
+    <string name="msg_400_bad_request_event_vote">There\'s a problem with your request.</string>
+    <string name="msg_401_unauthorized_event_vote">You need to be logged in to use this feature. Do it now, it\'s free!</string>
+    <string name="msg_404_not_found_event_vote">There\'s a problem with your request. Event might have been deleted.</string>
+    <string name="msg_500_internal_server_error_event_vote">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
+
+
+    <string name="msg_network_problem_event_unvote">There might be some network problems, we couldn\'t delete your vote. Try again later.</string>
+    <string name="msg_204_no_content_event_unvote">You have already removed your vote!</string>
+
+
     <string name="msg_unknown_error">An unknown error has occurred. Try again later. Contact us if the problem persists.</string>
 </resources>
