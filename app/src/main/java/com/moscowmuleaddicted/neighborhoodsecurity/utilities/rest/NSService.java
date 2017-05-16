@@ -637,7 +637,8 @@ public class NSService {
      * GET /subscriptions/{id}
      *
      * @param id
-     * @param callback
+     * @param callback onSuccess if 200,
+     *                 onMessageLoad if 404 or 500
      */
     public List<Subscription> getSubscriptionsByUser(String id, final MyCallback<List<Subscription>> callback) {
 
@@ -832,7 +833,10 @@ public class NSService {
      * @param lat
      * @param lon
      * @param radius
-     * @param callback
+     * @param callback onSuccess if 201,
+     *                 onMessageLoad if 400 or 500
+     *
+     *
      */
     public void postSubscriptionCenterAndRadius(Double lat, Double lon, int radius, final MyCallback<MyMessage> callback){
         restInterface.postSubscriptionCenterAndRadius(lat, lon, radius).enqueue(new retrofit2.Callback<MyMessage>() {
