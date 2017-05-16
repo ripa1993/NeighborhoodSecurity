@@ -565,8 +565,7 @@ public class NSService {
                             Log.w(TAG, "signUpWithEmail: (" + status + ") " + message);
                         }
                     });
-
-;
+                    callback.onSuccess("success");
                 } else {
                     Log.w(TAG, "signUpWithEmail:failure", task.getException());
                     callback.onFailure();
@@ -610,7 +609,7 @@ public class NSService {
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, "signInWithEmail: fcm registration ("+status+") ["+message.getArgument()+"] "+message.getMessage());
+                            Log.w(TAG, "signInWithEmail: fcm registration "+message);
                         }
                     });
 
