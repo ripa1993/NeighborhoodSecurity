@@ -184,7 +184,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         AccountHeaderBuilder mHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.account_background)
+                .withHeaderBackground(R.drawable.account_header)
                 .withAlternativeProfileHeaderSwitching(false)
                 .withSelectionListEnabled(false);
 
