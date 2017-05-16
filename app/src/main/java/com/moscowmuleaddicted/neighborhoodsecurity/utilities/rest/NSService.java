@@ -20,7 +20,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.AuthToken;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
@@ -51,7 +50,6 @@ public class NSService {
 
     private static final String baseUrl = "thawing-taiga-87659.herokuapp.com";
     private FirebaseAuth mAuth;
-    private static AuthToken authToken;
     private static NSService instance;
     private static NSRestService restInterface;
     private static Converter<ResponseBody, MyMessage> converter;
