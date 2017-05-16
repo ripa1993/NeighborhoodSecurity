@@ -17,6 +17,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import org.apache.commons.validator.routines.EmailValidator;
+
 /**
  * Fragment containing login / registration / password reset for email authentication
  *
@@ -144,7 +146,11 @@ public class EmailPasswordFragment extends Fragment {
         String email, password;
         email = etEmail.getText().toString();
         password = etPassword.getText().toString();
-        if (email.length()>0 && password.length()>0){
+
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        boolean passwordOK = password.length()>=6;
+
+        if (passwordOK && emailOK){
             NSService.getInstance(getContext()).signInWithEmail(email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
@@ -166,7 +172,17 @@ public class EmailPasswordFragment extends Fragment {
                 }
             });
         } else {
-            // TODO: notify error on edit text
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
+
+            if(!passwordOK){
+                inputLayoutPassword.setError(getString(R.string.msg_insert_valid_password));
+            } else {
+                inputLayoutPassword.setError(null);
+            }
 
         }
     }
@@ -180,7 +196,12 @@ public class EmailPasswordFragment extends Fragment {
         email = etEmail.getText().toString();
         password = etPassword.getText().toString();
         username = etUsername.getText().toString();
-        if(email.length()>0 && password.length()>0 && username.length()>0){
+
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        boolean passwordOK = password.length()>=6;
+        boolean usernameOK = username.length() > 0;
+
+        if(emailOK && passwordOK && usernameOK){
             NSService.getInstance(getContext()).signUpWithEmail(username, email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
@@ -203,8 +224,23 @@ public class EmailPasswordFragment extends Fragment {
                 }
             });
         } else {
-            // TODO: notify error on edit text
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
 
+            if(!passwordOK){
+                inputLayoutPassword.setError(getString(R.string.msg_insert_valid_password));
+            } else {
+                inputLayoutPassword.setError(null);
+            }
+
+            if(!usernameOK){
+                inputLayoutUsername.setError(getString(R.string.msg_insert_valid_username));
+            } else {
+                inputLayoutUsername.setError(null);
+            }
         }
     }
 
@@ -215,7 +251,8 @@ public class EmailPasswordFragment extends Fragment {
     public void resetPasswordClicked(View view){
         String email;
         email = etEmail.getText().toString();
-        if (email.length() > 0){
+        boolean emailOK = EmailValidator.getInstance().isValid(email);
+        if (emailOK){
             NSService.getInstance(getContext()).sendPasswordResetEmail(email, new NSService.MySimpleCallback() {
                 @Override
                 public void onSuccess(String s) {
@@ -228,7 +265,11 @@ public class EmailPasswordFragment extends Fragment {
                 }
             });
         } else {
-            // TODO: notify error on edit text
+            if(!emailOK){
+                inputLayoutEmail.setError(getString(R.string.msg_insert_valid_email));
+            } else {
+                inputLayoutEmail.setError(null);
+            }
         }
     }
 

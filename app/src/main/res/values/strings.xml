@@ -104,4 +104,8 @@
     <string name="msg_problem_resetpassword">Reset password encountered an error. Email is not registered or you might have network problems.</string>
 
     <string name="msg_unknown_error">An unknown error has occurred. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_insert_valid_email">Email must be valid.</string>
+    <string name="msg_insert_valid_password">Password must be at least 6 characters long.</string>
+    <string name="msg_insert_valid_username">Username cannot be empty.</string>
 </resources>
