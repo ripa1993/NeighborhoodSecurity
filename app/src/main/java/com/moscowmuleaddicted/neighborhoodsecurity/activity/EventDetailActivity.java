@@ -112,6 +112,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
                                     @Override
                                     public void onFailure() {
+                                        // TODO: change here
                                         Toast.makeText(getApplicationContext(), "There was some problem...", Toast.LENGTH_SHORT).show();
                                     }
 

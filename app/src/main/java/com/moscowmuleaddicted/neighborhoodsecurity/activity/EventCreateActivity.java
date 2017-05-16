@@ -63,7 +63,22 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
                             Log.w(TAG, "failed to create event with message: "+message.toString());
-                            // TODO: make toast
+                            String msg = "";
+                            switch (status){
+                                case 400:
+                                    msg = getString(R.string.msg_400_bad_request_subs);
+                                    break;
+                                case 401:
+                                    msg = getString(R.string.msg_401_unauthorized_subs);
+                                    break;
+                                case 500:
+                                    msg = getString(R.string.msg_500_internal_server_error_subs);
+                                    break;
+                                default:
+                                    msg = getString(R.string.msg_unknown_error);
+                                    break;
+                            }
+                            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                         }
                     });
 //                }

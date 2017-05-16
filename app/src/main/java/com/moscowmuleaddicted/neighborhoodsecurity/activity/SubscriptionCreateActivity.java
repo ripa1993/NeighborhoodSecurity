@@ -58,7 +58,19 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
                                 Log.w(TAG, "subscription create failure with msg: "+message.toString());
-                                // TODO: make
+                                String msg = "";
+                                switch(status){
+                                    case 400:
+                                        msg = getString(R.string.msg_400_bad_request_subs);
+                                        break;
+                                    case 500:
+                                        msg = getString(R.string.msg_500_internal_server_error_subs);
+                                        break;
+                                    default:
+                                        msg = getString(R.string.msg_unknown_error);
+                                        break;
+                                }
+                                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                             }
                         });
 

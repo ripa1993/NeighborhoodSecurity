@@ -1,9 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,9 +14,7 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventCreateFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
@@ -76,7 +72,22 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "events from UID: "+message);
-                        // TODO: add toast
+                        String msg = "";
+                        switch (status){
+                            case 400:
+                                msg = getString(R.string.msg_400_bad_request_events);
+                                break;
+                            case 404:
+                                msg = getString(R.string.msg_404_not_found_user_events);
+                                break;
+                            case 500:
+                                msg = getString(R.string.msg_500_internal_server_error_events);
+                                break;
+                            default:
+                                msg = getString(R.string.msg_unknown_error);
+                                break;
+                        }
+                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
                 }));
@@ -108,7 +119,19 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "events from sub: "+message);
-                        //TODO: add toast
+                        String msg = "";
+                        switch (status){
+                            case 400:
+                                msg = getString(R.string.msg_400_bad_request_events);
+                                break;
+                            case 500:
+                                msg = getString(R.string.msg_500_internal_server_error_events);
+                                break;
+                            default:
+                                msg = getString(R.string.msg_unknown_error);
+                                break;
+                        }
+                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
                 }));
