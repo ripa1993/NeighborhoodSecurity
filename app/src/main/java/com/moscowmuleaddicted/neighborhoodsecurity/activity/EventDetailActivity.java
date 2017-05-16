@@ -140,6 +140,6 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
     @Override
     public void onListFragmentInteraction(Details item) {
-        Toast.makeText(getApplicationContext(), item.getContent(), Toast.LENGTH_SHORT).show();
+
     }
 }

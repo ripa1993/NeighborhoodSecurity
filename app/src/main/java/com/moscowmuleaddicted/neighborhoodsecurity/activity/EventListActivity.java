@@ -69,12 +69,14 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                     @Override
                     public void onFailure() {
                         Log.w(TAG, "events from UID: failure");
+                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "events from UID: "+message);
+                        // TODO: add toast
                         mSwipe.setRefreshing(false);
                     }
                 }));
@@ -87,7 +89,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
                 mSwipe.setRefreshing(true);
 
-                events.addAll(NSService.getInstance(getContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
+                events.addAll(NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
                     @Override
                     public void onSuccess(List<Event> events) {
                         Log.d(TAG, "events from sub: found "+events.size()+ " events");
@@ -99,12 +101,14 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                     @Override
                     public void onFailure() {
                         Log.w(TAG, "events from sub: failure");
+                        Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                         mSwipe.setRefreshing(false);
                     }
 
                     @Override
                     public void onMessageLoad(MyMessage message, int status) {
                         Log.w(TAG, "events from sub: "+message);
+                        //TODO: add toast
                         mSwipe.setRefreshing(false);
                     }
                 }));

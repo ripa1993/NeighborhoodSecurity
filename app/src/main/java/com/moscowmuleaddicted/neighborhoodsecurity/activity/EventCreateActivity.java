@@ -1,10 +1,9 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
-import android.app.ActionBar;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,6 +17,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 public class EventCreateActivity extends AppCompatActivity implements EventCreateFragment.OnFragmentInteractionListener {
 
     EventCreateFragment mEventCreateFragment;
+    public static final String TAG = "EventCreateActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,18 +49,21 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                     NSService.getInstance(getApplicationContext()).postEventWithCoordinates(e.getEventType(), e.getDescription(), e.getLatitude(), e.getLongitude(), new NSService.MyCallback<String>() {
                         @Override
                         public void onSuccess(String s) {
-                            Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "event created");
+                            Toast.makeText(getApplicationContext(), getString(R.string.msg_success_event_create), Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onFailure() {
-                            Toast.makeText(getApplicationContext(), "failure", Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "failed to create event");
+                            Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_create), Toast.LENGTH_SHORT).show();
 
                         }
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
-                            Toast.makeText(getApplicationContext(), "("+status+") ["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "failed to create event with message: "+message.toString());
+                            // TODO: make toast
                         }
                     });
 //                }

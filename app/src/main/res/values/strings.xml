@@ -68,4 +68,12 @@
 
     <string name="map_button">Map</string>
     <string name="subscription_button">Subscriptions</string>
+
+    <string name="msg_network_problem_events_upd">There might be some network problems, we couldn\'t download event updates. Try again later.</string>
+    <string name="msg_network_problem_event_create">There might be some network problems, we couldn\'t create the event. Try again later.</string>
+    <string name="msg_success_event_create">Event created</string>
+
+    <string name="msg_network_problem_subscriptions_upd">There might be some network problems, we couldn\'t download subscription updates. Try again later.</string>
+    <string name="msg_network_problem_subscription_create">There might be some network problems, we couldn\'t create the subscription. Try again later.</string>
+    <string name="msg_success_subscription_create">Subscription created</string>
 </resources>
