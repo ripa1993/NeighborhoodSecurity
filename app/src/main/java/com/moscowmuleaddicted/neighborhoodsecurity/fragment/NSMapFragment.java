@@ -58,11 +58,11 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
             if (initialPositionSet)
                 currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
             else
-                centerCameraToContainAllEvents(initialEvents, false);
+                centerCameraInBarycenterOfEvents(initialEvents, false);
         } else if(initialPositionSet){
             currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
         } else{
-            test();
+            blank_start();
         }
     }
 
@@ -77,7 +77,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
 
             MarkerOptions options = new MarkerOptions();
             options.position(new LatLng(event.getLatitude(), event.getLongitude()));
-            options.title(title);
+            // options.title(title);
 
             // Select icon
             switch (event.getEventType()) {
@@ -189,20 +189,17 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
     }
 
 
-    private void test() {
-        Double latMin = 0d, latMax = 0d, lonMin = 0d, lonMax = 0d;
-        latMin = 45d;
-        latMax = 46d;
-        lonMin = 9d;
-        lonMax = 10d;
+    private void blank_start() {
+        final Double lat = 45.464217d, lon = 9.186571d;
+        int radius = 2000;
 
         service = NSService.getInstance(getActivity());
 
-        service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
+        service.getEventsByRadius(lat, lon, radius, new NSService.MyCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> events) {
                 addEventListMarkers(events);
-                centerCameraToContainAllEvents(events, true);
+                currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 11));;
             }
 
             @Override
