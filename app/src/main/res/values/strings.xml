@@ -72,8 +72,17 @@
     <string name="msg_network_problem_events_upd">There might be some network problems, we couldn\'t download event updates. Try again later.</string>
     <string name="msg_network_problem_event_create">There might be some network problems, we couldn\'t create the event. Try again later.</string>
     <string name="msg_success_event_create">Event created</string>
+    <string name="msg_400_bad_request_events">There\'s a problem with your request. Please check if every required field has been filled.</string>
+    <string name="msg_404_not_found_user_events">You are not logged in or your account isn\'t registered on our remote server. Try to reauthenticate.</string>
+    <string name="msg_500_internal_server_error_events">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
 
     <string name="msg_network_problem_subscriptions_upd">There might be some network problems, we couldn\'t download subscription updates. Try again later.</string>
     <string name="msg_network_problem_subscription_create">There might be some network problems, we couldn\'t create the subscription. Try again later.</string>
     <string name="msg_success_subscription_create">Subscription created</string>
+    <string name="msg_400_bad_request_subs">There\'s a problem with your request. Please check if every required field has been filled.</string>
+    <string name="msg_401_unauthorized_subs">You need to be logged in to use this feature. Do it now, it\'s free!</string>
+    <string name="msg_404_not_found_user_subs">You are not logged in or your account isn\'t registered on our remote server. Try to reauthenticate.</string>
+    <string name="msg_500_internal_server_error_subs">An error has occurred on our remote server. Try again later. Contact us if the problem persists.</string>
+
+    <string name="msg_unknown_error">An unknown error has occurred. Try again later. Contact us if the problem persists.</string>
 </resources>
