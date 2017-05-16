@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,9 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
  * @version 1
  */
 public class EmailPasswordFragment extends Fragment {
+
+    public static final String TAG = "EmailPasswordFragment";
+
     /**
      * The fragment state
      */
@@ -144,22 +148,26 @@ public class EmailPasswordFragment extends Fragment {
             NSService.getInstance(getContext()).signInWithEmail(email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "logged in with email");
+                    Toast.makeText(getContext(), getString(R.string.msg_success_login), Toast.LENGTH_SHORT).show();
                     mListener.loggedInWithEmail();
                 }
 
                 @Override
                 public void onFailure() {
-                    Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to login");
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_login), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onMessageLoad(MyMessage message, int status) {
-                    Toast.makeText(getContext(), message.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to login with msg: "+message);
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            // TODO: notify error on edit text
+
         }
     }
 
@@ -176,23 +184,27 @@ public class EmailPasswordFragment extends Fragment {
             NSService.getInstance(getContext()).signUpWithEmail(username, email, password, new NSService.MyCallback<String>() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "registered successfully");
+                    Toast.makeText(getContext(), getString(R.string.msg_success_register), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure() {
-                    Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to register");
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_register), Toast.LENGTH_SHORT).show();
 
                 }
 
                 @Override
                 public void onMessageLoad(MyMessage message, int status) {
-                    Toast.makeText(getContext(), message.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "failed to register with msg: "+message);
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
 
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            // TODO: notify error on edit text
+
         }
     }
 
@@ -207,16 +219,16 @@ public class EmailPasswordFragment extends Fragment {
             NSService.getInstance(getContext()).sendPasswordResetEmail(email, new NSService.MySimpleCallback() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.msg_success_resetpassword), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(String s) {
-                    Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.msg_problem_resetpassword), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getContext(), "check fields", Toast.LENGTH_SHORT).show();
+            // TODO: notify error on edit text
         }
     }
 
