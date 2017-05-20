@@ -2,7 +2,9 @@ package com.moscowmuleaddicted.neighborhoodsecurity.services;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
@@ -90,6 +93,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             mNotifyMgr.notify(eId, mBuilder.build());
 
+            // increment counter
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
+            int notificationCount = sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(Constants.NOTIFICATION_COUNT, notificationCount + 1);
+            editor.commit();
 
         }
 

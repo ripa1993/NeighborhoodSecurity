@@ -1,6 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
@@ -53,11 +55,12 @@ public class NSService {
     private static NSService instance;
     private static NSRestService restInterface;
     private static Converter<ResponseBody, MyMessage> converter;
-
+    private Context context;
     private static EventDB eventDB;
     private static SubscriptionDB subscriptionDB;
 
-    private NSService(Context context) {
+    private NSService(Context mContext) {
+        context = mContext;
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(20, TimeUnit.SECONDS)
@@ -78,8 +81,8 @@ public class NSService {
 
         mAuth = FirebaseAuth.getInstance();
 
-        eventDB = new EventDB(context);
-        subscriptionDB = new SubscriptionDB(context);
+        eventDB = new EventDB(mContext);
+        subscriptionDB = new SubscriptionDB(mContext);
 
     }
 
@@ -1203,6 +1206,11 @@ public class NSService {
 
     public int getNumStoredSubscriptions(String uid){
         return subscriptionDB.getCountByUid(uid);
+    }
+
+    public int getNumReceivedNotifications() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
     }
 
     public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
