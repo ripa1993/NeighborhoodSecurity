@@ -197,11 +197,14 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         if (mAuth.getCurrentUser() != null) {
             Log.d(TAG, "initializing profile: mail=" + mAuth.getCurrentUser().getEmail() + ", name=" + mAuth.getCurrentUser().getDisplayName() + ", photo=" + mAuth.getCurrentUser().getPhotoUrl());
-            mHeaderBuilder.addProfiles(
-                    new ProfileDrawerItem()
-                            .withEmail(mAuth.getCurrentUser().getEmail())
-                            .withName(mAuth.getCurrentUser().getDisplayName())
-                            .withIcon(mAuth.getCurrentUser().getPhotoUrl()));
+            ProfileDrawerItem profileDrawerItem = new ProfileDrawerItem()
+                    .withEmail(mAuth.getCurrentUser().getEmail())
+                    .withName(mAuth.getCurrentUser().getDisplayName());
+            if (mAuth.getCurrentUser().getPhotoUrl() != null) {
+                profileDrawerItem.withIcon(mAuth.getCurrentUser().getPhotoUrl());
+            }
+            mHeaderBuilder.addProfiles(profileDrawerItem);
+
         }
 
 
