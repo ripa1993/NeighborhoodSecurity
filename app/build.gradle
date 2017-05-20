@@ -18,6 +18,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dexOptions {
+        jumboMode = true
+    }
 }
 
 repositories {
@@ -60,6 +63,8 @@ dependencies {
 
     }
     compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.ogaclejapan.arclayout:library:1.1.0@aar'
+
 
     testCompile 'junit:junit:4.12'
 }

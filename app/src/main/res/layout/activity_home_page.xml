@@ -9,7 +9,6 @@
     tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.HomePage">
 
 
-
     <com.ogaclejapan.arclayout.ArcLayout
         android:id="@+id/arc_layout"
         android:layout_width="match_parent"

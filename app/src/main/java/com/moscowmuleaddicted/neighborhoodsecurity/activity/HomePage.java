@@ -6,16 +6,19 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -68,6 +71,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     GoogleApiClient mGoogleApiClient;
     FirebaseAuth mAuth;
     Location mLastLocation;
+    ImageView mEventSummary, mSubscriptionSummary, mHelp;
 
     Drawer mDrawer;
     AccountHeader mAccountHeader;
@@ -325,6 +329,60 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         animSet.setInterpolator(new DecelerateInterpolator());
         animSet.playTogether(animList);
         animSet.start();
+
+        mEventSummary = (ImageView) findViewById(R.id.icon_burglar);
+        mSubscriptionSummary = (ImageView) findViewById(R.id.icon_bell);
+        mHelp = (ImageView) findViewById(R.id.icon_question);
+
+        final AlertDialog ad = new AlertDialog.Builder(this)
+                .setMessage("Msg")
+                .setTitle("Title")
+                .setCancelable(true)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+
+        mEventSummary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ad.setTitle("Event Summary");
+                ad.setIcon(R.drawable.ic_007_burglar);
+                int eventCount = NSService.getInstance(getApplicationContext()).getNumStoredEvents();
+                ad.setMessage("You have seen "+ eventCount + " events.");
+                ad.show();
+            }
+        });
+
+        mSubscriptionSummary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ad.setTitle("Subscription Summary");
+                ad.setIcon(R.drawable.ic_006_school_bell);
+                if(mAuth.getCurrentUser() != null){
+                    String uid = mAuth.getCurrentUser().getUid();
+                    int subscriptionCount = NSService.getInstance(getApplicationContext()).getNumStoredSubscriptions(uid);
+                    int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications();
+                    ad.setMessage("You have received "+notificationCount+" notifications about "+subscriptionCount+" subscriptions.");
+                } else {
+                    ad.setMessage("To see these statistics you need to have an account!");
+                }
+                ad.show();
+            }
+        });
+
+        mHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ad.setTitle("Help");
+                ad.setIcon(R.drawable.ic_005_question);
+                ad.setMessage(getString(R.string.lorem_ipsum));
+                ad.show();
+            }
+        });
 
     }
 
