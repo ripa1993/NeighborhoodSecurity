@@ -1,6 +1,10 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,9 +18,15 @@ import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -43,6 +53,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.ogaclejapan.arclayout.ArcLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +75,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     private PrimaryDrawerItem myEventsItem;
     private PrimaryDrawerItem newEventItem;
     private PrimaryDrawerItem newSubscriptionItem;
+
+    ArcLayout mArcLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +192,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withSelectionListEnabled(false);
 
         if (mAuth.getCurrentUser() != null) {
-            Log.d(TAG, "initializing profile: mail="+mAuth.getCurrentUser().getEmail()+", name="+mAuth.getCurrentUser().getDisplayName()+", photo="+mAuth.getCurrentUser().getPhotoUrl());
+            Log.d(TAG, "initializing profile: mail=" + mAuth.getCurrentUser().getEmail() + ", name=" + mAuth.getCurrentUser().getDisplayName() + ", photo=" + mAuth.getCurrentUser().getPhotoUrl());
             mHeaderBuilder.addProfiles(
                     new ProfileDrawerItem()
                             .withEmail(mAuth.getCurrentUser().getEmail())
@@ -225,7 +238,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
-                                Toast.makeText(getApplicationContext(), "["+message.getArgument()+"] "+message.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "[" + message.getArgument() + "] " + message.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                         return false;
@@ -287,7 +300,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withSelectedItemByPosition(-1)
                 .build();
 
-        if(mAuth.getCurrentUser() == null){
+        if (mAuth.getCurrentUser() == null) {
             updateDrawerLoggedOut();
         } else {
             updateDrawerLoggedIn();
@@ -299,6 +312,19 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerToggle.syncState();
+
+        mArcLayout = (ArcLayout) findViewById(R.id.arc_layout);
+        mArcLayout.setVisibility(View.VISIBLE);
+        List<Animator> animList = new ArrayList<>();
+        for (int i = 0, len = mArcLayout.getChildCount(); i < len; i++) {
+            animList.add(createShowItemAnimator(mArcLayout.getChildAt(i)));
+        }
+
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(1000);
+        animSet.setInterpolator(new DecelerateInterpolator());
+        animSet.playTogether(animList);
+        animSet.start();
 
     }
 
@@ -415,14 +441,14 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             boolean loggedIn = data.getBooleanExtra("LOGGED_IN", false);
             boolean loggedOut = data.getBooleanExtra("LOGGED_OUT", false);
 
-            if( loggedIn || loggedOut ){
+            if (loggedIn || loggedOut) {
                 onAuthStateChanged(mAuth);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void updateDrawerLoggedOut(){
+    private void updateDrawerLoggedOut() {
         mDrawer.removeAllStickyFooterItems();
         mDrawer.addStickyFooterItem(authItem);
 
@@ -431,7 +457,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mDrawer.removeHeader();
     }
 
-    private void updateDrawerLoggedIn(){
+    private void updateDrawerLoggedIn() {
         mDrawer.removeAllStickyFooterItems();
         mDrawer.addStickyFooterItem(logoutItem);
 
@@ -439,6 +465,30 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mDrawer.addItems(newEventItem, newSubscriptionItem, myEventsItem);
 
         mDrawer.setHeader(mAccountHeader.getView());
+    }
+
+    private Animator createShowItemAnimator(View item) {
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+//        float dx = metrics.widthPixels / 2;
+//        float dy = metrics.heightPixels;
+        float dx = 0;
+        float dy = -1*metrics.widthPixels;
+
+        item.setRotation(0f);
+        item.setTranslationX(dx);
+        item.setTranslationY(dy);
+
+        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                item,
+                PropertyValuesHolder.ofFloat("rotation", 0f, 720f),
+                PropertyValuesHolder.ofFloat("translationX", dx, 0f),
+                PropertyValuesHolder.ofFloat("translationY", dy, 0f)
+        );
+
+        return anim;
     }
 
 }

@@ -1,56 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_home_page"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.moscowmuleaddicted.neighborhoodsecurity.activity.HomePage">
 
-    <TableLayout
+
+
+    <com.ogaclejapan.arclayout.ArcLayout
+        android:id="@+id/arc_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        app:arc_axisRadius="120dp"
+        app:arc_freeAngle="false"
+        app:arc_origin="bottom"
+        app:arc_radius="168dp"
+        app:arc_reverseAngle="false"
         >
 
-        <TableRow
-            android:id="@+id/row_1"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+        <ImageView
+            android:id="@+id/icon_burglar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_007_burglar"
+            app:arc_origin="center"
+            />
+
+        <ImageView
+            android:id="@+id/icon_bell"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_006_school_bell"
+            app:arc_origin="center"
+            />
+
+        <ImageView
+            android:id="@+id/icon_question"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_005_question"
+            app:arc_origin="center"
+            />
+
+
+    </com.ogaclejapan.arclayout.ArcLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/rounded_edges"
+            android:elevation="2dp">
+
             <Button
                 android:id="@+id/button_map"
-                android:paddingTop="48dp"
-                android:paddingBottom="48dp"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:text="@string/map_button"/>
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@null" />
+
+            <LinearLayout
+                android:id="@+id/button_map_layout"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:weightSum="5">
+
+                <ImageView
+                    android:id="@+id/imageView_map"
+                    android:layout_width="0dp"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_001_map_1" />
+
+                <TextView
+                    android:id="@+id/textView_map"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="@string/map_button"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#ffffff"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textAllCaps="true"
+                    />
 
 
-        </TableRow>
 
-        <TableRow
-            android:id="@+id/row_2"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            </LinearLayout>
 
+        </RelativeLayout>
+
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@drawable/rounded_edges"
+            android:elevation="2dp">
 
             <Button
                 android:id="@+id/button_subscriptions"
-                android:paddingTop="48dp"
-                android:paddingBottom="48dp"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:text="@string/subscription_button"/>
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@null" />
 
-        </TableRow>
+            <LinearLayout
+                android:id="@+id/button_subscriptions_layout"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:weightSum="5">
 
-    </TableLayout>
+                <ImageView
+                    android:id="@+id/imageView_subscription"
+                    android:layout_width="0dp"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:src="@drawable/ic_004_bell" />
+
+                <TextView
+                    android:id="@+id/textView_subscription"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:gravity="center"
+                    android:text="@string/subscription_button"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#ffffff"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textAllCaps="true"
+                    />
+
+
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/marmotta"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-60dp"
+        android:layout_below="@id/arc_layout"/>
 
 </RelativeLayout>
