@@ -73,6 +73,9 @@ public class DatabaseContract {
         public static final String SQL_SELECT_BY_ID =
                 "SELECT * FROM "+ EventEntry.TABLE_NAME + " WHERE "
                 + EventEntry._ID + " = ?";
+
+        public static final String SQL_SELECT_COUNT =
+                "SELECT COUNT(*) FROM "+ EventEntry.TABLE_NAME;
     }
 
     public static class SubscriptionStatements {
@@ -95,6 +98,9 @@ public class DatabaseContract {
         public static final String SQL_SELECT_BY_UID =
                 "SELECT * FROM " + SubscriptionEntry.TABLE_NAME + " WHERE "
                 + SubscriptionEntry.COLUMN_NAME_USERID + " = ?";
+
+        public static final String SQL_SELECT_COUNT =
+                "SELECT COUNT(*) FROM "+SubscriptionEntry.TABLE_NAME;
 
     }
 }

@@ -1197,6 +1197,14 @@ public class NSService {
         }
     }
 
+    public int getNumStoredEvents(){
+        return eventDB.getCount();
+    }
+
+    public int getNumStoredSubscriptions(String uid){
+        return subscriptionDB.getCountByUid(uid);
+    }
+
     public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
         public static final String TAG = "StoreSubsTask";
 

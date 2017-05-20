@@ -143,6 +143,12 @@ public class EventDB extends SQLiteOpenHelper {
         addEvent(event);
     }
 
+    public int getCount(){
+        Cursor cursor = getReadableDatabase().rawQuery(EventStatements.SQL_SELECT_COUNT, new String[]{});
+        cursor.moveToFirst();
+        return cursor.getInt(0);
+    }
+
     /**
      * Convert a cursor row into an Event
      * @param cursor
