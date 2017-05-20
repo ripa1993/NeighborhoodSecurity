@@ -349,10 +349,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mEventSummary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ad.setTitle("Event Summary");
+                ad.setTitle(getString(R.string.event_summary));
                 ad.setIcon(R.drawable.ic_007_burglar);
                 int eventCount = NSService.getInstance(getApplicationContext()).getNumStoredEvents();
-                ad.setMessage("You have seen "+ eventCount + " events.");
+                ad.setMessage(String.format(getString(R.string.event_summary_text), eventCount));
                 ad.show();
             }
         });
@@ -360,15 +360,15 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mSubscriptionSummary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ad.setTitle("Subscription Summary");
+                ad.setTitle(getString(R.string.subscription_summary));
                 ad.setIcon(R.drawable.ic_006_school_bell);
                 if(mAuth.getCurrentUser() != null){
                     String uid = mAuth.getCurrentUser().getUid();
                     int subscriptionCount = NSService.getInstance(getApplicationContext()).getNumStoredSubscriptions(uid);
                     int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications();
-                    ad.setMessage("You have received "+notificationCount+" notifications about "+subscriptionCount+" subscriptions.");
+                    ad.setMessage(String.format(getString(R.string.subscription_summary_text), subscriptionCount, notificationCount));
                 } else {
-                    ad.setMessage("To see these statistics you need to have an account!");
+                    ad.setMessage(getString(R.string.subscription_summary_error));
                 }
                 ad.show();
             }
@@ -377,7 +377,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ad.setTitle("Help");
+                ad.setTitle(getString(R.string.help));
                 ad.setIcon(R.drawable.ic_005_question);
                 ad.setMessage(getString(R.string.lorem_ipsum));
                 ad.show();
