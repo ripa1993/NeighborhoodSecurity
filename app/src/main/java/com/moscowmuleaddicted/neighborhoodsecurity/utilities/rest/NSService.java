@@ -1142,13 +1142,7 @@ public class NSService {
     }
 
     private void logResponse(Response<?> response) {
-        System.out.println("Response: " + response.message());
-        System.out.println("Content: " + response.raw());
-        Map<String, List<String>> map = response.headers().toMultimap();
-        for (String s : map.keySet()
-                ) {
-            System.out.println("Headers: " + s + " - " + map.get(s));
-        }
+        Log.d(TAG, "rest response content: " + response.raw());
     }
 
     private void postUser(String id, String name, String email, final MyCallback<String> callback) {
