@@ -1,8 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.res.Resources;
+package com.moscowmuleaddicted.neighborhoodsecurity.utilities.model;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 

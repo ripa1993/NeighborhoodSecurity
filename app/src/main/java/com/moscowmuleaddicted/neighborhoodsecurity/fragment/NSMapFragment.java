@@ -14,8 +14,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 import java.util.HashSet;

@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
 
 import java.util.ArrayList;

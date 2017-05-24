@@ -1,7 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -19,12 +18,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
 
 import org.apache.commons.lang3.math.NumberUtils;
 

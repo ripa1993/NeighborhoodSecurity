@@ -1,14 +1,8 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.internal.view.SupportSubMenu;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,10 +13,9 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.scalified.fab.ActionButton;
 

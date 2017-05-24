@@ -1,7 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities.details;
 
 
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;

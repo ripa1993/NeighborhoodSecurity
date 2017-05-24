@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;

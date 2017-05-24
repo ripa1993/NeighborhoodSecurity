@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -22,11 +21,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

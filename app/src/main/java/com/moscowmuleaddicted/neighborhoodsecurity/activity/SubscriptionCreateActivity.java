@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class SubscriptionCreateActivity extends AppCompatActivity implements SubscriptionCreateFragment.OnFragmentInteractionListener {

@@ -10,8 +10,8 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventCreateFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class EventCreateActivity extends AppCompatActivity implements EventCreateFragment.OnFragmentInteractionListener {

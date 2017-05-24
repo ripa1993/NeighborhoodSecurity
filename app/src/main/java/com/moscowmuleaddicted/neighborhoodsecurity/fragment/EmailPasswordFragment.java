@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 import org.apache.commons.validator.routines.EmailValidator;

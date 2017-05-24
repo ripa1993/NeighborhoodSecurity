@@ -18,13 +18,12 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
 import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.apache.commons.lang3.math.NumberUtils;

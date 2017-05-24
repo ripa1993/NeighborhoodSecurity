@@ -15,9 +15,9 @@ import android.widget.Toast;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.scalified.fab.ActionButton;
 

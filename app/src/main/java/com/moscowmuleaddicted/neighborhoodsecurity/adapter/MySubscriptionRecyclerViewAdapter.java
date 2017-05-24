@@ -8,8 +8,7 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collection;

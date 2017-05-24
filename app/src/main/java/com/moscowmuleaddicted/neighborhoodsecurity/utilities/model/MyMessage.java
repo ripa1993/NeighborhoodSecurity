@@ -1,9 +1,7 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses;
+package com.moscowmuleaddicted.neighborhoodsecurity.utilities.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
 
 /**
  * Created by Simone Ripamonti on 19/04/2017.

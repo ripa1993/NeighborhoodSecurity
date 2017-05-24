@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.NSMapFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.util.List;
 

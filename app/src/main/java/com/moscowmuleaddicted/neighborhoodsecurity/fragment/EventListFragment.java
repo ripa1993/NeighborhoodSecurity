@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;

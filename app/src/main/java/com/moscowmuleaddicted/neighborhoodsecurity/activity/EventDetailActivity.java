@@ -23,8 +23,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventDetailRecycler
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
