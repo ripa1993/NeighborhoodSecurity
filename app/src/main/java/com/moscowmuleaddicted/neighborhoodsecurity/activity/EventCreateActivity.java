@@ -42,6 +42,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create_event:
+                // todo: add progress dialog to prevent user from clicking multiple times
                 Event e = mEventCreateFragment.getEvent();
                 if (e.getDescription().length() > 0 && !e.getLatitude().equals(Double.NEGATIVE_INFINITY) && !e.getLongitude().equals(Double.NEGATIVE_INFINITY)) {
                     NSService.getInstance(getApplicationContext()).postEventWithCoordinates(e.getEventType(), e.getDescription(), e.getLatitude(), e.getLongitude(), new NSService.MyCallback<String>() {

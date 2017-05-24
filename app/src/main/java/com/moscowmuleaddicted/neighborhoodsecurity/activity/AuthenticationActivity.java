@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -24,7 +25,11 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
     /**
      * The contained fragment
      */
-    AuthenticationFragment mFragment;
+    private AuthenticationFragment mFragment;
+    /**
+     * Log tag
+     */
+    private static final String TAG = "AuthenticationAct";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -35,19 +40,15 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
-
-
+        
         mFragment = (AuthenticationFragment) getSupportFragmentManager().findFragmentById(R.id.authentication_fragment);
-
-
-
     }
 
     @Override
     public void loggedIn() {
         // a user is logged in
-        Toast.makeText(getApplicationContext(), "user logged in", Toast.LENGTH_SHORT).show();
-
+        Log.d(TAG, "logged in, exiting AuthenticationActivity");
+        // todo: check why after facebook login this is not fired
         Intent data = new Intent();
         data.putExtra("LOGGED_IN", true);
         setResult(RESULT_OK, data);

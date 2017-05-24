@@ -35,7 +35,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create_subscription:
-
+                // Todo: add a progress dialog to prevent user from clicking multiple times
                 NSService.getInstance(getApplicationContext()).postSubscriptionCenterAndRadius(
                         mFragment.getLatitude(),
                         mFragment.getLongitude(),

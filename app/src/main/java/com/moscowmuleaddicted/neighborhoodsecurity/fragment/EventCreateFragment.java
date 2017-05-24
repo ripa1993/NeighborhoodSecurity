@@ -111,7 +111,7 @@ public class EventCreateFragment extends Fragment {
 
         // setup spinner
         lsEventType.setItemsArray(Arrays.asList(EventType.values()));
-        lsEventType.setColor(android.R.color.tertiary_text_dark); // todo: check color
+        lsEventType.setColor(android.R.color.tertiary_text_dark);
 
         // setup radio
         final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupEventCreate);
@@ -253,7 +253,6 @@ public class EventCreateFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
