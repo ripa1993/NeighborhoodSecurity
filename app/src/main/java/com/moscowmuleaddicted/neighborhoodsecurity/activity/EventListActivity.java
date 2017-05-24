@@ -26,20 +26,44 @@ import java.util.List;
 
 import static xdroid.core.Global.getContext;
 
+/**
+ * Activity that shows a list of Events
+ * @author Simone Ripamonti
+ */
 public class EventListActivity extends AppCompatActivity implements EventListFragment.OnListFragmentInteractionListener {
-
-    private static final String TAG = "EventListActivity";
-    private EventListFragment mFragment;
-    private ActionButton mFab;
-    private SwipeRefreshLayout mSwipe;
-
-    private UpdateType updateType = UpdateType.NONE;
-
+    /**
+     * Source of the event
+     */
     private enum UpdateType{
         UID, SUBSCRIPTION, NONE
     }
-
+    /**
+     * Log tag
+     */
+    private static final String TAG = "EventListActivity";
+    /**
+     * The contained fragment
+     */
+    private EventListFragment mFragment;
+    /**
+     * Floating action button
+     */
+    private ActionButton mFab;
+    /**
+     * Swipe Refresh Layout used to update the shown Events
+     */
+    private SwipeRefreshLayout mSwipe;
+    /**
+     * Source of the Event shown
+     */
+    private UpdateType updateType = UpdateType.NONE;
+    /**
+     * Auxiliary info about source SUBSCRIPTION
+     */
     private Subscription sub;
+    /**
+     * Auxiliary info about source UID
+     */
     private String uid;
 
     @Override
@@ -56,42 +80,40 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         if(extras != null) {
             if(extras.containsKey("event-list")){
                 // if an event list is provided
+                Log.d(TAG, "creating fragment from provided event list");
                 events = (ArrayList<Event>) extras.getSerializable("event-list");
                 mFragment = EventListFragment.newInstance(1, events);
                 updateType = UpdateType.NONE;
-
+                Log.d(TAG, "fragment created");
             } else if (extras.containsKey("UID")){
                 // if an uid is provided
+                Log.d(TAG, "creating fragment from provided UID");
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
                 updateType = UpdateType.UID;
-
                 uid = extras.getString("UID");
-
                 events.addAll(getByUid());
                 mFragment = EventListFragment.newInstance(1, events);
                 Log.d(TAG, "fragment created");
-
             } else if (extras.containsKey("subscription")){
                 // if a subscription is provided
+                Log.d(TAG, "creating fragment from provided subscription");
                 sub = (Subscription) extras.getSerializable("subscription");
-
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
                 updateType = UpdateType.SUBSCRIPTION;
                 events.addAll(getBySub());
                 mFragment = EventListFragment.newInstance(1, events);
                 Log.d(TAG, "fragment created");
-
             }
         } else {
             // if nothing is provided
             mFragment = new EventListFragment();
             Log.d(TAG, "fragment created");
-
         }
 
         // initialize the fragment
+        Log.d(TAG, "showing fragment using support fragment manager");
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.event_list_fragment, mFragment);
@@ -155,6 +177,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         }
     }
 
+    /**
+     * Auxiliary method to retrieve fresh Events from NSService using UID and update the list shown
+     * @return the events found locally on the SQLite DB
+     */
     private List<Event> getByUid(){
         return NSService.getInstance(getApplicationContext()).getEventsByUser(uid, new NSService.MyCallback<List<Event>>() {
             @Override
@@ -196,6 +222,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         });
     }
 
+    /**
+     * Auxiliary method to retrieve fresh Events from NSService using Subscription and update the list shown
+     * @return the events found locally on the SQLite DB
+     */
     private List<Event> getBySub(){
         return NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
             @Override
