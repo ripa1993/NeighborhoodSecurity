@@ -36,6 +36,13 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
     private SubscriptionListFragment mFragment;
     private SwipeRefreshLayout mSwipe;
 
+    private enum UpdateType{
+        NONE, UID;
+    }
+
+    private UpdateType updateType = UpdateType.NONE;
+    private String uid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,47 +61,19 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                 // if subscription list is provided
                 mSubscriptions = (ArrayList<Subscription>) extras.getSerializable("subscription-list");
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
+
+                updateType = UpdateType.NONE;
+
                 Log.d(TAG, "fragment created");
 
             } else if (extras.containsKey("UID")){
                 // if UID is provided
                 Log.d(TAG, "contains UID");
                 mSwipe.setRefreshing(true);
-               mSubscriptions.addAll( NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(extras.getString("UID"), new NSService.MyCallback<List<Subscription>>() {
-                    @Override
-                    public void onSuccess(List<Subscription> subscriptions) {
-                        Log.d(TAG, "subscriptions from UID: found "+subscriptions.size()+" subscriptions");
-                        RecyclerView recyclerView = mFragment.getRecyclerView();
-                        ((MySubscriptionRecyclerViewAdapter) recyclerView.getAdapter()).addSubscriptions(subscriptions);
-                        mSwipe.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Log.w(TAG, "subscriptions from UID: failure");
-                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscriptions_upd), Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onMessageLoad(MyMessage message, int status) {
-                        Log.w(TAG, "subscriptions from UID: "+message);
-                        String msg = "";
-                        switch(status){
-                            case 404:
-                                msg = getString(R.string.msg_404_not_found_user_subs);
-                                break;
-                            case 500:
-                                msg = getString(R.string.msg_500_internal_server_error_subs);
-                                break;
-                            default:
-                                msg = getString(R.string.msg_unknown_error);
-                                break;
-                        }
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
-                }));
+                mSwipe.setEnabled(true);
+                updateType = UpdateType.UID;
+                uid = extras.getString("UID");
+               mSubscriptions.addAll(getByUid());
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
                 Log.d(TAG, "fragment created");
             }
@@ -123,6 +102,26 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             }
         });
 
+        mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                switch (updateType){
+                    case NONE:
+                        // should not be activated
+                        mSwipe.setEnabled(false);
+                        mSwipe.setRefreshing(false);
+                        return;
+                    case UID:
+                        getByUid();
+                        return;
+                    default:
+                        mSwipe.setEnabled(false);
+                        mSwipe.setRefreshing(false);
+                        return;
+                }
+            }
+        });
+
 
     }
 
@@ -145,6 +144,44 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         if (mFab.isHidden()) {
             mFab.show();
         }
+    }
+
+    private List<Subscription> getByUid(){
+        return NSService.getInstance(getApplicationContext()).getSubscriptionsByUser(uid, new NSService.MyCallback<List<Subscription>>() {
+            @Override
+            public void onSuccess(List<Subscription> subscriptions) {
+                Log.d(TAG, "subscriptions from UID: found "+subscriptions.size()+" subscriptions");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((MySubscriptionRecyclerViewAdapter) recyclerView.getAdapter()).addSubscriptions(subscriptions);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "subscriptions from UID: failure");
+                Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscriptions_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "subscriptions from UID: "+message);
+                String msg = "";
+                switch(status){
+                    case 404:
+                        msg = getString(R.string.msg_404_not_found_user_subs);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_subs);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
     }
 
 }

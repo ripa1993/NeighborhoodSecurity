@@ -33,6 +33,15 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     private ActionButton mFab;
     private SwipeRefreshLayout mSwipe;
 
+    private UpdateType updateType = UpdateType.NONE;
+
+    private enum UpdateType{
+        UID, SUBSCRIPTION, NONE
+    }
+
+    private Subscription sub;
+    private String uid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,92 +58,28 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 // if an event list is provided
                 events = (ArrayList<Event>) extras.getSerializable("event-list");
                 mFragment = EventListFragment.newInstance(1, events);
+                updateType = UpdateType.NONE;
 
             } else if (extras.containsKey("UID")){
                 // if an uid is provided
                 mSwipe.setRefreshing(true);
-                events.addAll(NSService.getInstance(getApplicationContext()).getEventsByUser(extras.getString("UID"), new NSService.MyCallback<List<Event>>() {
-                    @Override
-                    public void onSuccess(List<Event> events) {
-                        Log.d(TAG, "events from UID: found "+events.size()+ " events");
-                        RecyclerView recyclerView = mFragment.getRecyclerView();
-                        ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
-                        mSwipe.setRefreshing(false);
-                    }
+                mSwipe.setEnabled(true);
+                updateType = UpdateType.UID;
 
-                    @Override
-                    public void onFailure() {
-                        Log.w(TAG, "events from UID: failure");
-                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
+                uid = extras.getString("UID");
 
-                    @Override
-                    public void onMessageLoad(MyMessage message, int status) {
-                        Log.w(TAG, "events from UID: "+message);
-                        String msg = "";
-                        switch (status){
-                            case 400:
-                                msg = getString(R.string.msg_400_bad_request_events);
-                                break;
-                            case 404:
-                                msg = getString(R.string.msg_404_not_found_user_events);
-                                break;
-                            case 500:
-                                msg = getString(R.string.msg_500_internal_server_error_events);
-                                break;
-                            default:
-                                msg = getString(R.string.msg_unknown_error);
-                                break;
-                        }
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
-                }));
+                events.addAll(getByUid());
                 mFragment = EventListFragment.newInstance(1, events);
                 Log.d(TAG, "fragment created");
 
             } else if (extras.containsKey("subscription")){
                 // if a subscription is provided
-                Subscription sub = (Subscription) extras.getSerializable("subscription");
+                sub = (Subscription) extras.getSerializable("subscription");
 
                 mSwipe.setRefreshing(true);
-
-                events.addAll(NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
-                    @Override
-                    public void onSuccess(List<Event> events) {
-                        Log.d(TAG, "events from sub: found "+events.size()+ " events");
-                        RecyclerView recyclerView = mFragment.getRecyclerView();
-                        ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
-                        mSwipe.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Log.w(TAG, "events from sub: failure");
-                        Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onMessageLoad(MyMessage message, int status) {
-                        Log.w(TAG, "events from sub: "+message);
-                        String msg = "";
-                        switch (status){
-                            case 400:
-                                msg = getString(R.string.msg_400_bad_request_events);
-                                break;
-                            case 500:
-                                msg = getString(R.string.msg_500_internal_server_error_events);
-                                break;
-                            default:
-                                msg = getString(R.string.msg_unknown_error);
-                                break;
-                        }
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-                        mSwipe.setRefreshing(false);
-                    }
-                }));
+                mSwipe.setEnabled(true);
+                updateType = UpdateType.SUBSCRIPTION;
+                events.addAll(getBySub());
                 mFragment = EventListFragment.newInstance(1, events);
                 Log.d(TAG, "fragment created");
 
@@ -162,7 +107,28 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             }
         });
 
-
+        mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                switch (updateType){
+                    case NONE:
+                        // should not be enabled
+                        mSwipe.setEnabled(false);
+                        mSwipe.setRefreshing(false);
+                        return;
+                    case UID:
+                        getByUid();
+                        return;
+                    case SUBSCRIPTION:
+                        getBySub();
+                        return;
+                    default:
+                        mSwipe.setEnabled(false);
+                        mSwipe.setRefreshing(false);
+                        return;
+                }
+            }
+        });
     }
 
     @Override
@@ -189,4 +155,82 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         }
     }
 
+    private List<Event> getByUid(){
+        return NSService.getInstance(getApplicationContext()).getEventsByUser(uid, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from UID: found "+events.size()+ " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from UID: failure");
+                Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from UID: "+message);
+                String msg = "";
+                switch (status){
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 404:
+                        msg = getString(R.string.msg_404_not_found_user_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
+
+    private List<Event> getBySub(){
+        return NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from sub: found "+events.size()+ " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from sub: failure");
+                Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from sub: "+message);
+                String msg = "";
+                switch (status){
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
 }
