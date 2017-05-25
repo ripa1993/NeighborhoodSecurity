@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,8 @@ import java.util.List;
  * @author Simone Ripamonti
  * @version 1
  */
-public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
-
+public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
+    public static final String TAG ="MyEvetRVAdapter";
     /**
      * Application context, used to retrieve localized strings for the events
      */
@@ -120,7 +121,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     /**
      * View Holder to contain the events data
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
         public final View mView;
         public final TextView mEventType;
         public final TextView mEventLocation;
@@ -154,12 +155,16 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         // add remaining ones
         mValues.addAll(tempEvents);
         // notify changes
+        Log.d(TAG, "inserted "+tempEvents.size()+" items");
         notifyItemRangeInserted(oldSize, tempEvents.size());
+        notifyDataSetChanged();
     }
 
     public synchronized void clear() {
         int size = this.mValues.size();
         this.mValues.clear();
+        Log.d(TAG, "removed "+size+" items");
         notifyItemRangeRemoved(0, size);
+        notifyDataSetChanged();
     }
 }

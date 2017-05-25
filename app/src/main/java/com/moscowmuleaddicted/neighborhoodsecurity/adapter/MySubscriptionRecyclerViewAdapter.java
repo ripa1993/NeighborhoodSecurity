@@ -1,6 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class MySubscriptionRecyclerViewAdapter extends RecyclerView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
+public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
+    public static final String TAG = "MySusRVAdapter";
     private final List<Subscription> mValues;
     private final OnListFragmentInteractionListener mListener;
 
@@ -54,7 +56,7 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerView.Adapter<MySu
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
         public final View mView;
         public final TextView mCity;
         public final TextView mStreet;
@@ -80,8 +82,10 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerView.Adapter<MySu
         ArrayList<Subscription> tempSubscriptions = new ArrayList<Subscription>(subscriptions);
         tempSubscriptions.removeAll(mValues);
         // add remaining ones
+        Log.d(TAG, "inserted "+tempSubscriptions.size()+" items");
         mValues.addAll(tempSubscriptions);
         // notify changes
         notifyItemRangeInserted(oldSize, tempSubscriptions.size());
+        notifyDataSetChanged();
     }
 }

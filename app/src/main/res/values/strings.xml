@@ -137,4 +137,7 @@
     <string name="title_event_list_generic">Event list</string>
     <string name="title_event_list_subscription">Events in subscription</string>
     <string name="title_event_list_uid">Your events</string>
+
+    <string name="msg_no_event_to_show">No events to show here :)</string>
+    <string name="msg_no_subs_to_show">No subscription to show, why don\'t you create one?</string>
 </resources>

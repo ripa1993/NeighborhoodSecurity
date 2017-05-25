@@ -1,13 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
-    android:name="com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment"
-    tools:listitem="@layout/fragment_subscription" />
+    android:layout_height="match_parent">
+
+    <com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView
+        android:id="@+id/fragment_subscription_list"
+        android:name="com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:listitem="@layout/fragment_subscription" />
+
+    <LinearLayout
+        android:id="@+id/empty_view_subscriptions"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:src="@drawable/marmotta" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="@string/msg_no_subs_to_show" />
+
+    </LinearLayout>
+</LinearLayout>
