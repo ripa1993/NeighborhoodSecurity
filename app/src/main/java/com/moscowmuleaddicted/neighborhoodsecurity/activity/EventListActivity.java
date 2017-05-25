@@ -76,6 +76,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         mSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_event_list);
         mSwipe.setEnabled(false);
 
+        // todo: add location search using places API
         ArrayList<Event> events = new ArrayList<>();
         if(extras != null) {
             if(extras.containsKey("event-list")){

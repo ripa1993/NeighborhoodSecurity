@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,14 +36,35 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_create_subscription:
-                // Todo: add a progress dialog to prevent user from clicking multiple times
+                Double latitude, longitude;
+                Integer radius;
+                latitude = mFragment.getLatitude();
+                longitude = mFragment.getLongitude();
+                radius = mFragment.getRadius();
+
+                Log.d(TAG, "creating subscription @ ("+latitude+", "+longitude+") with radius "+radius);
+
+                boolean notNull = (latitude!=null && longitude != null && radius!=null);
+                if(!notNull){
+                    mFragment.showErrors();
+                    return false;
+                }
+
+                // check valid values
+                if (latitude < -90d || latitude > 90d || longitude < -180d || longitude > 180d || radius < 0 || radius > 2000) {
+                    mFragment.showErrors();
+                    return false;
+                }
+
+                final ProgressDialog progressDialog = ProgressDialog.show(this, getString(R.string.progress_subscription_title), getString(R.string.progress_subscription_message), true, false);
                 NSService.getInstance(getApplicationContext()).postSubscriptionCenterAndRadius(
-                        mFragment.getLatitude(),
-                        mFragment.getLongitude(),
-                        mFragment.getRadius(),
+                        latitude,
+                        longitude,
+                        radius,
                         new NSService.MyCallback<MyMessage>() {
                             @Override
                             public void onSuccess(MyMessage myMessage) {
+                                progressDialog.dismiss();
                                 Log.d(TAG, "subscription created");
                                 Toast.makeText(getApplicationContext(), getString(R.string.msg_success_subscription_create), Toast.LENGTH_SHORT).show();
                                 finish();
@@ -51,6 +73,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
 
                             @Override
                             public void onFailure() {
+                                progressDialog.dismiss();
                                 Log.w(TAG, "subscription create failure");
                                 Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscription_create), Toast.LENGTH_SHORT).show();
 
@@ -58,6 +81,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
 
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
+                                progressDialog.dismiss();
                                 Log.w(TAG, "subscription create failure with msg: "+message.toString());
                                 String msg = "";
                                 switch(status){

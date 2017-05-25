@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -64,6 +66,7 @@ public class SubscriptionCreateFragment extends Fragment {
     private Coords coords;
 
     private EditText etLatitude, etLongitude;
+    private TextInputLayout ilLatitude, ilLongitude;
     private TextView tvSeekbarCurValue;
     private SeekBar sbRadius;
     private RadioGroup radioGroup;
@@ -112,6 +115,8 @@ public class SubscriptionCreateFragment extends Fragment {
 
         etLatitude = (EditText) view.findViewById(R.id.input_latitude);
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
+        ilLatitude = (TextInputLayout) view.findViewById(R.id.input_layout_latitude);
+        ilLongitude = (TextInputLayout) view.findViewById(R.id.input_layout_longitude);
 
         tvSeekbarCurValue = (TextView) view.findViewById(R.id.seekbar_title_value);
 
@@ -213,11 +218,38 @@ public class SubscriptionCreateFragment extends Fragment {
     }
 
     public Double getLatitude() {
-        return NumberUtils.toDouble(etLatitude.getText().toString());
+        return NumberUtils.toDouble(etLatitude.getText().toString(), -1000d);
     }
 
     public Double getLongitude() {
-        return NumberUtils.toDouble(etLongitude.getText().toString());
+        return NumberUtils.toDouble(etLongitude.getText().toString(), -1000d);
     }
 
+    public void showErrors() {
+        if (rbAddress.isChecked()) {
+            Toast.makeText(getContext(), getString(R.string.msg_insert_valid_place), Toast.LENGTH_SHORT).show();
+            ilLatitude.setError(null);
+            ilLongitude.setError(null);
+        } else {
+            Double latitude = NumberUtils.toDouble(etLatitude.getText().toString(), -1000);
+            Double longitude = NumberUtils.toDouble(etLongitude.getText().toString(), -1000);
+            if (etLatitude.getText().length() == 0 || latitude < -90d || latitude > 90d) {
+                ilLatitude.setError(getString(R.string.msg_insert_valid_latitude));
+            } else {
+                ilLatitude.setError(null);
+            }
+
+            if (etLongitude.getText().length() == 0 || longitude < -180d || longitude > 180d) {
+                ilLongitude.setError(getString(R.string.msg_insert_valid_longitude));
+            } else {
+                ilLongitude.setError(null);
+            }
+
+            if(sbRadius.getProgress() < 0 || sbRadius.getProgress()>2000){
+                // cheated?
+                Toast.makeText(getContext(), getString(R.string.msg_insert_valid_radius), Toast.LENGTH_SHORT).show();
+                sbRadius.setProgress(500);
+            }
+        }
+    }
 }
