@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -632,6 +633,7 @@ public class NSService {
      */
     public void logout(final MyCallback<String> callback) {
         mAuth.signOut();
+        LoginManager.getInstance().logOut();
         callback.onSuccess("ok");
     }
 
