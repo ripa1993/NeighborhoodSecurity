@@ -22,6 +22,8 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_SUBSCRIPTION_REQUEST_CODE;
+
 /**
  * Activity that shows a list of Subscription items
  * @author Simone Ripamonti
@@ -109,7 +111,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             public void onClick(View v) {
                 Log.d(TAG, "FAB clicked");
                 Intent intent = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, CREATE_SUBSCRIPTION_REQUEST_CODE);
             }
         });
 
@@ -117,24 +119,28 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             @Override
             public void onRefresh() {
                 Log.d(TAG, "swiped to refresh");
-                switch (updateType) {
-                    case NONE:
-                        // should not be activated
-                        mSwipe.setEnabled(false);
-                        mSwipe.setRefreshing(false);
-                        return;
-                    case UID:
-                        getByUid();
-                        return;
-                    default:
-                        mSwipe.setEnabled(false);
-                        mSwipe.setRefreshing(false);
-                        return;
-                }
+                refreshList();
             }
         });
 
 
+    }
+
+    private void refreshList() {
+        switch (updateType) {
+            case NONE:
+                // should not be activated
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+            case UID:
+                getByUid();
+                return;
+            default:
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+        }
     }
 
     @Override
@@ -200,4 +206,10 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CREATE_SUBSCRIPTION_REQUEST_CODE && resultCode == RESULT_OK) {
+            refreshList();
+        }
+    }
 }

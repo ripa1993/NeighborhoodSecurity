@@ -52,6 +52,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
                             progressDialog.dismiss();
                             Log.d(TAG, "event created");
                             Toast.makeText(getApplicationContext(), getString(R.string.msg_success_event_create), Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
                             finish();
                         }
 

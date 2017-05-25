@@ -31,6 +31,7 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_EVENT_REQUEST_CODE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLACE_AUTOCOMPLETE_REQUEST_CODE;
 import static xdroid.core.Global.getContext;
 
@@ -138,37 +139,40 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, CREATE_EVENT_REQUEST_CODE);
             }
         });
 
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                switch (updateType){
-                    case NONE:
-                        // should not be enabled
-                        mSwipe.setEnabled(false);
-                        mSwipe.setRefreshing(false);
-                        return;
-                    case UID:
-                        getByUid();
-                        return;
-                    case SUBSCRIPTION:
-                        getBySub();
-                        return;
-                    case LOCATION:
-                        getByLocation();
-                        return;
-                    default:
-                        mSwipe.setEnabled(false);
-                        mSwipe.setRefreshing(false);
-                        return;
-                }
+                refreshList();
             }
         });
+    }
+
+    private void refreshList() {
+        switch (updateType){
+            case NONE:
+                // should not be enabled
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+            case UID:
+                getByUid();
+                return;
+            case SUBSCRIPTION:
+                getBySub();
+                return;
+            case LOCATION:
+                getByLocation();
+                return;
+            default:
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+        }
     }
 
     @Override
@@ -335,6 +339,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == CREATE_EVENT_REQUEST_CODE && resultCode == RESULT_OK){
+            refreshList();
+        }
+
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);

@@ -67,6 +67,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
                                 progressDialog.dismiss();
                                 Log.d(TAG, "subscription created");
                                 Toast.makeText(getApplicationContext(), getString(R.string.msg_success_subscription_create), Toast.LENGTH_SHORT).show();
+                                setResult(RESULT_OK);
                                 finish();
 
                             }
