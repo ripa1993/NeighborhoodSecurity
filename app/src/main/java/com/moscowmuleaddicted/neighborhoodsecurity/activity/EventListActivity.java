@@ -9,9 +9,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
@@ -24,6 +31,7 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLACE_AUTOCOMPLETE_REQUEST_CODE;
 import static xdroid.core.Global.getContext;
 
 /**
@@ -35,7 +43,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
      * Source of the event
      */
     private enum UpdateType{
-        UID, SUBSCRIPTION, NONE
+        UID, SUBSCRIPTION, LOCATION, NONE
     }
     /**
      * Log tag
@@ -65,6 +73,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
      * Auxiliary info about source UID
      */
     private String uid;
+    /**
+     * Auxiliary info about source LOCATION
+     */
+    private Double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +88,6 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         mSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_event_list);
         mSwipe.setEnabled(false);
 
-        // todo: add location search using places API
         ArrayList<Event> events = new ArrayList<>();
         if(extras != null) {
             if(extras.containsKey("event-list")){
@@ -85,6 +96,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 events = (ArrayList<Event>) extras.getSerializable("event-list");
                 mFragment = EventListFragment.newInstance(1, events);
                 updateType = UpdateType.NONE;
+                setTitle(getString(R.string.title_event_list_generic));
                 Log.d(TAG, "fragment created");
             } else if (extras.containsKey("UID")){
                 // if an uid is provided
@@ -95,6 +107,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 uid = extras.getString("UID");
                 events.addAll(getByUid());
                 mFragment = EventListFragment.newInstance(1, events);
+                setTitle(getString(R.string.title_event_list_uid));
                 Log.d(TAG, "fragment created");
             } else if (extras.containsKey("subscription")){
                 // if a subscription is provided
@@ -105,6 +118,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 updateType = UpdateType.SUBSCRIPTION;
                 events.addAll(getBySub());
                 mFragment = EventListFragment.newInstance(1, events);
+                setTitle(getString(R.string.title_event_list_subscription));
                 Log.d(TAG, "fragment created");
             }
         } else {
@@ -144,6 +158,9 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         return;
                     case SUBSCRIPTION:
                         getBySub();
+                        return;
+                    case LOCATION:
+                        getByLocation();
                         return;
                     default:
                         mSwipe.setEnabled(false);
@@ -263,5 +280,116 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 mSwipe.setRefreshing(false);
             }
         });
+    }
+
+    private List<Event> getByLocation(){
+        return NSService.getInstance(getContext()).getEventsByRadius(latitude, longitude, 2000, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from location: found "+events.size()+ " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from location: failure");
+                Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from location: "+message);
+                String msg = "";
+                switch (status){
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
+
+    public void findPlace() {
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                Log.i(TAG, "Place: " + place.getName());
+
+                // set refreshing
+                mSwipe.setEnabled(true);
+                mSwipe.setRefreshing(true);
+
+                // set update type
+                updateType = UpdateType.LOCATION;
+
+                // clear the list
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                MyEventRecyclerViewAdapter adapter = (MyEventRecyclerViewAdapter) recyclerView.getAdapter();
+                adapter.clear();
+
+                // update lat lng
+                latitude = place.getLatLng().latitude;
+                longitude = place.getLatLng().longitude;
+
+                // set title
+                String title = String.format(getString(R.string.title_event_list_location), place.getName());
+                setTitle(title);
+
+                // update list
+                adapter.addEvents(getByLocation());
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+                Log.w(TAG, "PlaceAutocomplete error "+status.getStatusMessage());
+                Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d(TAG, "PlaceAutocomplete canceled");
+                // The user canceled the operation.
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                findPlace();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_event_list, menu);
+        return true;
     }
 }

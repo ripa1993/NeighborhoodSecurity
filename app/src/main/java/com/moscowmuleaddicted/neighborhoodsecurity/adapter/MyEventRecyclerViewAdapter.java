@@ -156,4 +156,10 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         // notify changes
         notifyItemRangeInserted(oldSize, tempEvents.size());
     }
+
+    public synchronized void clear() {
+        int size = this.mValues.size();
+        this.mValues.clear();
+        notifyItemRangeRemoved(0, size);
+    }
 }

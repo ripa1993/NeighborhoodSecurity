@@ -130,4 +130,11 @@
     <string name="msg_insert_valid_place">Select a place, before creating the subscription</string>
     <string name="progress_fb_title">Authenticating using Facebook</string>
     <string name="progress_fb_message">Please wait</string>
+
+    <string name="action_search">Search</string>
+
+    <string name="title_event_list_location">Events in %1$s</string>
+    <string name="title_event_list_generic">Event list</string>
+    <string name="title_event_list_subscription">Events in subscription</string>
+    <string name="title_event_list_uid">Your events</string>
 </resources>
