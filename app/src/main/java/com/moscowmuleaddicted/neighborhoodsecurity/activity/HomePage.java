@@ -24,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -359,7 +360,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             public void onClick(View v) {
                 ad.setTitle(getString(R.string.subscription_summary));
                 ad.setIcon(R.drawable.ic_006_school_bell);
-                if(mAuth.getCurrentUser() != null){
+                if (mAuth.getCurrentUser() != null) {
                     String uid = mAuth.getCurrentUser().getUid();
                     int subscriptionCount = NSService.getInstance(getApplicationContext()).getNumStoredSubscriptions(uid);
                     int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications();
@@ -457,9 +458,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         }
     }
 
-    @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+    private void updateDrawer() {
+        FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             if (mAccountHeader.getProfiles().size() > 0) {
                 // update profile
@@ -471,7 +471,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 );
             } else {
                 // add new profile
-                updateDrawerLoggedIn();
                 mAccountHeader.addProfiles(
                         new ProfileDrawerItem()
                                 .withEmail(user.getEmail())
@@ -479,27 +478,30 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                                 .withIcon(user.getPhotoUrl())
                 );
             }
+            updateDrawerLoggedIn();
+
         } else {
             if (mAccountHeader.getProfiles().size() > 0) {
                 // remove user profile
-                updateDrawerLoggedOut();
                 mAccountHeader.removeProfile(mAccountHeader.getActiveProfile());
             } else {
                 // do nothing
-
             }
+            updateDrawerLoggedOut();
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
-            boolean loggedIn = data.getBooleanExtra("LOGGED_IN", false);
-            boolean loggedOut = data.getBooleanExtra("LOGGED_OUT", false);
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        updateDrawer();
+    }
 
-            if (loggedIn || loggedOut) {
-                onAuthStateChanged(mAuth);
-            }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult request=" + requestCode + " result=" + resultCode);
+        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
+            Log.d(TAG, "onActivityResult preparing to refresh drawer");
+            updateDrawer();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -531,7 +533,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 //        float dx = metrics.widthPixels / 2;
 //        float dy = metrics.heightPixels;
         float dx = 0;
-        float dy = -1*metrics.widthPixels;
+        float dy = -1 * metrics.widthPixels;
 
         item.setRotation(0f);
         item.setTranslationX(dx);

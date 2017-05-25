@@ -128,4 +128,6 @@
     <string name="progress_subscription_message">Please wait</string>
     <string name="msg_insert_valid_radius">Select a valid radius, between 0 and 2000</string>
     <string name="msg_insert_valid_place">Select a place, before creating the subscription</string>
+    <string name="progress_fb_title">Authenticating using Facebook</string>
+    <string name="progress_fb_message">Please wait</string>
 </resources>

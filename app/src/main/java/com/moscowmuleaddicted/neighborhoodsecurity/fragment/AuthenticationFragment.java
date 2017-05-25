@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -68,7 +69,6 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
      * Fragment listener
      */
     private OnFragmentInteractionListener mListener;
-
     /**
      * Empty constructor
      */
@@ -204,6 +204,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+            Log.d(TAG, "onActivityResult: request code was RC_SIGN_IN");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
@@ -213,6 +214,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
         // Email
         if (requestCode == EMAIL_LOGIN) {
+            Log.d(TAG, "onActivityResult: request code was EMAIL_LOGIN");
             // handle exit status
             if (data.getBooleanExtra("LOGGED_IN", false)) {
                 // logged in
@@ -234,17 +236,19 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
             NSService.getInstance(getContext()).signInWithGoogle(acct, new NSService.MySimpleCallback() {
                 @Override
                 public void onSuccess(String s) {
-                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "signInWithGoogle successful");
                     mListener.loggedIn();
                 }
 
                 @Override
                 public void onFailure(String s) {
-                    Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "signInWithGoogle failed: "+s);
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "GoogleSignInResult was unsuccessful "+result.getStatus().getStatusMessage());
+            Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -254,17 +258,20 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
      */
     public void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
+        final ProgressDialog fbProgress = ProgressDialog.show(getContext(), getString(R.string.progress_fb_title), getString(R.string.progress_fb_message), true, false);
         NSService.getInstance(getContext()).signInWithFacebook(token, new NSService.MySimpleCallback() {
             @Override
             public void onSuccess(String s) {
-                Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "signInWithFacebook successful");
+                fbProgress.dismiss();
                 mListener.loggedIn();
             }
 
             @Override
             public void onFailure(String s) {
-                Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
-
+                Log.w(TAG, "signInWithFacebook unsuccessful: "+s);
+                fbProgress.dismiss();
+                Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -48,7 +48,6 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
     public void loggedIn() {
         // a user is logged in
         Log.d(TAG, "logged in, exiting AuthenticationActivity");
-        // todo: check why after facebook login this is not fired
         Intent data = new Intent();
         data.putExtra("LOGGED_IN", true);
         setResult(RESULT_OK, data);
