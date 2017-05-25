@@ -128,6 +128,8 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                                         switch(status){
                                             case 204:
                                                 msg = getString(R.string.msg_204_no_content_event_unvote);
+                                                fab.setEnabled(true);
+                                                fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
                                                 break;
                                             case 400:
                                                 msg = getString(R.string.msg_400_bad_request_event_vote);
@@ -165,6 +167,8 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                         switch(status){
                             case 204:
                                 msg = getString(R.string.msg_204_no_content_event_vote);
+                                fab.setEnabled(false);
+                                fab.setImageDrawable(getDrawable(R.drawable.ic_star));
                                 break;
                             case 400:
                                 msg = getString(R.string.msg_400_bad_request_event_vote);
