@@ -331,9 +331,11 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                             .build(this);
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
         } catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
+            Log.d(TAG, "findPlace: repairable error "+e.getMessage());
+            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         } catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
+            Log.d(TAG, "findPlace: play service not available error "+e.getMessage());
+            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
