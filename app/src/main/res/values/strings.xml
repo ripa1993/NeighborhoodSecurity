@@ -114,7 +114,7 @@
     <string name="msg_insert_valid_longitude">Insert a valid longitude, between -180 and +180</string>
     <string name="msg_insert_valid_address">Address</string>
 
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="lorem_ipsum" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="event_summary">Event summary</string>
     <string name="subscription_summary">Subscription summary</string>
     <string name="help">Help</string>
@@ -140,4 +140,6 @@
 
     <string name="msg_no_event_to_show">No events to show here :)</string>
     <string name="msg_no_subs_to_show">No subscription to show, why don\'t you create one?</string>
+
+    <string name="help_ns">Neighborhood Security allows you to publish crime events and subscribe to notifications about specific areas. As soon as another user posts an event you might be interested in, we will notify you!</string>
 </resources>

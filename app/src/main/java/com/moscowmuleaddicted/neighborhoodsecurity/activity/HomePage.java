@@ -377,8 +377,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             public void onClick(View v) {
                 ad.setTitle(getString(R.string.help));
                 ad.setIcon(R.drawable.ic_005_question);
-                // todo: provide better text
-                ad.setMessage(getString(R.string.lorem_ipsum));
+                ad.setMessage(getString(R.string.help_ns));
                 ad.show();
             }
         });
