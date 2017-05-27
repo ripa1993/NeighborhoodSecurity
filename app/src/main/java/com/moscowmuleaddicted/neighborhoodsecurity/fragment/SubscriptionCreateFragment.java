@@ -1,15 +1,22 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -18,7 +25,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
@@ -26,6 +36,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 
 import org.apache.commons.lang3.math.NumberUtils;
+
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PERMISSION_POSITION_REQUEST_CODE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,7 +71,8 @@ class Coords {
     }
 }
 
-public class SubscriptionCreateFragment extends Fragment {
+public class SubscriptionCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    // TODO: add "get current position"
 
     private static final String TAG = "SubscriptionCreateFgmnt";
 
@@ -71,6 +84,10 @@ public class SubscriptionCreateFragment extends Fragment {
     private SeekBar sbRadius;
     private RadioGroup radioGroup;
     private RadioButton rbAddress;
+
+    private ImageView ivGetPosition;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
 
     private static final String ARG_LATITUDE = "latitude";
     private static final String ARG_LONGITUDE = "longtitude";
@@ -104,6 +121,14 @@ public class SubscriptionCreateFragment extends Fragment {
             mLatitude = getArguments().getDouble(ARG_LATITUDE);
             mLongitude = getArguments().getDouble(ARG_LONGITUDE);
         }
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
     }
 
     @Override
@@ -117,6 +142,7 @@ public class SubscriptionCreateFragment extends Fragment {
         etLongitude = (EditText) view.findViewById(R.id.input_longitude);
         ilLatitude = (TextInputLayout) view.findViewById(R.id.input_layout_latitude);
         ilLongitude = (TextInputLayout) view.findViewById(R.id.input_layout_longitude);
+        ivGetPosition = (ImageView) view.findViewById(R.id.subscription_get_position);
 
         tvSeekbarCurValue = (TextView) view.findViewById(R.id.seekbar_title_value);
 
@@ -124,7 +150,7 @@ public class SubscriptionCreateFragment extends Fragment {
 
         radioGroup = (RadioGroup) view.findViewById(R.id.radio_group_subscription);
 
-        rbAddress = (RadioButton) view.findViewById(R.id.radio_address);
+        rbAddress = (RadioButton) view.findViewById(R.id.radio_address_sub);
 
         placeAutocompleteFragment = (SupportPlaceAutocompleteFragment) getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
@@ -185,6 +211,21 @@ public class SubscriptionCreateFragment extends Fragment {
             }
         });
         placeAutocompleteFragment.setHint(getString(R.string.hint_address));
+
+        ivGetPosition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mLastLocation != null){
+                    radioGroup.check(R.id.radio_coordinates_sub);
+                    etLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
+                    etLongitude.setText(String.valueOf(mLastLocation.getLongitude()));
+                    Toast.makeText(getContext(), "location set with accuracy of "+(int)mLastLocation.getAccuracy()+" metres", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "still acquiring position", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         return view;
     }
 
@@ -206,11 +247,53 @@ public class SubscriptionCreateFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // request permissions for accessing location, requires SDK >= 23 (marshmellow)
+                Log.d(TAG, "onConnected: prompting user to allow location permissions");
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_POSITION_REQUEST_CODE);
+            } else {
+                Log.w(TAG, "onConnected: SDK version is too low (" + Build.VERSION.SDK_INT + ") to ask permissions at runtime");
+                Toast.makeText(getContext(), "Give location permission to allow application know events around you", Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            // permissions already granted
+            Log.d(TAG, "onConnected: location permission already granted, requesting last known position");
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }
     }
 
-    public boolean isAddressChecked() {
-        return rbAddress.isChecked();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSION_POSITION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "onRequestPermissionsResult: location permission granted, requesting last known position");
+                //noinspection MissingPermission
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            } else {
+                Log.d(TAG, "onRequestPermissionsResult: location permission not granted");
+            }
+        }
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    public interface OnFragmentInteractionListener {
     }
 
     public int getRadius() {
@@ -252,4 +335,17 @@ public class SubscriptionCreateFragment extends Fragment {
             }
         }
     }
+
+    @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
 }
