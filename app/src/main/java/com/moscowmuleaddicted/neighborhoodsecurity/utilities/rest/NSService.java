@@ -1204,7 +1204,7 @@ public class NSService {
     }
 
     public int getNumReceivedNotifications() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_COUNTERS, Context.MODE_PRIVATE);
         return sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
     }
 

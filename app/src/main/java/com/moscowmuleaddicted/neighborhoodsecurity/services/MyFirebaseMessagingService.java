@@ -93,7 +93,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             mNotifyMgr.notify(eId, mBuilder.build());
 
             // increment counter
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_COUNTERS, Context.MODE_PRIVATE);
             int notificationCount = sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(Constants.NOTIFICATION_COUNT, notificationCount + 1);

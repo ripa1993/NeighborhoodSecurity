@@ -31,8 +31,8 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_EVENT_REQUEST_CODE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLACE_AUTOCOMPLETE_REQUEST_CODE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_EVENT_RC;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLACE_AUTOCOMPLETE_RC;
 import static xdroid.core.Global.getContext;
 
 /**
@@ -140,7 +140,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                startActivityForResult(intent, CREATE_EVENT_REQUEST_CODE);
+                startActivityForResult(intent, CREATE_EVENT_RC);
             }
         });
 
@@ -329,7 +329,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
                             .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_RC);
         } catch (GooglePlayServicesRepairableException e) {
             Log.d(TAG, "findPlace: repairable error "+e.getMessage());
             Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -341,11 +341,11 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CREATE_EVENT_REQUEST_CODE && resultCode == RESULT_OK){
+        if(requestCode == CREATE_EVENT_RC && resultCode == RESULT_OK){
             refreshList();
         }
 
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == PLACE_AUTOCOMPLETE_RC) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 Log.i(TAG, "Place: " + place.getName());

@@ -42,7 +42,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 import java.util.Date;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PERMISSION_POSITION_REQUEST_CODE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PERMISSION_POSITION_RC;
 
 public class EventCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -286,7 +286,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // request permissions for accessing location, requires SDK >= 23 (marshmellow)
                 Log.d(TAG, "onConnected: prompting user to allow location permissions");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_POSITION_REQUEST_CODE);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_POSITION_RC);
             } else {
                 Log.w(TAG, "onConnected: SDK version is too low (" + Build.VERSION.SDK_INT + ") to ask permissions at runtime");
                 Toast.makeText(getContext(), "Give location permission to allow application know events around you", Toast.LENGTH_LONG).show();
@@ -302,7 +302,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSION_POSITION_REQUEST_CODE) {
+        if (requestCode == PERMISSION_POSITION_RC) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted, requesting last known position");
                 //noinspection MissingPermission

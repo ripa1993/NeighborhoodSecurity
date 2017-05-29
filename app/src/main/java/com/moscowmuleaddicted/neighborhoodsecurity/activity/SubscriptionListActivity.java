@@ -22,7 +22,7 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_SUBSCRIPTION_REQUEST_CODE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_SUBSCRIPTION_RC;
 
 /**
  * Activity that shows a list of Subscription items
@@ -111,7 +111,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             public void onClick(View v) {
                 Log.d(TAG, "FAB clicked");
                 Intent intent = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                startActivityForResult(intent, CREATE_SUBSCRIPTION_REQUEST_CODE);
+                startActivityForResult(intent, CREATE_SUBSCRIPTION_RC);
             }
         });
 
@@ -208,7 +208,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_SUBSCRIPTION_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == CREATE_SUBSCRIPTION_RC && resultCode == RESULT_OK) {
             refreshList();
         }
     }
