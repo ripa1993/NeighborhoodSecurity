@@ -100,7 +100,8 @@ public class DatabaseContract {
                 + SubscriptionEntry.COLUMN_NAME_USERID + " = ?";
 
         public static final String SQL_SELECT_COUNT =
-                "SELECT COUNT(*) FROM "+SubscriptionEntry.TABLE_NAME;
+                "SELECT COUNT(*) FROM "+SubscriptionEntry.TABLE_NAME + " WHERE "
+                        + SubscriptionEntry.COLUMN_NAME_USERID + " = ?";
 
     }
 }

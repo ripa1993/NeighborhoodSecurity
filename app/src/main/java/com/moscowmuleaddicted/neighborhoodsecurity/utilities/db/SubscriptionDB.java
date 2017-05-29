@@ -76,7 +76,7 @@ public class SubscriptionDB extends SQLiteOpenHelper {
     }
 
     public int getCountByUid(String uid){
-        Cursor cursor = getReadableDatabase().rawQuery(SubscriptionStatements.SQL_SELECT_COUNT, new String[]{});
+        Cursor cursor = getReadableDatabase().rawQuery(SubscriptionStatements.SQL_SELECT_COUNT, new String[]{uid});
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
