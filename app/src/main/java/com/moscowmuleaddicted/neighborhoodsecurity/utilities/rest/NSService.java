@@ -1205,9 +1205,9 @@ public class NSService {
         return subscriptionDB.getCountByUid(uid);
     }
 
-    public int getNumReceivedNotifications() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_COUNTERS, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
+    public int getNumReceivedNotifications(String uid) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(uid, 0);
     }
 
     public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{

@@ -377,7 +377,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 if (mAuth.getCurrentUser() != null) {
                     String uid = mAuth.getCurrentUser().getUid();
                     int subscriptionCount = NSService.getInstance(getApplicationContext()).getNumStoredSubscriptions(uid);
-                    int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications();
+                    int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications(uid);
                     ad.setMessage(String.format(getString(R.string.subscription_summary_text), subscriptionCount, notificationCount));
                 } else {
                     ad.setMessage(getString(R.string.subscription_summary_error));

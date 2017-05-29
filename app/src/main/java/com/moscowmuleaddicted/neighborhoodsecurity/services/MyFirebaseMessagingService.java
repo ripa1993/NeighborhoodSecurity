@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
@@ -93,11 +95,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             mNotifyMgr.notify(eId, mBuilder.build());
 
             // increment counter
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_COUNTERS, Context.MODE_PRIVATE);
-            int notificationCount = sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(Constants.NOTIFICATION_COUNT, notificationCount + 1);
-            editor.commit();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(user != null){
+                String uid = user.getUid();
+                SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+                int notificationCount = sharedPreferences.getInt(uid, 0);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(uid, notificationCount + 1);
+                editor.commit();
+            }
+
 
         }
 
