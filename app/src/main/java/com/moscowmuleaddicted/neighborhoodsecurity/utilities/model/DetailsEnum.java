@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.details;
+package com.moscowmuleaddicted.neighborhoodsecurity.utilities.model;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 

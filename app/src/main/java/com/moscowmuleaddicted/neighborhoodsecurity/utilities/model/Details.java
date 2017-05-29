@@ -1,7 +1,5 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.details;
+package com.moscowmuleaddicted.neighborhoodsecurity.utilities.model;
 
-
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -42,22 +40,26 @@ public class Details {
 
     public static List<Details> listFromEvent(Event e){
         List<Details> list = new LinkedList<Details>();
-//        list.add(new Details("id", String.valueOf(e.getId())));
-//        list.add(new Details("submitterId", String.valueOf(e.getSubmitterId())));
+
         SimpleDateFormat sdf = new SimpleDateFormat();
         sdf.applyPattern("dd MMMM yyyy");
 
         list.add(new Details(DetailsEnum.DATE.toString(), sdf.format(e.getDate())));
         list.add(new Details(DetailsEnum.EVENT_TYPE.toString(), e.getEventType().toString()));
-        list.add(new Details(DetailsEnum.DESCRIPTION.toString(), e.getDescription()));
-        list.add(new Details(DetailsEnum.ADDRESS.toString(), e.getCountry() +", "+e.getCity()+", "+e.getStreet()));
-//        list.add(new Details(DetailsEnum.COORDINATES.toString(), "("+e.getLatitude()+", "+e.getLongitude()+")"));
+        if(e.getDescription().length() > 0 && !e.getDescription().equals("null"))
+            list.add(new Details(DetailsEnum.DESCRIPTION.toString(), e.getDescription()));
+
+        String address = "";
+        if (e.getCity().length() > 0 && !e.getCity().equals("null"))
+            address = address + e.getCity();
+        else
+            address = address + e.getCountry();
+        if (e.getStreet().length()>0 && !e.getStreet().equals("null"))
+            address = address + ", "+ e.getStreet();
+
+        list.add(new Details(DetailsEnum.ADDRESS.toString(), address));
         list.add(new Details(DetailsEnum.VOTES.toString(), String.valueOf(e.getVotes())));
 
-//        list.add(new Details("dummy", "dummy"));
-//        list.add(new Details("dummy", "dummy"));
-//        list.add(new Details("dummy", "dummy"));
-//        list.add(new Details("dummy", "dummy"));
         return list;
     }
 

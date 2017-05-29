@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.details.Details;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Details;
 
 import java.util.List;
 
