@@ -11,4 +11,6 @@
 
     <color name="grey_300">#E0E0E0</color>
     <color name="white">#fff</color>
+
+    <color name="drawer_icon">#616161</color>
 </resources>

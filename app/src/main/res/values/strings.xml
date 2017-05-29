@@ -142,4 +142,11 @@
     <string name="msg_no_subs_to_show">No subscription to show, why don\'t you create one?</string>
 
     <string name="help_ns">Neighborhood Security allows you to publish crime events and subscribe to notifications about specific areas. As soon as another user posts an event you might be interested in, we will notify you!</string>
+    <string name="drawer_login_register">Login / Register</string>
+    <string name="drawer_logout">Logout</string>
+    <string name="drawer_new_event">New Event</string>
+    <string name="drawer_new_subscription">New Subscription</string>
+    <string name="drawer_my_events">My Events</string>
+    <string name="drawer_logout_ok">Successfully logged out</string>
+    <string name="drawer_logout_fail">Failed to logout</string>
 </resources>

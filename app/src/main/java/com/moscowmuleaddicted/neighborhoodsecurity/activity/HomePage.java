@@ -208,8 +208,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         authItem = new PrimaryDrawerItem()
                 .withIdentifier(1000)
-                .withName("Login / Register")
+                .withName(R.string.drawer_login_register)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_login)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -221,26 +223,32 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         logoutItem = new PrimaryDrawerItem()
                 .withIdentifier(1001)
-                .withName("Logout")
+                .withName(R.string.drawer_logout)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_exit)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         NSService.getInstance(getApplicationContext()).logout(new NSService.MyCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
-                                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "logged out");
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_ok, Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "logout failed without msg");
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_fail, Toast.LENGTH_SHORT).show();
 
                             }
 
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
-                                Toast.makeText(getApplicationContext(), "[" + message.getArgument() + "] " + message.getMessage(), Toast.LENGTH_SHORT).show();
+                                // should never happen
+                                Log.w(TAG, "logout "+status+": "+message);
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_fail, Toast.LENGTH_SHORT).show();
                             }
                         });
                         return false;
@@ -249,8 +257,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         newEventItem = new PrimaryDrawerItem()
                 .withIdentifier(2000)
-                .withName("New Event")
+                .withName(R.string.drawer_new_event)
                 .withSelectable(false)
+                .withIcon(R.drawable.alert_decagram)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -261,8 +271,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 });
         newSubscriptionItem = new PrimaryDrawerItem()
                 .withIdentifier(2001)
-                .withName("New Subscription")
+                .withName(R.string.drawer_new_subscription)
                 .withSelectable(false)
+                .withIcon(R.drawable.bell_ring)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -274,8 +286,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         myEventsItem = new PrimaryDrawerItem()
                 .withIdentifier(2002)
-                .withName("My Events")
+                .withName(R.string.drawer_my_events)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_account_circle)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
