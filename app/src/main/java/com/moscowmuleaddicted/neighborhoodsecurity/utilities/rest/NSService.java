@@ -31,7 +31,6 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -43,6 +42,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.google.android.gms.internal.zzt.TAG;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
@@ -364,6 +364,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    addVoteSharedPreferences(id);
                     if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, 1);
@@ -409,6 +410,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    removeVoteSharedPreferences(id);
                     if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, -1);
@@ -1230,6 +1232,20 @@ public class NSService {
         protected void onPostExecute(Integer result) {
             Log.d(TAG, "finished storing "+result+" subscriptions");
         }
+    }
+
+    private void addVoteSharedPreferences(int eventId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(String.valueOf(eventId), true);
+        editor.commit();
+    }
+
+    private void removeVoteSharedPreferences(int eventId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(String.valueOf(eventId));
+        editor.commit();
     }
 
 }

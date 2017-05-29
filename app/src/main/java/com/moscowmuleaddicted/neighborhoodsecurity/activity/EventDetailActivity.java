@@ -2,6 +2,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,9 +28,12 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
+
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
 
     public static final String TAG = "EventDetailAct";
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +91,15 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         fragmentTransaction.commit();
 
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         final int eventId = event.getId();
+
+        if(alreadyVoted(eventId)){
+            disableFab();
+        } else {
+            enableFab();
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -96,8 +107,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                     @Override
                     public void onSuccess(String s) {
                         Log.d(TAG, "success in voting the event");
-                        fab.setEnabled(false);
-                        fab.setImageDrawable(getDrawable(R.drawable.ic_star));
+                        disableFab();
                         final MyEventDetailRecyclerViewAdapter adapter =(MyEventDetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
                         adapter.updateVotes(1);
                         final Snackbar snack = Snackbar.make(view, getString(R.string.event_voted), Snackbar.LENGTH_INDEFINITE);
@@ -110,8 +120,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                                     public void onSuccess(String s) {
                                         Log.d(TAG, "success in unvoting the event");
                                         snack.dismiss();
-                                        fab.setEnabled(true);
-                                        fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
+                                        enableFab();
                                         adapter.updateVotes(-1);
                                     }
 
@@ -128,8 +137,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                                         switch(status){
                                             case 204:
                                                 msg = getString(R.string.msg_204_no_content_event_unvote);
-                                                fab.setEnabled(true);
-                                                fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
+                                                enableFab();
                                                 break;
                                             case 400:
                                                 msg = getString(R.string.msg_400_bad_request_event_vote);
@@ -167,8 +175,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                         switch(status){
                             case 204:
                                 msg = getString(R.string.msg_204_no_content_event_vote);
-                                fab.setEnabled(false);
-                                fab.setImageDrawable(getDrawable(R.drawable.ic_star));
+                                disableFab();
                                 break;
                             case 400:
                                 msg = getString(R.string.msg_400_bad_request_event_vote);
@@ -192,8 +199,23 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         });
     }
 
+    private void enableFab() {
+        fab.setEnabled(true);
+        fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
+    }
+
+    private void disableFab() {
+        fab.setEnabled(false);
+        fab.setImageDrawable(getDrawable(R.drawable.ic_star));
+    }
+
     @Override
     public void onListFragmentInteraction(Details item) {
 
+    }
+
+    private boolean alreadyVoted(int eventId){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, MODE_PRIVATE);
+        return sharedPreferences.getBoolean(String.valueOf(eventId), false);
     }
 }
