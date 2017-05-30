@@ -18,6 +18,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
@@ -29,6 +31,7 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
 
     public MySubscriptionRecyclerViewAdapter(List<Subscription> items, OnListFragmentInteractionListener listener) {
         mValues = items;
+        Collections.sort(mValues, idComparator);
         mListener = listener;
     }
 
@@ -122,7 +125,15 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         Log.d(TAG, "inserted "+tempSubscriptions.size()+" items");
         mValues.addAll(tempSubscriptions);
         // notify changes
-        notifyItemRangeInserted(oldSize, tempSubscriptions.size());
+//        notifyItemRangeInserted(oldSize, tempSubscriptions.size());
+        Collections.sort(mValues, idComparator);
         notifyDataSetChanged();
     }
+
+    private Comparator<Subscription> idComparator = new Comparator<Subscription>() {
+        @Override
+        public int compare(Subscription o1, Subscription o2) {
+            return Integer.valueOf(o1.getId()).compareTo(o2.getId());
+        }
+    };
 }

@@ -16,6 +16,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -53,6 +55,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         mListener = listener;
         mContext = context;
         mDateFormat = DateFormat.getDateFormat(mContext);
+        Collections.sort(mValues, dateComparator);
     }
 
     @Override
@@ -156,7 +159,8 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         mValues.addAll(tempEvents);
         // notify changes
         Log.d(TAG, "inserted "+tempEvents.size()+" items");
-        notifyItemRangeInserted(oldSize, tempEvents.size());
+//        notifyItemRangeInserted(oldSize, tempEvents.size());
+        Collections.sort(mValues, dateComparator);
         notifyDataSetChanged();
     }
 
@@ -167,4 +171,18 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         notifyItemRangeRemoved(0, size);
         notifyDataSetChanged();
     }
+
+    private Comparator<Event> dateComparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event o1, Event o2) {
+            return o2.getDate().compareTo(o1.getDate());
+        }
+    };
+
+    private Comparator<Event> voteComparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event o1, Event o2) {
+            return Integer.valueOf(o2.getVotes()).compareTo(o1.getVotes());
+        }
+    };
 }
