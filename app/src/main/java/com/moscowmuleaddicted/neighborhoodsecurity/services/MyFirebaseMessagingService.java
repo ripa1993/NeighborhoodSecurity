@@ -73,16 +73,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             db.close();
 
             int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
-            Log.d(TAG, "received notification about subscription "+subscriptionId);
-            if(subscriptionId < 0)
+            String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
+
+            Log.d(TAG, "received notification about subscription "+subscriptionId + " owned by "+subscriptionOwner);
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            if(firebaseUser == null){
+                Log.w(TAG, "discarding notification because no user is logged in");
                 return;
+            }
+
+            if(!firebaseUser.getUid().equals(subscriptionOwner)) {
+                Log.w(TAG, "discarding notification because it is not for the current user");
+                return;
+            }
+
+            if(subscriptionId < 0) {
+                Log.w(TAG, "discarding notification about an unknown subscription");
+                return;
+            }
 
             SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
             boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
             Log.d(TAG, "subscription is enabled? "+subscriptionEnabled);
-            if(!subscriptionEnabled)
+            if(!subscriptionEnabled) {
+                Log.d(TAG, "discarding notification because subscription is disabled");
                 return;
-
+            }
 
             Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
             eventDetailIntent.putExtra("event", event);
