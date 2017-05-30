@@ -7,6 +7,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities;
 public class Constants {
     public static final String SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID = "com.moscowmuleaddicted.neighborhoodsecurity.counters";
     public static final String SHARED_PREFERENCES_VOTED_EVENTS = "com.moscowmuleaddicted.neighborhoodsecurity.voted_events";
+    public static final String SHARED_PREFERENCES_SUBSCRIPTIONS = "com.moscowmuleaddicted.neighborhoodsecurity.subscriptions";
 
     public static final String NOTIFICATION_COUNT = "notification_count";
 

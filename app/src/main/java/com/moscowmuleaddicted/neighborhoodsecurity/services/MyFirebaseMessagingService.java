@@ -27,6 +27,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
+
 /**
  * Created by Simone Ripamonti on 25/04/2017.
  * <p>
@@ -62,7 +64,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
             int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
             String eSubmitterId = remoteMessage.getData().get("submitterId");
-
             Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
                     eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
 
@@ -70,6 +71,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             EventDB db = new EventDB(this);
             db.addEvent(event);
             db.close();
+
+            int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
+            Log.d(TAG, "received notification about subscription "+subscriptionId);
+            if(subscriptionId < 0)
+                return;
+
+            SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
+            boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
+            Log.d(TAG, "subscription is enabled? "+subscriptionEnabled);
+            if(!subscriptionEnabled)
+                return;
+
 
             Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
             eventDetailIntent.putExtra("event", event);
@@ -98,9 +111,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if(user != null){
                 String uid = user.getUid();
-                SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
-                int notificationCount = sharedPreferences.getInt(uid, 0);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+                int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
+                SharedPreferences.Editor editor = sharedPreferencesNotifications.edit();
                 editor.putInt(uid, notificationCount + 1);
                 editor.commit();
             }

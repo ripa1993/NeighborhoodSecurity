@@ -42,6 +42,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.google.android.gms.internal.zzt.TAG;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
 
 /**
@@ -1217,11 +1218,20 @@ public class NSService {
         protected Integer doInBackground(Subscription... params) {
             int count = params.length;
             int i;
+            SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
             for (i = 0; i < count; i++){
                 subscriptionDB.addSubscription(params[i]);
+                if(!sharedPreferences.contains(String.valueOf(params[i].getId()))){
+                    editor.putBoolean(String.valueOf(params[i].getId()), true);
+                }
                 publishProgress((int) ((i / (float) count) * 100));
-                if (isCancelled()) break;
+                if (isCancelled()) {
+                    editor.commit();
+                    break;
+                }
             }
+            editor.commit();
             return i;
         }
 

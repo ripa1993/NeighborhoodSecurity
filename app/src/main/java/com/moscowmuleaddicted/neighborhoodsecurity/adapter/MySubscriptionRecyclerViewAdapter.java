@@ -1,10 +1,15 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
@@ -14,6 +19,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
 
 public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
     public static final String TAG = "MySusRVAdapter";
@@ -39,6 +46,16 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         holder.mStreet.setText(mValues.get(position).getStreet());
         holder.mRadius.setText(String.format("%1$dm", mValues.get(position).getRadius()));
 
+        final Context context = holder.mCity.getContext();
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
+        boolean enabled = sharedPreferences.getBoolean(String.valueOf(holder.mItem.getId()), true);
+        holder.mSwitch.setChecked(enabled);
+        if(enabled){
+            holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_button));
+        } else {
+            holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_turn_notifications_off_button));
+        }
+
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,6 +63,22 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
+                }
+            }
+        });
+
+
+
+        holder.mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(String.valueOf(holder.mItem.getId()), isChecked);
+                editor.commit();
+                if(isChecked){
+                    holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_button));
+                } else {
+                    holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_turn_notifications_off_button));
                 }
             }
         });
@@ -62,6 +95,8 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         public final TextView mStreet;
         public final TextView mRadius;
         public Subscription mItem;
+        public final Switch mSwitch;
+        public final ImageView mIcon;
 
         public ViewHolder(View view) {
             super(view);
@@ -69,6 +104,8 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
             mCity = (TextView) view.findViewById(R.id.sub_city);
             mStreet = (TextView) view.findViewById(R.id.sub_street);
             mRadius = (TextView) view.findViewById(R.id.sub_radius);
+            mSwitch = (Switch) view.findViewById(R.id.switch_notifications);
+            mIcon = (ImageView) view.findViewById(R.id.sub_icon);
         }
 
         @Override
