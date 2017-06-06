@@ -72,7 +72,6 @@ class Coords {
 }
 
 public class SubscriptionCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    // TODO: add "get current position"
 
     private static final String TAG = "SubscriptionCreateFgmnt";
 
