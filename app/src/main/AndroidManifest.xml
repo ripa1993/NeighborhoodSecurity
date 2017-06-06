@@ -39,11 +39,7 @@
         <activity
             android:name=".activity.TestRestAPI"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service android:name=".services.MyFirebaseInstanceIDService">
@@ -61,21 +57,13 @@
             android:name=".activity.EventDetailActivity"
             android:label="@string/title_activity_event_detail"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".activity.EmailPasswordActivity" />
         <activity
             android:name=".activity.AuthenticationActivity"
             android:label="@string/title_authentication">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.facebook.CustomTabActivity"
@@ -95,37 +83,19 @@
 
             <!-- android:theme="@style/AppTheme.NoActionBar" -->
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.EventListActivity"
             android:label="@string/title_activity_event_list">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.SubscriptionCreateActivity"
             android:label="@string/title_activity_subscription_create">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".activity.SubscriptionListActivity"
             android:label="@string/title_activity_subscription_list">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

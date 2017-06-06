@@ -5,9 +5,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,16 +22,15 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -43,6 +42,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.google.android.gms.internal.zzt.TAG;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
@@ -364,6 +365,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    addVoteSharedPreferences(id);
                     if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, 1);
@@ -409,6 +411,7 @@ public class NSService {
                 logResponse(response);
 
                 if (response.isSuccessful()) {
+                    removeVoteSharedPreferences(id);
                     if(response.code() == 200){
                         try {
                             eventDB.modifyVote(id, -1);
@@ -633,6 +636,7 @@ public class NSService {
      */
     public void logout(final MyCallback<String> callback) {
         mAuth.signOut();
+        LoginManager.getInstance().logOut();
         callback.onSuccess("ok");
     }
 
@@ -1143,13 +1147,7 @@ public class NSService {
     }
 
     private void logResponse(Response<?> response) {
-        System.out.println("Response: " + response.message());
-        System.out.println("Content: " + response.raw());
-        Map<String, List<String>> map = response.headers().toMultimap();
-        for (String s : map.keySet()
-                ) {
-            System.out.println("Headers: " + s + " - " + map.get(s));
-        }
+        Log.d(TAG, "rest response content: " + response.raw());
     }
 
     private void postUser(String id, String name, String email, final MyCallback<String> callback) {
@@ -1208,9 +1206,9 @@ public class NSService {
         return subscriptionDB.getCountByUid(uid);
     }
 
-    public int getNumReceivedNotifications() {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
+    public int getNumReceivedNotifications(String uid) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(uid, 0);
     }
 
     public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
@@ -1220,11 +1218,20 @@ public class NSService {
         protected Integer doInBackground(Subscription... params) {
             int count = params.length;
             int i;
+            SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
             for (i = 0; i < count; i++){
                 subscriptionDB.addSubscription(params[i]);
+                if(!sharedPreferences.contains(String.valueOf(params[i].getId()))){
+                    editor.putBoolean(String.valueOf(params[i].getId()), true);
+                }
                 publishProgress((int) ((i / (float) count) * 100));
-                if (isCancelled()) break;
+                if (isCancelled()) {
+                    editor.commit();
+                    break;
+                }
             }
+            editor.commit();
             return i;
         }
 
@@ -1235,6 +1242,20 @@ public class NSService {
         protected void onPostExecute(Integer result) {
             Log.d(TAG, "finished storing "+result+" subscriptions");
         }
+    }
+
+    private void addVoteSharedPreferences(int eventId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(String.valueOf(eventId), true);
+        editor.commit();
+    }
+
+    private void removeVoteSharedPreferences(int eventId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(String.valueOf(eventId));
+        editor.commit();
     }
 
 }

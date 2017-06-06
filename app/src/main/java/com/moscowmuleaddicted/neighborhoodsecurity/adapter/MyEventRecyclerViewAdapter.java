@@ -3,6 +3,7 @@ package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +12,12 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,8 +26,8 @@ import java.util.List;
  * @author Simone Ripamonti
  * @version 1
  */
-public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
-
+public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
+    public static final String TAG ="MyEvetRVAdapter";
     /**
      * Application context, used to retrieve localized strings for the events
      */
@@ -52,6 +55,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         mListener = listener;
         mContext = context;
         mDateFormat = DateFormat.getDateFormat(mContext);
+        Collections.sort(mValues, dateComparator);
     }
 
     @Override
@@ -120,7 +124,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
     /**
      * View Holder to contain the events data
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
         public final View mView;
         public final TextView mEventType;
         public final TextView mEventLocation;
@@ -154,6 +158,31 @@ public class MyEventRecyclerViewAdapter extends RecyclerView.Adapter<MyEventRecy
         // add remaining ones
         mValues.addAll(tempEvents);
         // notify changes
-        notifyItemRangeInserted(oldSize, tempEvents.size());
+        Log.d(TAG, "inserted "+tempEvents.size()+" items");
+//        notifyItemRangeInserted(oldSize, tempEvents.size());
+        Collections.sort(mValues, dateComparator);
+        notifyDataSetChanged();
     }
+
+    public synchronized void clear() {
+        int size = this.mValues.size();
+        this.mValues.clear();
+        Log.d(TAG, "removed "+size+" items");
+        notifyItemRangeRemoved(0, size);
+        notifyDataSetChanged();
+    }
+
+    private Comparator<Event> dateComparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event o1, Event o2) {
+            return o2.getDate().compareTo(o1.getDate());
+        }
+    };
+
+    private Comparator<Event> voteComparator = new Comparator<Event>() {
+        @Override
+        public int compare(Event o1, Event o2) {
+            return Integer.valueOf(o2.getVotes()).compareTo(o1.getVotes());
+        }
+    };
 }

@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,8 +11,8 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventCreateFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 public class EventCreateActivity extends AppCompatActivity implements EventCreateFragment.OnFragmentInteractionListener {
@@ -44,16 +45,20 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
             case R.id.action_create_event:
                 Event e = mEventCreateFragment.getEvent();
                 if (e.getDescription().length() > 0 && !e.getLatitude().equals(Double.NEGATIVE_INFINITY) && !e.getLongitude().equals(Double.NEGATIVE_INFINITY)) {
+                    final ProgressDialog progressDialog = ProgressDialog.show(this, getString(R.string.progress_event_title), getString(R.string.progress_event_message), true, false);
                     NSService.getInstance(getApplicationContext()).postEventWithCoordinates(e.getEventType(), e.getDescription(), e.getLatitude(), e.getLongitude(), new NSService.MyCallback<String>() {
                         @Override
                         public void onSuccess(String s) {
+                            progressDialog.dismiss();
                             Log.d(TAG, "event created");
                             Toast.makeText(getApplicationContext(), getString(R.string.msg_success_event_create), Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
                             finish();
                         }
 
                         @Override
                         public void onFailure() {
+                            progressDialog.dismiss();
                             Log.w(TAG, "failed to create event");
                             Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_create), Toast.LENGTH_SHORT).show();
 
@@ -61,6 +66,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 
                         @Override
                         public void onMessageLoad(MyMessage message, int status) {
+                            progressDialog.dismiss();
                             Log.w(TAG, "failed to create event with message: " + message.toString());
                             String msg = "";
                             switch (status) {

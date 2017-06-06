@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class SubscriptionListFragment extends Fragment {
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
 
-    private RecyclerView mRecyclerView;
+    private RecyclerViewWithEmptyView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -59,35 +60,33 @@ public class SubscriptionListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subscription_list, container, false);
+        Context context = view.getContext();
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            mRecyclerView = recyclerView;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MySubscriptionRecyclerViewAdapter(mSubscriptions, mListener));
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    if (dy > 0){
-                        //scrolling up
-                        mListener.scrollingUp();
-                    } else {
-                        // scrolling down
-                        mListener.scrollingDown();
-                    }
-                }
-            });
-
+        mRecyclerView = (RecyclerViewWithEmptyView) view.findViewById(R.id.fragment_subscription_list);
+        mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view_subscriptions));
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        mRecyclerView.setAdapter(new MySubscriptionRecyclerViewAdapter(mSubscriptions, mListener));
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) {
+                    //scrolling up
+                    mListener.scrollingUp();
+                } else {
+                    // scrolling down
+                    mListener.scrollingDown();
+                }
+            }
+        });
+
+
         return view;
     }
 
@@ -111,7 +110,9 @@ public class SubscriptionListFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Subscription item);
+
         void scrollingUp();
+
         void scrollingDown();
     }
 
@@ -120,7 +121,7 @@ public class SubscriptionListFragment extends Fragment {
         return mRecyclerView;
     }
 
-    public void showData(List<Subscription> subscriptions){
+    public void showData(List<Subscription> subscriptions) {
         mRecyclerView.swapAdapter(new MySubscriptionRecyclerViewAdapter(subscriptions, mListener), false);
     }
 

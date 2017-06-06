@@ -5,26 +5,29 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
 
 /**
  * Created by Simone Ripamonti on 25/04/2017.
@@ -61,7 +64,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
             int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
             String eSubmitterId = remoteMessage.getData().get("submitterId");
-
             Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
                     eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
 
@@ -69,6 +71,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             EventDB db = new EventDB(this);
             db.addEvent(event);
             db.close();
+
+            int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
+            String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
+
+            Log.d(TAG, "received notification about subscription "+subscriptionId + " owned by "+subscriptionOwner);
+            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            if(firebaseUser == null){
+                Log.w(TAG, "discarding notification because no user is logged in");
+                return;
+            }
+
+            if(!firebaseUser.getUid().equals(subscriptionOwner)) {
+                Log.w(TAG, "discarding notification because it is not for the current user");
+                return;
+            }
+
+            if(subscriptionId < 0) {
+                Log.w(TAG, "discarding notification about an unknown subscription");
+                return;
+            }
+
+            SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
+            boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
+            Log.d(TAG, "subscription is enabled? "+subscriptionEnabled);
+            if(!subscriptionEnabled) {
+                Log.d(TAG, "discarding notification because subscription is disabled");
+                return;
+            }
 
             Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
             eventDetailIntent.putExtra("event", event);
@@ -94,11 +125,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             mNotifyMgr.notify(eId, mBuilder.build());
 
             // increment counter
-            SharedPreferences sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCE_COUNTERS, Context.MODE_PRIVATE);
-            int notificationCount = sharedPreferences.getInt(Constants.NOTIFICATION_COUNT, 0);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(Constants.NOTIFICATION_COUNT, notificationCount + 1);
-            editor.commit();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if(user != null){
+                String uid = user.getUid();
+                SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+                int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
+                SharedPreferences.Editor editor = sharedPreferencesNotifications.edit();
+                editor.putInt(uid, notificationCount + 1);
+                editor.commit();
+            }
+
 
         }
 

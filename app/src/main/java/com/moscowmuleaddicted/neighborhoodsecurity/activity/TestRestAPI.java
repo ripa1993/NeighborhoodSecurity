@@ -14,10 +14,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.EventType;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 import org.apache.commons.lang3.math.NumberUtils;

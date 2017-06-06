@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -23,13 +22,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnticipateInterpolator;
-import android.view.animation.BounceInterpolator;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -52,9 +48,8 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.ogaclejapan.arclayout.ArcLayout;
 
@@ -213,8 +208,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         authItem = new PrimaryDrawerItem()
                 .withIdentifier(1000)
-                .withName("Login / Register")
+                .withName(R.string.drawer_login_register)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_login)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -226,26 +223,32 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         logoutItem = new PrimaryDrawerItem()
                 .withIdentifier(1001)
-                .withName("Logout")
+                .withName(R.string.drawer_logout)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_exit)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         NSService.getInstance(getApplicationContext()).logout(new NSService.MyCallback<String>() {
                             @Override
                             public void onSuccess(String s) {
-                                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "logged out");
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_ok, Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "logout failed without msg");
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_fail, Toast.LENGTH_SHORT).show();
 
                             }
 
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
-                                Toast.makeText(getApplicationContext(), "[" + message.getArgument() + "] " + message.getMessage(), Toast.LENGTH_SHORT).show();
+                                // should never happen
+                                Log.w(TAG, "logout "+status+": "+message);
+                                Toast.makeText(getApplicationContext(), R.string.drawer_logout_fail, Toast.LENGTH_SHORT).show();
                             }
                         });
                         return false;
@@ -254,8 +257,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         newEventItem = new PrimaryDrawerItem()
                 .withIdentifier(2000)
-                .withName("New Event")
+                .withName(R.string.drawer_new_event)
                 .withSelectable(false)
+                .withIcon(R.drawable.alert_decagram)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -266,8 +271,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 });
         newSubscriptionItem = new PrimaryDrawerItem()
                 .withIdentifier(2001)
-                .withName("New Subscription")
+                .withName(R.string.drawer_new_subscription)
                 .withSelectable(false)
+                .withIcon(R.drawable.bell_ring)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -279,8 +286,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
         myEventsItem = new PrimaryDrawerItem()
                 .withIdentifier(2002)
-                .withName("My Events")
+                .withName(R.string.drawer_my_events)
                 .withSelectable(false)
+                .withIcon(R.drawable.ic_account_circle)
+                .withIconColorRes(R.color.drawer_icon)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -365,10 +374,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             public void onClick(View v) {
                 ad.setTitle(getString(R.string.subscription_summary));
                 ad.setIcon(R.drawable.ic_006_school_bell);
-                if(mAuth.getCurrentUser() != null){
+                if (mAuth.getCurrentUser() != null) {
                     String uid = mAuth.getCurrentUser().getUid();
                     int subscriptionCount = NSService.getInstance(getApplicationContext()).getNumStoredSubscriptions(uid);
-                    int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications();
+                    int notificationCount = NSService.getInstance(getApplicationContext()).getNumReceivedNotifications(uid);
                     ad.setMessage(String.format(getString(R.string.subscription_summary_text), subscriptionCount, notificationCount));
                 } else {
                     ad.setMessage(getString(R.string.subscription_summary_error));
@@ -382,7 +391,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             public void onClick(View v) {
                 ad.setTitle(getString(R.string.help));
                 ad.setIcon(R.drawable.ic_005_question);
-                ad.setMessage(getString(R.string.lorem_ipsum));
+                ad.setMessage(getString(R.string.help_ns));
                 ad.show();
             }
         });
@@ -462,9 +471,8 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         }
     }
 
-    @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+    private void updateDrawer() {
+        FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             if (mAccountHeader.getProfiles().size() > 0) {
                 // update profile
@@ -476,7 +484,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 );
             } else {
                 // add new profile
-                updateDrawerLoggedIn();
                 mAccountHeader.addProfiles(
                         new ProfileDrawerItem()
                                 .withEmail(user.getEmail())
@@ -484,27 +491,30 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                                 .withIcon(user.getPhotoUrl())
                 );
             }
+            updateDrawerLoggedIn();
+
         } else {
             if (mAccountHeader.getProfiles().size() > 0) {
                 // remove user profile
-                updateDrawerLoggedOut();
                 mAccountHeader.removeProfile(mAccountHeader.getActiveProfile());
             } else {
                 // do nothing
-
             }
+            updateDrawerLoggedOut();
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
-            boolean loggedIn = data.getBooleanExtra("LOGGED_IN", false);
-            boolean loggedOut = data.getBooleanExtra("LOGGED_OUT", false);
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        updateDrawer();
+    }
 
-            if (loggedIn || loggedOut) {
-                onAuthStateChanged(mAuth);
-            }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult request=" + requestCode + " result=" + resultCode);
+        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
+            Log.d(TAG, "onActivityResult preparing to refresh drawer");
+            updateDrawer();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -536,7 +546,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 //        float dx = metrics.widthPixels / 2;
 //        float dy = metrics.heightPixels;
         float dx = 0;
-        float dy = -1*metrics.widthPixels;
+        float dy = -1 * metrics.widthPixels;
 
         item.setRotation(0f);
         item.setTranslationX(dx);

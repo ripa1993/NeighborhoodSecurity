@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.jsonclasses.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class EventListFragment extends Fragment {
      */
     private OnListFragmentInteractionListener mListener;
 
-    private RecyclerView mRecyclerView;
+    private RecyclerViewWithEmptyView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,6 +58,7 @@ public class EventListFragment extends Fragment {
 
     /**
      * constructor that receives a list of events to show
+     *
      * @param columnCount
      * @param events
      * @return
@@ -84,34 +86,33 @@ public class EventListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
+        Context context = view.getContext();
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            mRecyclerView = recyclerView;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyEventRecyclerViewAdapter(mListEvents, mListener, getContext()));
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    if (dy > 0){
-                        //scrolling up
-                        mListener.scrollingUp();
-                    } else {
-                        // scrolling down
-                        mListener.scrollingDown();
-                    }
-                }
-            });
+        mRecyclerView = (RecyclerViewWithEmptyView) view.findViewById(R.id.fragment_event_list);
+        mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view_events));
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mListEvents, mListener, getContext()));
+
+        mRecyclerView.addOnScrollListener(new RecyclerViewWithEmptyView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) {
+                    //scrolling up
+                    mListener.scrollingUp();
+                } else {
+                    // scrolling down
+                    mListener.scrollingDown();
+                }
+            }
+        });
+
         return view;
     }
 
@@ -135,11 +136,13 @@ public class EventListFragment extends Fragment {
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentInteraction(Event event);
+
         void scrollingUp();
+
         void scrollingDown();
     }
 
-    public RecyclerView getRecyclerView(){
+    public RecyclerViewWithEmptyView getRecyclerView() {
         return mRecyclerView;
     }
 

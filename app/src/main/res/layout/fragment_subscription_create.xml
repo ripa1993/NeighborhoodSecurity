@@ -83,7 +83,7 @@
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/radio_address"
+            android:id="@+id/radio_address_sub"
             android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             android:text="@string/radio_address" />
 
         <RadioButton
-            android:id="@+id/radio_coordinates"
+            android:id="@+id/radio_coordinates_sub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -104,32 +104,34 @@
     <LinearLayout
         android:id="@+id/layout_address_group"
         android:layout_marginTop="16dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/icon_country"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingRight="8dp"
-                android:src="@drawable/ic_map" />
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical">
 
             <fragment
                 android:id="@+id/place_autocomplete_fragment"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/icon_country"
+                android:layout_weight="5"
                 android:name="com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment"
                 />
-        </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/subscription_get_position"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_gps_fixed"
+                android:tint="@color/md_black_1000"/>
+        </LinearLayout>
     </LinearLayout>
 
     <RelativeLayout
