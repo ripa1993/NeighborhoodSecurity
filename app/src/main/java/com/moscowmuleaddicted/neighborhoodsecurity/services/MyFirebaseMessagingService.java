@@ -5,11 +5,17 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat.WearableExtender;
+import android.text.format.DateFormat;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -26,6 +32,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
 
@@ -75,28 +82,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
             String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
 
-            Log.d(TAG, "received notification about subscription "+subscriptionId + " owned by "+subscriptionOwner);
+            Log.d(TAG, "received notification about subscription " + subscriptionId + " owned by " + subscriptionOwner);
             FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            if(firebaseUser == null){
+            if (firebaseUser == null) {
                 Log.w(TAG, "discarding notification because no user is logged in");
                 return;
             }
 
-            if(!firebaseUser.getUid().equals(subscriptionOwner)) {
+            if (!firebaseUser.getUid().equals(subscriptionOwner)) {
                 Log.w(TAG, "discarding notification because it is not for the current user");
                 return;
             }
 
-            if(subscriptionId < 0) {
+            if (subscriptionId < 0) {
                 Log.w(TAG, "discarding notification about an unknown subscription");
                 return;
             }
 
             SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
             boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
-            Log.d(TAG, "subscription is enabled? "+subscriptionEnabled);
-            if(!subscriptionEnabled) {
+            Log.d(TAG, "subscription is enabled? " + subscriptionEnabled);
+            if (!subscriptionEnabled) {
                 Log.d(TAG, "discarding notification because subscription is disabled");
                 return;
             }
@@ -111,13 +118,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+            Bitmap androidWearBg = BitmapFactory.decodeResource(getResources(),R.drawable.android_wear_bg);
+            boolean skipMap = false;
+            Bitmap map = null;
+            try {
+                map = getMapBitmap(eLatitude, eLongitude);
+            } catch (Exception e) {
+                // ignore
+                Log.w(TAG, "cannot load static map image", e);
+                skipMap = true;
+            }
+
+            NotificationCompat.WearableExtender wearableExtender =
+                    new NotificationCompat.WearableExtender()
+                            .setHintHideIcon(true)
+                            .setBackground(androidWearBg);
+
+            if(!skipMap){
+                wearableExtender.addPage(new NotificationCompat.Builder(this).extend(new WearableExtender().setBackground(map).setHintShowBackgroundOnly(true)).build());
+            }
+
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.ic_mood_bad)
+                    .setSmallIcon(R.drawable.ic_marmotta_full)
                     .setContentTitle(eEventType + " @ " + eCity + ", " + eStreet)
                     .setContentText(eDescription)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(eDescription)
+                    )
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true)
-                    .setSound(notificationSound);
+                    .setSound(notificationSound)
+                    .extend(wearableExtender);
 
             NotificationManager mNotifyMgr =
                     (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -126,7 +157,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             // increment counter
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if(user != null){
+            if (user != null) {
                 String uid = user.getUid();
                 SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
                 int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
@@ -142,5 +173,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
+    }
+
+    private String buildMapUrl(double latitude, double longitude){
+        String base = "https://maps.googleapis.com/maps/api/staticmap?center=%1$f,%2$f&zoom=15&size=400x400&markers=size:large%7C%1$f,%2$f&key=%3$s";
+        return String.format(base, latitude, longitude, getString(R.string.google_maps_key));
+    }
+
+    private Bitmap getMapBitmap(double latitude, double longitude) throws ExecutionException, InterruptedException {
+        return Glide.
+                with(this).
+                load(buildMapUrl(latitude, longitude)).
+                asBitmap().
+                into(400, 400). // Width and height
+                get();
     }
 }
