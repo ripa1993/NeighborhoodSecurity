@@ -60,6 +60,10 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
      * Auxiliary data for the source UID
      */
     private String uid;
+    /**
+     * Tell if the activity is in front, to prevent showing toasts in wrong activity
+     */
+    private boolean isInFront = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +185,8 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             @Override
             public void onFailure() {
                 Log.w(TAG, "subscriptions from UID: failure");
-                Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscriptions_upd), Toast.LENGTH_LONG).show();
+                if(isInFront)
+                    Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_subscriptions_upd), Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
 
@@ -200,7 +205,8 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                         msg = getString(R.string.msg_unknown_error);
                         break;
                 }
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                if(isInFront)
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
         });
@@ -211,5 +217,18 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         if (requestCode == CREATE_SUBSCRIPTION_RC && resultCode == RESULT_OK) {
             refreshList();
         }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
     }
 }

@@ -37,15 +37,17 @@ import static xdroid.core.Global.getContext;
 
 /**
  * Activity that shows a list of Events
+ *
  * @author Simone Ripamonti
  */
 public class EventListActivity extends AppCompatActivity implements EventListFragment.OnListFragmentInteractionListener {
     /**
      * Source of the event
      */
-    private enum UpdateType{
+    private enum UpdateType {
         UID, SUBSCRIPTION, LOCATION, NONE
     }
+
     /**
      * Log tag
      */
@@ -78,6 +80,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
      * Auxiliary info about source LOCATION
      */
     private Double latitude, longitude;
+    /**
+     * Tell if the activity is in front, to prevent showing toasts in wrong activity
+     */
+    private boolean isInFront = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +96,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         mSwipe.setEnabled(false);
 
         ArrayList<Event> events = new ArrayList<>();
-        if(extras != null) {
-            if(extras.containsKey("event-list")){
+        if (extras != null) {
+            if (extras.containsKey("event-list")) {
                 // if an event list is provided
                 Log.d(TAG, "creating fragment from provided event list");
                 events = (ArrayList<Event>) extras.getSerializable("event-list");
@@ -99,7 +105,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 updateType = UpdateType.NONE;
                 setTitle(getString(R.string.title_event_list_generic));
                 Log.d(TAG, "fragment created");
-            } else if (extras.containsKey("UID")){
+            } else if (extras.containsKey("UID")) {
                 // if an uid is provided
                 Log.d(TAG, "creating fragment from provided UID");
                 mSwipe.setRefreshing(true);
@@ -110,7 +116,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 mFragment = EventListFragment.newInstance(1, events);
                 setTitle(getString(R.string.title_event_list_uid));
                 Log.d(TAG, "fragment created");
-            } else if (extras.containsKey("subscription")){
+            } else if (extras.containsKey("subscription")) {
                 // if a subscription is provided
                 Log.d(TAG, "creating fragment from provided subscription");
                 sub = (Subscription) extras.getSerializable("subscription");
@@ -153,7 +159,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     }
 
     private void refreshList() {
-        switch (updateType){
+        switch (updateType) {
             case NONE:
                 // should not be enabled
                 mSwipe.setEnabled(false);
@@ -201,13 +207,14 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     /**
      * Auxiliary method to retrieve fresh Events from NSService using UID and update the list shown
+     *
      * @return the events found locally on the SQLite DB
      */
-    private List<Event> getByUid(){
+    private List<Event> getByUid() {
         return NSService.getInstance(getApplicationContext()).getEventsByUser(uid, new NSService.MyCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from UID: found "+events.size()+ " events");
+                Log.d(TAG, "events from UID: found " + events.size() + " events");
                 RecyclerView recyclerView = mFragment.getRecyclerView();
                 ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
                 mSwipe.setRefreshing(false);
@@ -216,15 +223,16 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onFailure() {
                 Log.w(TAG, "events from UID: failure");
-                Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                if(isInFront)
+                    Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
 
             @Override
             public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from UID: "+message);
+                Log.w(TAG, "events from UID: " + message);
                 String msg = "";
-                switch (status){
+                switch (status) {
                     case 400:
                         msg = getString(R.string.msg_400_bad_request_events);
                         break;
@@ -238,7 +246,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         msg = getString(R.string.msg_unknown_error);
                         break;
                 }
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
         });
@@ -246,13 +255,14 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     /**
      * Auxiliary method to retrieve fresh Events from NSService using Subscription and update the list shown
+     *
      * @return the events found locally on the SQLite DB
      */
-    private List<Event> getBySub(){
+    private List<Event> getBySub() {
         return NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from sub: found "+events.size()+ " events");
+                Log.d(TAG, "events from sub: found " + events.size() + " events");
                 RecyclerView recyclerView = mFragment.getRecyclerView();
                 ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
                 mSwipe.setRefreshing(false);
@@ -261,15 +271,16 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onFailure() {
                 Log.w(TAG, "events from sub: failure");
-                Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                if (isInFront)
+                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
 
             @Override
             public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from sub: "+message);
+                Log.w(TAG, "events from sub: " + message);
                 String msg = "";
-                switch (status){
+                switch (status) {
                     case 400:
                         msg = getString(R.string.msg_400_bad_request_events);
                         break;
@@ -280,17 +291,18 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         msg = getString(R.string.msg_unknown_error);
                         break;
                 }
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
         });
     }
 
-    private List<Event> getByLocation(){
+    private List<Event> getByLocation() {
         return NSService.getInstance(getContext()).getEventsByRadius(latitude, longitude, 2000, new NSService.MyCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from location: found "+events.size()+ " events");
+                Log.d(TAG, "events from location: found " + events.size() + " events");
                 RecyclerView recyclerView = mFragment.getRecyclerView();
                 ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
                 mSwipe.setRefreshing(false);
@@ -299,15 +311,16 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onFailure() {
                 Log.w(TAG, "events from location: failure");
-                Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                if (isInFront)
+                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
 
             @Override
             public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from location: "+message);
+                Log.w(TAG, "events from location: " + message);
                 String msg = "";
-                switch (status){
+                switch (status) {
                     case 400:
                         msg = getString(R.string.msg_400_bad_request_events);
                         break;
@@ -318,7 +331,8 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                         msg = getString(R.string.msg_unknown_error);
                         break;
                 }
-                Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
         });
@@ -331,17 +345,19 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                             .build(this);
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_RC);
         } catch (GooglePlayServicesRepairableException e) {
-            Log.d(TAG, "findPlace: repairable error "+e.getMessage());
-            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "findPlace: repairable error " + e.getMessage());
+            if(isInFront)
+                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d(TAG, "findPlace: play service not available error "+e.getMessage());
-            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "findPlace: play service not available error " + e.getMessage());
+            if(isInFront)
+                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CREATE_EVENT_RC && resultCode == RESULT_OK){
+        if (requestCode == CREATE_EVENT_RC && resultCode == RESULT_OK) {
             refreshList();
         }
 
@@ -375,8 +391,9 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
-                Log.w(TAG, "PlaceAutocomplete error "+status.getStatusMessage());
-                Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "PlaceAutocomplete error " + status.getStatusMessage());
+                if(isInFront)
+                    Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, status.getStatusMessage());
 
             } else if (resultCode == RESULT_CANCELED) {
@@ -401,5 +418,17 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_event_list, menu);
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
     }
 }
