@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Neighborhood Security Wear</string>
+    <string name="hello_round">Hello Round World!</string>
+    <string name="hello_square">Hello Square World!</string>
+    <string name="new_event">New Event</string>
+    <string name="nearby">Nearby</string>
+    <string name="map">Map</string>
+</resources>
