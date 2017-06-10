@@ -5,4 +5,5 @@
     <string name="new_event">New Event</string>
     <string name="nearby">Nearby</string>
     <string name="map">Map</string>
+    <string name="please_install_app">Please install phone app</string>
 </resources>

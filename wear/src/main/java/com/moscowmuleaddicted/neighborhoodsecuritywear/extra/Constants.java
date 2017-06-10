@@ -5,4 +5,5 @@ package com.moscowmuleaddicted.neighborhoodsecuritywear.extra;
  */
 
 public class Constants {
+    public static final String CAPABILITY_PHONE_APP = "capability_phone_app_ns";
 }
