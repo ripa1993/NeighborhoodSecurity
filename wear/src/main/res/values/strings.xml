@@ -6,4 +6,6 @@
     <string name="nearby">Nearby</string>
     <string name="map">Map</string>
     <string name="please_install_app">Please install phone app</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="intro_text">Long click to exit the map.</string>
 </resources>

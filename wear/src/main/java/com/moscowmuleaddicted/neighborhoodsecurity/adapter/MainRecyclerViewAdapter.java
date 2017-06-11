@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecuritywear.adapter;
+package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.moscowmuleaddicted.neighborhoodsecuritywear.R;
-import com.moscowmuleaddicted.neighborhoodsecuritywear.extra.MainItem;
+import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.extra.MainItem;
 
 import java.util.List;
 
@@ -33,15 +33,16 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final MainItem item = mItems.get(position);
+        holder.mItem = item;
         holder.mImage.setImageDrawable(item.getImage());
-        holder.mText.setText(item.getText());
+        holder.mText.setText(String.valueOf(position) + " " + item.getText());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mListener != null){
-                    mListener.onInteraction(item);
+                    mListener.onInteraction(holder.mItem);
                 }
             }
         });
@@ -57,6 +58,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         public final View mView;
         public final ImageView mImage;
         public final TextView mText;
+        public MainItem mItem;
 
         public ViewHolder(View view){
             super(view);

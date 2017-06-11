@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecuritywear.extra;
+package com.moscowmuleaddicted.neighborhoodsecurity.extra;
 
 import android.graphics.drawable.Drawable;
 

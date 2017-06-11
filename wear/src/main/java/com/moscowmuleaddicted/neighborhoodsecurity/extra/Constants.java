@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecuritywear.extra;
+package com.moscowmuleaddicted.neighborhoodsecurity.extra;
 
 /**
  * Created by Simone Ripamonti on 10/06/2017.

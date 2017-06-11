@@ -1,13 +1,12 @@
-package com.moscowmuleaddicted.neighborhoodsecuritywear.activity;
+package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.CurvedChildLayoutManager;
 import android.support.wearable.view.WearableRecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,22 +17,24 @@ import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.Wearable;
-import com.moscowmuleaddicted.neighborhoodsecuritywear.R;
-import com.moscowmuleaddicted.neighborhoodsecuritywear.adapter.MainRecyclerViewAdapter;
-import com.moscowmuleaddicted.neighborhoodsecuritywear.extra.ItemType;
-import com.moscowmuleaddicted.neighborhoodsecuritywear.extra.MainItem;
+import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MainRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.extra.ItemType;
+import com.moscowmuleaddicted.neighborhoodsecurity.extra.MainItem;
+import com.moscowmuleaddicted.neighborhoodsecurity.extra.MyCurvedChildLayoutManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.moscowmuleaddicted.neighborhoodsecuritywear.extra.Constants.CAPABILITY_PHONE_APP;
+import static com.moscowmuleaddicted.neighborhoodsecurity.extra.Constants.CAPABILITY_PHONE_APP;
 
 public class MainActivity extends WearableActivity implements MainRecyclerViewAdapter.OnItemInteractionListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CapabilityApi.CapabilityListener {
 
     public static final String TAG = "MainActivity";
 
     private WearableRecyclerView mRecyclerView;
-    private CurvedChildLayoutManager mChildLayoutManager;
+    private MyCurvedChildLayoutManager mChildLayoutManager;
     private List<MainItem> mActions;
     private Node mAndroidPhoneNodeWithApp;
     private GoogleApiClient mGoogleApiClient;
@@ -43,6 +44,7 @@ public class MainActivity extends WearableActivity implements MainRecyclerViewAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mActions = new ArrayList<>();
         mActions.add(new MainItem(getDrawable(R.mipmap.ic_launcher), getString(R.string.new_event), ItemType.NEW_EVENT));
         mActions.add(new MainItem(getDrawable(R.mipmap.ic_launcher), getString(R.string.nearby), ItemType.NEARBY));
         mActions.add(new MainItem(getDrawable(R.mipmap.ic_launcher), getString(R.string.map), ItemType.MAP));
@@ -53,7 +55,7 @@ public class MainActivity extends WearableActivity implements MainRecyclerViewAd
 
 
         mRecyclerView = (WearableRecyclerView) findViewById(R.id.recycler_view_main);
-        mChildLayoutManager = new CurvedChildLayoutManager(getApplicationContext());
+        mChildLayoutManager = new MyCurvedChildLayoutManager(getApplicationContext());
 
         mRecyclerView.setCenterEdgeItems(true);
         mRecyclerView.setLayoutManager(mChildLayoutManager);
@@ -75,6 +77,8 @@ public class MainActivity extends WearableActivity implements MainRecyclerViewAd
             case NEW_EVENT:
                 break;
             case MAP:
+                Intent mapsIntent = new Intent(this, MapsActivity.class);
+                startActivity(mapsIntent);
                 break;
             case NEARBY:
                 break;
