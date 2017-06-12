@@ -52,14 +52,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     private boolean initialPositionSet = false;
     private List<Event> initialEvents;
     private boolean initialEventsSet = false;
-    private LatLng defaultPosition = new LatLng(45.477072, 9.226096);
-
-    public NSMapFragment(){
-        GoogleMapOptions gmo = new GoogleMapOptions()
-                .compassEnabled(false)
-                .mapToolbarEnabled(false);
-        newInstance(gmo);
-    }
+    private LatLng defaultPosition = new LatLng(45.477072, 9.226096); // Milano
 
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
@@ -90,6 +83,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         currentMap.setTrafficEnabled(false);
         currentMap.setIndoorEnabled(false);
         currentMap.setBuildingsEnabled(false);
+        currentMap.getUiSettings().setMapToolbarEnabled(false);
 
         if (initialPositionSet) {
             currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16f));
