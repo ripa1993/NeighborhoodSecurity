@@ -1,10 +1,15 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
+import android.Manifest;
 import android.content.Intent;
-import android.widget.Toast;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -12,17 +17,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.MarkerManager;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventListActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
+import static com.facebook.FacebookSdk.getApplicationContext;
+
+public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem> {
+
+    public static final String TAG = "NSMapFragment";
 
     private GoogleMap currentMap;
     private NSService service;
@@ -33,6 +52,14 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
     private boolean initialPositionSet = false;
     private List<Event> initialEvents;
     private boolean initialEventsSet = false;
+    private LatLng defaultPosition = new LatLng(45.477072, 9.226096);
+
+    public NSMapFragment(){
+        GoogleMapOptions gmo = new GoogleMapOptions()
+                .compassEnabled(false)
+                .mapToolbarEnabled(false);
+        newInstance(gmo);
+    }
 
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
@@ -44,98 +71,87 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         initialEventsSet = true;
     }
 
+    // Declare a variable for the cluster manager.
+    private ClusterManager<EventClusterItem> mClusterManager;
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        service = NSService.getInstance(getActivity());
+        idsAlreadyIn = new HashSet<Integer>();
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        idsAlreadyIn = new HashSet<Integer>();
         // Set local map variable
         currentMap = googleMap;
-        // Set a listener for marker click.
-        currentMap.setOnMarkerClickListener(this);
+        //noinspection MissingPermission
+        currentMap.setMyLocationEnabled(false);
+        currentMap.setTrafficEnabled(false);
+        currentMap.setIndoorEnabled(false);
+        currentMap.setBuildingsEnabled(false);
+
+        if (initialPositionSet) {
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16f));
+        } else if (initialEventsSet){
+            centerCameraToContainAllEvents(initialEvents, false);
+        } else {
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPosition, 16f));
+        }
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<>(getActivity(), currentMap);
+        mClusterManager.setRenderer(new EventClusterRenderer());
+
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        currentMap.setOnMarkerClickListener(mClusterManager);
 
         if (initialEventsSet) {
-            addEventListMarkers(initialEvents);
-            if (initialPositionSet)
-                currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
-            else
-                centerCameraToContainAllEvents(initialEvents, false);
-        } else if(initialPositionSet){
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
-        } else{
-            test();
+            addToCluster(initialEvents);
         }
-    }
 
+        currentMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                Log.d(TAG, "Camera stopped!");
+                LatLng northEast = currentMap.getProjection().getVisibleRegion().latLngBounds.northeast;
+                LatLng southWest = currentMap.getProjection().getVisibleRegion().latLngBounds.southwest;
 
-    // Add marker of an event
-    private void addEventMarker(Event event) {
+                Double latMin, latMax, lonMin, lonMax;
+                latMin = southWest.latitude;
+                latMax = northEast.latitude;
+                lonMin = southWest.longitude;
+                lonMax = northEast.longitude;
 
-        if(idsAlreadyIn.add(event.getId())) { // true if this set did not already contain the specified element
+                final List<Event> localEvents = new ArrayList<Event>();
+                localEvents.addAll(service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
+                    @Override
+                    public void onSuccess(List<Event> events) {
+                        Log.d(TAG, "Found " + events.size() + " events after the API call");
+                        addToCluster(events);
+                    }
 
-            LatLng coords = new LatLng(event.getLatitude(), event.getLongitude());
-            String title = event.getId() + ") " + event.getEventType().toString();
+                    @Override
+                    public void onFailure() {
+                        Log.w(TAG, "onFailure: getEventsByArea");
+                    }
 
-            MarkerOptions options = new MarkerOptions();
-            options.position(new LatLng(event.getLatitude(), event.getLongitude()));
-            options.title(title);
-
-            // Select icon
-            switch (event.getEventType()) {
-                case CARJACKING:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
-                    break;
-                case BURGLARY:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
-                    break;
-                case ROBBERY:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
-                    break;
-                case THEFT:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
-                    break;
-                case SHADY_PEOPLE:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
-                    break;
-                case SCAMMERS:
-                    options.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
-                    break;
-                default:
-                    break;
+                    @Override
+                    public void onMessageLoad(MyMessage message, int status) {
+                        Log.w(TAG, "onMessageLoad: getEventsByArea " + message);
+                    }
+                }));
+                Log.d(TAG, "Found " + localEvents.size() + " events in the local db");
+                addToCluster(localEvents);
+                mClusterManager.onCameraIdle();
             }
+        });
 
-            // Add the marker
-            Marker newMarker = currentMap.addMarker(options);
-
-            // Save the Event object in marker's Tag
-            newMarker.setTag(event);
-        }
-    }
-
-
-    // Add all markers from a list of events
-    public void addEventListMarkers(List<Event> events) {
-
-        for (Event event : events) {
-            addEventMarker(event);
-        }
-
-    }
-
-
-    @Override
-    public boolean onMarkerClick(final Marker marker) {
-
-        // Retrieve Event object.
-        Event event = (Event) marker.getTag();
-
-        Intent i = new Intent(getActivity(), EventDetailActivity.class);
-        i.putExtra("event", event);
-        startActivity(i);
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
-        return false;
     }
 
 
@@ -168,7 +184,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
 
 
     private void centerCameraInBarycenterOfEvents(List<Event> events, boolean animate) {
-        if(animate)
+        if (animate)
             currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
         else
             currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
@@ -182,39 +198,114 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         }
         LatLngBounds bounds = b.build();
 
-        if(animate)
+        if (animate)
             currentMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
         else
             currentMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
     }
 
-
-    private void test() {
-        Double latMin = 0d, latMax = 0d, lonMin = 0d, lonMax = 0d;
-        latMin = 45d;
-        latMax = 46d;
-        lonMin = 9d;
-        lonMax = 10d;
-
-        service = NSService.getInstance(getActivity());
-
-        service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                addEventListMarkers(events);
-                centerCameraToContainAllEvents(events, true);
+    private synchronized void addToCluster(List<Event> events) {
+        Log.d(TAG, "Found " + events.size() + " events");
+        List<EventClusterItem> eventClusterItems = new ArrayList<>();
+        for (Event e : events) {
+            if (idsAlreadyIn.add(e.getId())) {
+                eventClusterItems.add(new EventClusterItem(e));
             }
-
-            @Override
-            public void onFailure() {
-                Toast.makeText(getActivity(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Toast.makeText(getActivity(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
+        }
+        mClusterManager.addItems(eventClusterItems);
     }
+
+    @Override
+    public boolean onClusterClick(Cluster<EventClusterItem> cluster) {
+        Collection<EventClusterItem> eventClusterItems = cluster.getItems();
+        ArrayList<Event> events = new ArrayList<>();
+        for(EventClusterItem e: eventClusterItems){
+            events.add(e.getEvent());
+        }
+        Intent showEventList = new Intent(getActivity(), EventListActivity.class);
+        showEventList.putExtra("event-list", events);
+        startActivity(showEventList);
+        return false;
+    }
+
+    @Override
+    public boolean onClusterItemClick(EventClusterItem eventClusterItem) {
+        Event event = eventClusterItem.getEvent();
+        Intent showEventDetail = new Intent(getActivity(), EventDetailActivity.class);
+        showEventDetail.putExtra("event", event);
+        startActivity(showEventDetail);
+        return false;
+    }
+
+    public class EventClusterItem implements ClusterItem {
+        private Event mEvent;
+        private LatLng mPosition;
+        private String mTitle;
+        private String mSnippet;
+
+        public EventClusterItem(Event event) {
+            mEvent = event;
+            mPosition = new LatLng(event.getLatitude(), event.getLongitude());
+        }
+
+        public EventClusterItem(double lat, double lng, String title, String snippet, Event event) {
+            mPosition = new LatLng(lat, lng);
+            mTitle = title;
+            mSnippet = snippet;
+            mEvent = event;
+        }
+
+        @Override
+        public LatLng getPosition() {
+            return mPosition;
+        }
+
+        @Override
+        public String getTitle() {
+            return mTitle;
+        }
+
+        @Override
+        public String getSnippet() {
+            return mSnippet;
+        }
+
+        public Event getEvent() {
+            return mEvent;
+        }
+    }
+
+    private class EventClusterRenderer extends DefaultClusterRenderer<EventClusterItem> {
+
+        public EventClusterRenderer() {
+            super(getApplicationContext(), currentMap, mClusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(EventClusterItem item, MarkerOptions markerOptions) {
+            switch (item.getEvent().getEventType()) {
+                case CARJACKING:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
+                    break;
+                case BURGLARY:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
+                    break;
+                case ROBBERY:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
+                    break;
+                case THEFT:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
+                    break;
+                case SHADY_PEOPLE:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
+                    break;
+                case SCAMMERS:
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 }
