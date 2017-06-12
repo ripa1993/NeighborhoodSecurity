@@ -24,6 +24,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
 
@@ -53,119 +54,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-            int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), 0);
-            Date eDate;
-            try {
-                eDate = inFormat.parse(remoteMessage.getData().get("date"));
-            } catch (ParseException e) {
-                eDate = new Date();
-            }
-            EventType eEventType = EventType.valueOf(remoteMessage.getData().get("eventType").toUpperCase());
-            String eDescription = remoteMessage.getData().get("description");
-            String eCountry = remoteMessage.getData().get("country");
-            String eCity = remoteMessage.getData().get("city");
-            String eStreet = remoteMessage.getData().get("street");
-            Double eLatitude = NumberUtils.toDouble(remoteMessage.getData().get("latitude"), 0);
-            Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
-            int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
-            String eSubmitterId = remoteMessage.getData().get("submitterId");
-            Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
-                    eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
-
-            // save in local db
-            EventDB db = new EventDB(this);
-            db.addEvent(event);
-            db.close();
-
-            int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
-            String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
-
-            Log.d(TAG, "received notification about subscription " + subscriptionId + " owned by " + subscriptionOwner);
-            FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-            if (firebaseUser == null) {
-                Log.w(TAG, "discarding notification because no user is logged in");
+            if(remoteMessage.getData().get("type").equals("event")){
+                handleEvent(remoteMessage);
+            } else if (remoteMessage.getData().get("type").equals("remove_event")){
+                handleDeleteEvent(remoteMessage);
+            } else {
                 return;
             }
-
-            if (!firebaseUser.getUid().equals(subscriptionOwner)) {
-                Log.w(TAG, "discarding notification because it is not for the current user");
-                return;
-            }
-
-            if (subscriptionId < 0) {
-                Log.w(TAG, "discarding notification about an unknown subscription");
-                return;
-            }
-
-            SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
-            boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
-            Log.d(TAG, "subscription is enabled? " + subscriptionEnabled);
-            if (!subscriptionEnabled) {
-                Log.d(TAG, "discarding notification because subscription is disabled");
-                return;
-            }
-
-            Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
-            eventDetailIntent.putExtra("event", event);
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                    0,
-                    eventDetailIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-
-            Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-            Bitmap androidWearBg = BitmapFactory.decodeResource(getResources(),R.drawable.android_wear_bg);
-            boolean skipMap = false;
-            Bitmap map = null;
-            try {
-                map = getMapBitmap(eLatitude, eLongitude);
-            } catch (Exception e) {
-                // ignore
-                Log.w(TAG, "cannot load static map image", e);
-                skipMap = true;
-            }
-
-            NotificationCompat.WearableExtender wearableExtender =
-                    new NotificationCompat.WearableExtender()
-                            .setHintHideIcon(true)
-                            .setBackground(androidWearBg);
-
-            if(!skipMap){
-                wearableExtender.addPage(new NotificationCompat.Builder(this).extend(new WearableExtender().setBackground(map).setHintShowBackgroundOnly(true)).build());
-            }
-
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.ic_marmotta_full)
-                    .setContentTitle(eEventType + " @ " + eCity + ", " + eStreet)
-                    .setContentText(eDescription)
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(eDescription)
-                    )
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(true)
-                    .setSound(notificationSound)
-                    .extend(wearableExtender);
-
-            NotificationManager mNotifyMgr =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-            mNotifyMgr.notify(eId, mBuilder.build());
-
-            // increment counter
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user != null) {
-                String uid = user.getUid();
-                SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
-                int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
-                SharedPreferences.Editor editor = sharedPreferencesNotifications.edit();
-                editor.putInt(uid, notificationCount + 1);
-                editor.commit();
-            }
-
 
         }
 
@@ -173,6 +68,132 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
+    }
+
+    private boolean handleEvent(RemoteMessage remoteMessage) {
+        Log.d(TAG, "handling event");
+
+        SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), 0);
+        Date eDate;
+        try {
+            eDate = inFormat.parse(remoteMessage.getData().get("date"));
+        } catch (ParseException e) {
+            eDate = new Date();
+        }
+        EventType eEventType = EventType.valueOf(remoteMessage.getData().get("eventType").toUpperCase());
+        String eDescription = remoteMessage.getData().get("description");
+        String eCountry = remoteMessage.getData().get("country");
+        String eCity = remoteMessage.getData().get("city");
+        String eStreet = remoteMessage.getData().get("street");
+        Double eLatitude = NumberUtils.toDouble(remoteMessage.getData().get("latitude"), 0);
+        Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
+        int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
+        String eSubmitterId = remoteMessage.getData().get("submitterId");
+        Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
+                eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
+
+        // save in local db
+        EventDB db = new EventDB(this);
+        db.addEvent(event);
+        db.close();
+
+        int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
+        String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
+
+        Log.d(TAG, "received notification about subscription " + subscriptionId + " owned by " + subscriptionOwner);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser == null) {
+            Log.w(TAG, "discarding notification because no user is logged in");
+            return true;
+        }
+
+        if (!firebaseUser.getUid().equals(subscriptionOwner)) {
+            Log.w(TAG, "discarding notification because it is not for the current user");
+            return true;
+        }
+
+        if (subscriptionId < 0) {
+            Log.w(TAG, "discarding notification about an unknown subscription");
+            return true;
+        }
+
+        SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
+        boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
+        Log.d(TAG, "subscription is enabled? " + subscriptionEnabled);
+        if (!subscriptionEnabled) {
+            Log.d(TAG, "discarding notification because subscription is disabled");
+            return true;
+        }
+
+        Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
+        eventDetailIntent.putExtra("event", event);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0,
+                eventDetailIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        Bitmap androidWearBg = BitmapFactory.decodeResource(getResources(), R.drawable.android_wear_bg);
+        boolean skipMap = false;
+        Bitmap map = null;
+        try {
+            map = getMapBitmap(eLatitude, eLongitude);
+        } catch (Exception e) {
+            // ignore
+            Log.w(TAG, "cannot load static map image", e);
+            skipMap = true;
+        }
+
+        WearableExtender wearableExtender =
+                new WearableExtender()
+                        .setHintHideIcon(true)
+                        .setBackground(androidWearBg);
+
+        if(!skipMap){
+            wearableExtender.addPage(new NotificationCompat.Builder(this).extend(new WearableExtender().setBackground(map).setHintShowBackgroundOnly(true)).build());
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_marmotta_full)
+                .setContentTitle(eEventType + " @ " + eCity + ", " + eStreet)
+                .setContentText(eDescription)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(eDescription)
+                )
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setSound(notificationSound)
+                .extend(wearableExtender);
+
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        mNotifyMgr.notify(eId, mBuilder.build());
+
+        // increment counter
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+            int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
+            SharedPreferences.Editor editor = sharedPreferencesNotifications.edit();
+            editor.putInt(uid, notificationCount + 1);
+            editor.commit();
+        }
+        return false;
+    }
+
+    private void handleDeleteEvent(RemoteMessage remoteMessage){
+        int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), -1);
+        if(eId < 0) return;
+
+        EventDB eventDB = new EventDB(this);
+        eventDB.deleteById(eId);
     }
 
     private String buildMapUrl(double latitude, double longitude){
