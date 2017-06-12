@@ -2,7 +2,12 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.NSMapFragment;
@@ -13,15 +18,21 @@ import java.util.List;
 
 public class MapActivity extends AppCompatActivity {
 
+    public static final String TAG = "MapActivity";
+    NSMapFragment mapFragment;
+    PlaceAutocompleteFragment placeAutocompleteFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Retrieve the content view that renders the map.
-        setContentView(R.layout.fragment_ns_map);
+        setContentView(R.layout.activity_map);
 
         // Get the MapFragment
-        NSMapFragment mapFragment = (NSMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (NSMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        // Get the PlacesAutomcomplete
+        placeAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         // Get data passed to the intent
         Bundle extras = getIntent().getExtras();
@@ -43,6 +54,19 @@ public class MapActivity extends AppCompatActivity {
         }
 
         mapFragment.getMapAsync(mapFragment);
+
+        placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.w(TAG, "PlaceAutocomplete returned "+place.getLatLng());
+                mapFragment.moveCamera(place.getLatLng(), true);
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.w(TAG, status.getStatusMessage());
+            }
+        });
 
     }
 

@@ -39,7 +39,7 @@ import java.util.Set;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem> {
+public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem>, GoogleMap.OnCameraIdleListener {
 
     public static final String TAG = "NSMapFragment";
 
@@ -85,67 +85,30 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         currentMap.setBuildingsEnabled(false);
         currentMap.getUiSettings().setMapToolbarEnabled(false);
 
-        if (initialPositionSet) {
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 16f));
-        } else if (initialEventsSet){
-            centerCameraToContainAllEvents(initialEvents, false);
-        } else {
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPosition, 16f));
-        }
-
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
         mClusterManager = new ClusterManager<>(getActivity(), currentMap);
         mClusterManager.setRenderer(new EventClusterRenderer());
 
+        // set listeners
+        currentMap.setOnCameraIdleListener(this);
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterItemClickListener(this);
-
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
         currentMap.setOnMarkerClickListener(mClusterManager);
 
+        // load initial events
         if (initialEventsSet) {
             addToCluster(initialEvents);
         }
 
-        currentMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                Log.d(TAG, "Camera stopped!");
-                LatLng northEast = currentMap.getProjection().getVisibleRegion().latLngBounds.northeast;
-                LatLng southWest = currentMap.getProjection().getVisibleRegion().latLngBounds.southwest;
-
-                Double latMin, latMax, lonMin, lonMax;
-                latMin = southWest.latitude;
-                latMax = northEast.latitude;
-                lonMin = southWest.longitude;
-                lonMax = northEast.longitude;
-
-                final List<Event> localEvents = new ArrayList<Event>();
-                localEvents.addAll(service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
-                    @Override
-                    public void onSuccess(List<Event> events) {
-                        Log.d(TAG, "Found " + events.size() + " events after the API call");
-                        addToCluster(events);
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        Log.w(TAG, "onFailure: getEventsByArea");
-                    }
-
-                    @Override
-                    public void onMessageLoad(MyMessage message, int status) {
-                        Log.w(TAG, "onMessageLoad: getEventsByArea " + message);
-                    }
-                }));
-                Log.d(TAG, "Found " + localEvents.size() + " events in the local db");
-                addToCluster(localEvents);
-                mClusterManager.onCameraIdle();
-            }
-        });
-
+        // set initial position
+        if (initialPositionSet) {
+            moveCamera(initialPosition, true);
+        } else if (initialEventsSet){
+            centerCameraToContainAllEvents(initialEvents, true);
+        } else {
+            moveCamera(defaultPosition, true);
+        }
     }
 
 
@@ -229,6 +192,50 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         showEventDetail.putExtra("event", event);
         startActivity(showEventDetail);
         return false;
+    }
+
+    public void moveCamera(LatLng latLng, boolean animate){
+        if(animate){
+            currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+        } else {
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+        }
+        onCameraIdle();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        Log.d(TAG, "Camera stopped!");
+        LatLng northEast = currentMap.getProjection().getVisibleRegion().latLngBounds.northeast;
+        LatLng southWest = currentMap.getProjection().getVisibleRegion().latLngBounds.southwest;
+
+        Double latMin, latMax, lonMin, lonMax;
+        latMin = southWest.latitude;
+        latMax = northEast.latitude;
+        lonMin = southWest.longitude;
+        lonMax = northEast.longitude;
+
+        final List<Event> localEvents = new ArrayList<Event>();
+        localEvents.addAll(service.getEventsByArea(latMin, latMax, lonMin, lonMax, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "Found " + events.size() + " events after the API call");
+                addToCluster(events);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "onFailure: getEventsByArea");
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "onMessageLoad: getEventsByArea " + message);
+            }
+        }));
+        Log.d(TAG, "Found " + localEvents.size() + " events in the local db");
+        addToCluster(localEvents);
+        mClusterManager.onCameraIdle();
     }
 
     public class EventClusterItem implements ClusterItem {
