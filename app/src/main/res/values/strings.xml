@@ -149,4 +149,5 @@
     <string name="drawer_my_events">My Events</string>
     <string name="drawer_logout_ok">Successfully logged out</string>
     <string name="drawer_logout_fail">Failed to logout</string>
+    <string name="title_activity_map">Event map</string>
 </resources>

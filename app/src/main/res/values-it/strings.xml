@@ -113,4 +113,12 @@
     <string name="title_event_list_location">Eventi a %1$s</string>
     <string name="title_event_list_subscription">Eventi nella sottoscrizione</string>
     <string name="title_event_list_uid">I tuoi eventi</string>
+    <string name="drawer_login_register">Accedi / Registrati</string>
+    <string name="drawer_logout">Esci</string>
+    <string name="drawer_logout_fail">Erorre nell\'uscita</string>
+    <string name="drawer_logout_ok">Uscito con successo</string>
+    <string name="drawer_my_events">I miei eventi</string>
+    <string name="drawer_new_event">Nuovo evento</string>
+    <string name="drawer_new_subscription">Nuova sottoscrizione</string>
+    <string name="title_activity_map">Mappa degli eventi</string>
 </resources>
