@@ -81,6 +81,10 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         return cursor.getInt(0);
     }
 
+    public void deleteById(int subscriptionId){
+        getWritableDatabase().delete(SubscriptionEntry.TABLE_NAME, SubscriptionEntry._ID + " = ?", new String[]{String.valueOf(subscriptionId)});
+    }
+
     private Subscription toSubscription(Cursor cursor){
         Subscription sub = new Subscription();
         sub.setId(cursor.getInt(0));
@@ -95,4 +99,5 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         sub.setStreet(cursor.getString(9));
         return sub;
     }
+
 }

@@ -768,7 +768,7 @@ public class NSService {
      * @param id
      * @param callback
      */
-    public void deleteSubscriptionById(int id, final MyCallback<MyMessage> callback) {
+    public void deleteSubscriptionById(final int id, final MyCallback<MyMessage> callback) {
         restInterface.deleteSubscriptionById(id).enqueue(new retrofit2.Callback<MyMessage>() {
             @Override
             public void onResponse(Call<MyMessage> call, Response<MyMessage> response) {
@@ -777,6 +777,7 @@ public class NSService {
 
                 if (response.isSuccessful()) {
                     MyMessage msg = response.body();
+                    subscriptionDB.deleteById(id);
                     callback.onSuccess(msg);
                 } else {
                     try {
