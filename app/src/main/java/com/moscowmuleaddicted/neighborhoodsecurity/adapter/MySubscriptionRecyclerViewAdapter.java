@@ -2,7 +2,6 @@ package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +52,7 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
         boolean enabled = sharedPreferences.getBoolean(String.valueOf(holder.mItem.getId()), true);
         holder.mSwitch.setChecked(enabled);
-        if(enabled){
+        if (enabled) {
             holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_button));
         } else {
             holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_turn_notifications_off_button));
@@ -65,12 +64,20 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListItemClick(holder.mItem);
                 }
             }
         });
 
-
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (null != mListener) {
+                    return mListener.onListItemLongClick(holder.mItem, v);
+                }
+                return false;
+            }
+        });
 
         holder.mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -78,7 +85,7 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(String.valueOf(holder.mItem.getId()), isChecked);
                 editor.commit();
-                if(isChecked){
+                if (isChecked) {
                     holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_notifications_button));
                 } else {
                     holder.mIcon.setImageDrawable(context.getDrawable(R.drawable.ic_turn_notifications_off_button));
@@ -113,16 +120,17 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mCity.getText() +" " +mStreet.getText()+" "+mRadius.getText()+ "'";
+            return super.toString() + " '" + mCity.getText() + " " + mStreet.getText() + " " + mRadius.getText() + "'";
         }
     }
-    public synchronized void addSubscriptions(Collection<Subscription> subscriptions){
+
+    public synchronized void addSubscriptions(Collection<Subscription> subscriptions) {
         int oldSize = mValues.size();
         // remove events already present
         ArrayList<Subscription> tempSubscriptions = new ArrayList<Subscription>(subscriptions);
         tempSubscriptions.removeAll(mValues);
         // add remaining ones
-        Log.d(TAG, "inserted "+tempSubscriptions.size()+" items");
+        Log.d(TAG, "inserted " + tempSubscriptions.size() + " items");
         mValues.addAll(tempSubscriptions);
         // notify changes
 //        notifyItemRangeInserted(oldSize, tempSubscriptions.size());
@@ -136,4 +144,11 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
             return Integer.valueOf(o1.getId()).compareTo(o2.getId());
         }
     };
+
+    public synchronized void removeSubscription(Subscription s){
+        mValues.remove(s);
+        notifyDataSetChanged();
+    }
+
+
 }

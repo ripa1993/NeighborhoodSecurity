@@ -197,7 +197,7 @@ public class NSService {
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,
      *                 onFailure if exception
      */
-    public Event getEventById(int id, final MyCallback<Event> callback) throws EventDB.NoEventFoundException {
+    public Event getEventById(final int id, final MyCallback<Event> callback) throws EventDB.NoEventFoundException {
         Log.i(TAG, "getEventById: querying for event " + id);
         restInterface.getEventById(id).enqueue(new retrofit2.Callback<Event>() {
             @Override
@@ -213,6 +213,9 @@ public class NSService {
                     callback.onSuccess(event);
                 } else {
                     try {
+                        if (response.code() == 404){
+                            eventDB.deleteById(id);
+                        }
                         MyMessage msg = converter.convert(response.errorBody());
                         callback.onMessageLoad(msg, response.code());
                     } catch (IOException e) {
@@ -334,6 +337,9 @@ public class NSService {
                 } else {
                     try {
                         MyMessage msg = converter.convert(response.errorBody());
+                        if(response.code() == 404){
+                            eventDB.deleteById(id);
+                        }
                         callback.onMessageLoad(msg, response.code());
                     } catch (IOException e) {
                         callback.onFailure();
@@ -374,6 +380,9 @@ public class NSService {
                         }
                         callback.onSuccess("ok");
                     } else {
+                        if (response.code() == 404){
+                            eventDB.deleteById(id);
+                        }
                         callback.onMessageLoad(new MyMessage(), 204);
                     }
 
@@ -420,6 +429,9 @@ public class NSService {
                         }
                         callback.onSuccess("ok");
                     } else {
+                        if (response.code() == 404){
+                            eventDB.deleteById(id);
+                        }
                         callback.onMessageLoad(new MyMessage(), 204);
                     }
                 } else {
@@ -781,6 +793,9 @@ public class NSService {
                     callback.onSuccess(msg);
                 } else {
                     try {
+                        if (response.code() == 404){
+                            subscriptionDB.deleteById(id);
+                        }
                         MyMessage msg = converter.convert(response.errorBody());
                         callback.onMessageLoad(msg, response.code());
                     } catch (IOException e) {

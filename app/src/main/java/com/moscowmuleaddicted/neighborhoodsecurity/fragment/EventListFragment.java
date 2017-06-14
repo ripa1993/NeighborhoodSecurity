@@ -135,16 +135,20 @@ public class EventListFragment extends Fragment {
     }
 
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Event event);
+        void onListItemClick(Event event);
 
         void scrollingUp();
 
         void scrollingDown();
+
+        boolean onListItemLongClick(Event mItem, View view);
     }
 
     public RecyclerViewWithEmptyView getRecyclerView() {
         return mRecyclerView;
     }
 
-
+    public void removeEvent(Event e){
+        ((MyEventRecyclerViewAdapter) mRecyclerView.getAdapter()).removeEvent(e);
+    }
 }

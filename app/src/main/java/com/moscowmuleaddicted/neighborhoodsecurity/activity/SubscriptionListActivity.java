@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
@@ -148,7 +151,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
     }
 
     @Override
-    public void onListFragmentInteraction(Subscription item) {
+    public void onListItemClick(Subscription item) {
         Intent intent = new Intent(SubscriptionListActivity.this, EventListActivity.class);
         intent.putExtra("subscription", item);
         startActivity(intent);
@@ -166,6 +169,63 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         if (mFab.isHidden()) {
             mFab.show();
         }
+    }
+
+    @Override
+    public boolean onListItemLongClick(final Subscription mItem, View v) {
+        // show  menu
+
+        PopupMenu popupMenu = new PopupMenu(getApplication(), v, Gravity.CENTER);
+        popupMenu.inflate(R.menu.menu_delete_subscription);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.action_delete_subscription:
+                        NSService.getInstance(getApplicationContext()).deleteSubscriptionById(mItem.getId(), new NSService.MyCallback<MyMessage>() {
+                            @Override
+                            public void onSuccess(MyMessage s) {
+                                mFragment.removeSubscription(mItem);
+                                Toast.makeText(getApplicationContext(), getString(R.string.msg_subscription_deleted), Toast.LENGTH_SHORT).show();
+                            }
+                            @Override
+                            public void onFailure() {
+                                String toastMessage = getString(R.string.msg_unknown_error);
+                                Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onMessageLoad(MyMessage message, int status) {
+                                String toastMessage = "";
+                                switch (status){
+                                    case 400:
+                                        toastMessage = getString(R.string.msg_400_bad_request_delete_subscription);
+                                        break;
+                                    case 401:
+                                        toastMessage = getString(R.string.msg_401_unauthorized_delete_subscription);
+                                        break;
+                                    case 404:
+                                        toastMessage = getString(R.string.msg_404_not_found_delete_subscription);
+                                        mFragment.removeSubscription(mItem);
+                                        break;
+                                    case 500:
+                                        toastMessage = getString(R.string.msg_500_internal_server_error_delete_subscription);
+                                        break;
+                                    default:
+                                        toastMessage = getString(R.string.msg_unknown_error);
+                                }
+                                Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        });
+        popupMenu.show();
+        return true;
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -107,11 +106,23 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "clicked");
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onListItemClick(holder.mItem);
                 }
+            }
+        });
+
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.d(TAG, "long clicked");
+                if (null != mListener){
+                    return mListener.onListItemLongClick(holder.mItem, v);
+                }
+                return false;
             }
         });
     }
@@ -161,6 +172,11 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         Log.d(TAG, "inserted "+tempEvents.size()+" items");
 //        notifyItemRangeInserted(oldSize, tempEvents.size());
         Collections.sort(mValues, dateComparator);
+        notifyDataSetChanged();
+    }
+
+    public synchronized void removeEvent(Event e){
+        mValues.remove(e);
         notifyDataSetChanged();
     }
 

@@ -150,4 +150,20 @@
     <string name="drawer_logout_ok">Successfully logged out</string>
     <string name="drawer_logout_fail">Failed to logout</string>
     <string name="title_activity_map">Event map</string>
+    <string name="delete_event_title">Delete event?</string>
+    <string name="delete_event_message">Do you want to delete this event?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="action_delete_event">Delete event</string>
+    <string name="msg_400_bad_request_delete_event">There was a problem with your request. Please try again later</string>
+    <string name="msg_401_unauthorized_delete_event">You are not authorized to delete this event, are you the owner?</string>
+    <string name="msg_404_not_found_delete_event">This event no longer exists</string>
+    <string name="msg_500_internal_server_error_delete_event">Something went wrong on our server. Please try again later</string>
+    <string name="msg_400_bad_request_delete_subscription">There was a problem with your request. Please try again later</string>
+    <string name="msg_401_unauthorized_delete_subscription">You are not authorized to delete this subscription, are you the owner?</string>
+    <string name="msg_404_not_found_delete_subscription">This subscription no longer exists</string>
+    <string name="msg_500_internal_server_error_delete_subscription">Something went wrong on our server. Please try again later</string>
+    <string name="msg_event_deleted">Event deleted</string>
+    <string name="msg_subscription_deleted">Subscription deleted</string>
+    <string name="action_delete_subscription">Delete subscription</string>
 </resources>

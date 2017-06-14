@@ -109,11 +109,13 @@ public class SubscriptionListFragment extends Fragment {
     }
 
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Subscription item);
+        void onListItemClick(Subscription item);
 
         void scrollingUp();
 
         void scrollingDown();
+
+        boolean onListItemLongClick(Subscription mItem, View v);
     }
 
     public RecyclerView getRecyclerView() {
@@ -123,6 +125,10 @@ public class SubscriptionListFragment extends Fragment {
 
     public void showData(List<Subscription> subscriptions) {
         mRecyclerView.swapAdapter(new MySubscriptionRecyclerViewAdapter(subscriptions, mListener), false);
+    }
+
+    public void removeSubscription(Subscription s){
+        ((MySubscriptionRecyclerViewAdapter) mRecyclerView.getAdapter()).removeSubscription(s);
     }
 
 }

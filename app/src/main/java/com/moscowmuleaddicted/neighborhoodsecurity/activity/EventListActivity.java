@@ -4,12 +4,16 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -182,7 +186,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     }
 
     @Override
-    public void onListFragmentInteraction(Event event) {
+    public void onListItemClick(Event event) {
         Log.d(TAG, event.toString());
 
         Intent intent = new Intent(this, EventDetailActivity.class);
@@ -205,6 +209,63 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         }
     }
 
+    @Override
+    public boolean onListItemLongClick(final Event mItem, View view) {
+        // show  menu
+
+        PopupMenu popupMenu = new PopupMenu(getApplication(), view, Gravity.CENTER);
+        popupMenu.inflate(R.menu.menu_delete_event);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.action_delete_event:
+                        NSService.getInstance(getApplicationContext()).deleteEvent(mItem.getId(), new NSService.MyCallback<String>() {
+                            @Override
+                            public void onSuccess(String s) {
+                                mFragment.removeEvent(mItem);
+                                Toast.makeText(getApplicationContext(), getString(R.string.msg_event_deleted), Toast.LENGTH_SHORT).show();
+                            }
+                            @Override
+                            public void onFailure() {
+                                String toastMessage = getString(R.string.msg_unknown_error);
+                                Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onMessageLoad(MyMessage message, int status) {
+                                String toastMessage = "";
+                                switch (status){
+                                    case 400:
+                                        toastMessage = getString(R.string.msg_400_bad_request_delete_event);
+                                        break;
+                                    case 401:
+                                        toastMessage = getString(R.string.msg_401_unauthorized_delete_event);
+                                        break;
+                                    case 404:
+                                        toastMessage = getString(R.string.msg_404_not_found_delete_event);
+                                        mFragment.removeEvent(mItem);
+                                        break;
+                                    case 500:
+                                        toastMessage = getString(R.string.msg_500_internal_server_error_delete_event);
+                                        break;
+                                    default:
+                                        toastMessage = getString(R.string.msg_unknown_error);
+                                }
+                                Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        });
+        popupMenu.show();
+        return true;
+    }
+
     /**
      * Auxiliary method to retrieve fresh Events from NSService using UID and update the list shown
      *
@@ -223,7 +284,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onFailure() {
                 Log.w(TAG, "events from UID: failure");
-                if(isInFront)
+                if (isInFront)
                     Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
                 mSwipe.setRefreshing(false);
             }
@@ -346,11 +407,11 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             startActivityForResult(intent, PLACE_AUTOCOMPLETE_RC);
         } catch (GooglePlayServicesRepairableException e) {
             Log.d(TAG, "findPlace: repairable error " + e.getMessage());
-            if(isInFront)
+            if (isInFront)
                 Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         } catch (GooglePlayServicesNotAvailableException e) {
             Log.d(TAG, "findPlace: play service not available error " + e.getMessage());
-            if(isInFront)
+            if (isInFront)
                 Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -392,7 +453,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
                 Log.w(TAG, "PlaceAutocomplete error " + status.getStatusMessage());
-                if(isInFront)
+                if (isInFront)
                     Toast.makeText(getContext(), getString(R.string.msg_unknown_error), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, status.getStatusMessage());
 

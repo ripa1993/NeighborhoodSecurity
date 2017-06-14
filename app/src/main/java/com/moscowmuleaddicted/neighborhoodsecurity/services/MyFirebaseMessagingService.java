@@ -71,7 +71,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private boolean handleEvent(RemoteMessage remoteMessage) {
-        Log.d(TAG, "handling event");
+        Log.d(TAG, "handleEvent");
 
         SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -189,6 +189,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void handleDeleteEvent(RemoteMessage remoteMessage){
+        Log.d(TAG, "handleDeleteEvent");
         int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), -1);
         if(eId < 0) return;
 
