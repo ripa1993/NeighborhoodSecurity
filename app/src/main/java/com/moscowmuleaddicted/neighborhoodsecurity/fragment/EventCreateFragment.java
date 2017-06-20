@@ -56,6 +56,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     private ImageView ivGetPosition;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private RadioGroup radioGroup;
 
     private static final String ARG_LATITUDE = "latitude";
     private static final String ARG_LONGITUDE = "longitude";
@@ -139,7 +140,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
         lsEventType.setColor(android.R.color.tertiary_text_dark);
 
         // setup radio
-        final RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupEventCreate);
+        radioGroup = (RadioGroup) view.findViewById(R.id.radioGroupEventCreate);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -348,6 +349,12 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     public void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+
+    public void setLocation(double lat, double lon) {
+        radioGroup.check(R.id.radio_coordinates_event);
+        etLatitude.setText(String.valueOf(lat));
+        etLongitude.setText(String.valueOf(lon));
     }
 
 }

@@ -24,6 +24,16 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
         setContentView(R.layout.activity_subscription_create);
 
         mFragment = (SubscriptionCreateFragment) getSupportFragmentManager().findFragmentById(R.id.subscription_create_fragment);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras!=null){
+            if (extras.containsKey("lat") && extras.containsKey("lon")){
+                double lat, lon;
+                lat = extras.getDouble("lat");
+                lon = extras.getDouble("lon");
+                mFragment.setLocation(lat, lon);
+            }
+        }
     }
 
     @Override

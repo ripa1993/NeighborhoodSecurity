@@ -335,6 +335,12 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
         }
     }
 
+    public void setLocation(double lat, double lon) {
+        radioGroup.check(R.id.radio_coordinates_sub);
+        etLatitude.setText(String.valueOf(lat));
+        etLongitude.setText(String.valueOf(lon));
+    }
+
     @Override
     public void onStart() {
         mGoogleApiClient.connect();

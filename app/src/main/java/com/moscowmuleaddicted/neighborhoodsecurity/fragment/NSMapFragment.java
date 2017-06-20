@@ -1,11 +1,16 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.widget.PopupMenu;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,8 +29,11 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventCreateActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventListActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.MapActivity;
+import com.moscowmuleaddicted.neighborhoodsecurity.activity.SubscriptionCreateActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
@@ -39,7 +47,7 @@ import java.util.Set;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
-public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem>, GoogleMap.OnCameraIdleListener {
+public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem>, GoogleMap.OnCameraIdleListener, GoogleMap.OnMapLongClickListener {
 
     public static final String TAG = "NSMapFragment";
 
@@ -109,6 +117,9 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         } else {
             moveCamera(defaultPosition, true);
         }
+
+        // set long click listener
+        googleMap.setOnMapLongClickListener(this);
     }
 
 
@@ -236,6 +247,38 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         Log.d(TAG, "Found " + localEvents.size() + " events in the local db");
         addToCluster(localEvents);
         mClusterManager.onCameraIdle();
+    }
+
+    @Override
+    public void onMapLongClick(final LatLng latLng) {
+        Log.d(TAG, "map long click");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.map_dialog)
+            .setItems(new String[]{getString(R.string.map_dialog_event), getString(R.string.map_dialog_subscription)}, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case 0:
+                            Log.d(TAG, "starting event creation");
+                            Intent intentEvent = new Intent(getApplicationContext(), EventCreateActivity.class);
+                            intentEvent.putExtra("lat", latLng.latitude);
+                            intentEvent.putExtra("lon", latLng.longitude);
+                            startActivity(intentEvent);
+                            return;
+                        case 1:
+                            Log.d(TAG, "starting subscription creation");
+                            Intent intentSubscription = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
+                            intentSubscription.putExtra("lat", latLng.latitude);
+                            intentSubscription.putExtra("lon", latLng.longitude);
+                            startActivity(intentSubscription);
+                            return;
+                        default:
+                            return;
+                    }
+                }
+            }).setCancelable(true).create().show();
+
     }
 
     public class EventClusterItem implements ClusterItem {

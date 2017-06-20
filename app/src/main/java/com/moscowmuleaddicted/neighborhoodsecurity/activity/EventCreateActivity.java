@@ -26,6 +26,16 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
         setContentView(R.layout.activity_event_create);
 
         mEventCreateFragment = (EventCreateFragment) getSupportFragmentManager().findFragmentById(R.id.eventCreateFragment);
+
+        Bundle extras = getIntent().getExtras();
+        if(extras!=null){
+            if (extras.containsKey("lat") && extras.containsKey("lon")){
+                double lat, lon;
+                lat = extras.getDouble("lat");
+                lon = extras.getDouble("lon");
+                mEventCreateFragment.setLocation(lat, lon);
+            }
+        }
     }
 
     @Override

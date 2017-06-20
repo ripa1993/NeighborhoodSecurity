@@ -166,4 +166,9 @@
     <string name="msg_event_deleted">Event deleted</string>
     <string name="msg_subscription_deleted">Subscription deleted</string>
     <string name="action_delete_subscription">Delete subscription</string>
+    <string name="action_new_event">New event</string>
+    <string name="action_new_subscription">New subscription</string>
+    <string name="map_dialog">Create new</string>
+    <string name="map_dialog_event">Event</string>
+    <string name="map_dialog_subscription">Subscription</string>
 </resources>
