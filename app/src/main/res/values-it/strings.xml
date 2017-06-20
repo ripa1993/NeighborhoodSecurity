@@ -121,4 +121,25 @@
     <string name="drawer_new_event">Nuovo evento</string>
     <string name="drawer_new_subscription">Nuova sottoscrizione</string>
     <string name="title_activity_map">Mappa degli eventi</string>
+    <string name="action_delete_event">Elimina evento</string>
+    <string name="action_delete_subscription">Elimina sottoscrizione</string>
+    <string name="action_new_event">Nuovo evento</string>
+    <string name="action_new_subscription">Nuova sottoscrizione</string>
+    <string name="delete_event_message">Vuoi cancellare questo evento?</string>
+    <string name="delete_event_title">Elimina evento?</string>
+    <string name="map_dialog">Crea nuovo</string>
+    <string name="map_dialog_event">Evento</string>
+    <string name="map_dialog_subscription">Sottoscrizione</string>
+    <string name="msg_400_bad_request_delete_event">C\'è stato un problema con la tua richiesta. Prova più tardi</string>
+    <string name="msg_400_bad_request_delete_subscription">C\'è stato un problema con la tua richiesta. Prova più tardi</string>
+    <string name="msg_401_unauthorized_delete_event">Non sei autorizzato a cancellare questo evento, ne sei il creatore?</string>
+    <string name="msg_401_unauthorized_delete_subscription">Non sei autorizzato a cancellare questa sottoscrizione, ne sei il creatore?</string>
+    <string name="msg_404_not_found_delete_event">Questo evento non esiste più</string>
+    <string name="msg_404_not_found_delete_subscription">Questa sottoscrizione non esiste più</string>
+    <string name="msg_500_internal_server_error_delete_event">Qualcosa è andato storto sui nostri server. Riprova più tardi</string>
+    <string name="msg_500_internal_server_error_delete_subscription">Qualcosa è andato storto sui nostri server. Riprova più tardi</string>
+    <string name="msg_event_deleted">Evento eliminato</string>
+    <string name="msg_subscription_deleted">Sottoscrizione eliminata</string>
+    <string name="no">No</string>
+    <string name="yes">Sì</string>
 </resources>
