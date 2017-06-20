@@ -10,9 +10,7 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat.WearableExtender;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -24,7 +22,6 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
 
@@ -35,7 +32,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_CITY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_COUNTRY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_DATE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_DESCRIPTION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_EVENT_TYPE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_REMOVE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_STREET;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBMITTER_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBSCRIPTION_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBSCRIPTION_OWNER;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_TYPE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_VOTES;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAPS_API_URL;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
 
 /**
  * Created by Simone Ripamonti on 25/04/2017.
@@ -54,9 +69,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            if(remoteMessage.getData().get("type").equals("event")){
+            if(remoteMessage.getData().get(FCM_TYPE).equals(FCM_EVENT)){
                 handleEvent(remoteMessage);
-            } else if (remoteMessage.getData().get("type").equals("remove_event")){
+            } else if (remoteMessage.getData().get(FCM_TYPE).equals(FCM_REMOVE_EVENT)){
                 handleDeleteEvent(remoteMessage);
             } else {
                 return;
@@ -75,22 +90,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-        int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), 0);
+        int eId = NumberUtils.toInt(remoteMessage.getData().get(FCM_ID), 0);
         Date eDate;
         try {
-            eDate = inFormat.parse(remoteMessage.getData().get("date"));
+            eDate = inFormat.parse(remoteMessage.getData().get(FCM_DATE));
         } catch (ParseException e) {
             eDate = new Date();
         }
-        EventType eEventType = EventType.valueOf(remoteMessage.getData().get("eventType").toUpperCase());
-        String eDescription = remoteMessage.getData().get("description");
-        String eCountry = remoteMessage.getData().get("country");
-        String eCity = remoteMessage.getData().get("city");
-        String eStreet = remoteMessage.getData().get("street");
-        Double eLatitude = NumberUtils.toDouble(remoteMessage.getData().get("latitude"), 0);
-        Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get("longitude"), 0);
-        int eVotes = NumberUtils.toInt(remoteMessage.getData().get("votes"), 0);
-        String eSubmitterId = remoteMessage.getData().get("submitterId");
+        EventType eEventType = EventType.valueOf(remoteMessage.getData().get(FCM_EVENT_TYPE).toUpperCase());
+        String eDescription = remoteMessage.getData().get(FCM_DESCRIPTION);
+        String eCountry = remoteMessage.getData().get(FCM_COUNTRY);
+        String eCity = remoteMessage.getData().get(FCM_CITY);
+        String eStreet = remoteMessage.getData().get(FCM_STREET);
+        Double eLatitude = NumberUtils.toDouble(remoteMessage.getData().get(FCM_LATITUDE), 0);
+        Double eLongitude = NumberUtils.toDouble(remoteMessage.getData().get(FCM_LONGITUDE), 0);
+        int eVotes = NumberUtils.toInt(remoteMessage.getData().get(FCM_VOTES), 0);
+        String eSubmitterId = remoteMessage.getData().get(FCM_SUBMITTER_ID);
         Event event = new Event(eId, eDate, eEventType, eDescription, eCountry,
                 eCity, eStreet, eLatitude, eLongitude, eVotes, eSubmitterId);
 
@@ -99,8 +114,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         db.addEvent(event);
         db.close();
 
-        int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get("subscriptionId"), -1);
-        String subscriptionOwner = remoteMessage.getData().get("subscriptionOwner");
+        int subscriptionId = NumberUtils.toInt(remoteMessage.getData().get(FCM_SUBSCRIPTION_ID), -1);
+        String subscriptionOwner = remoteMessage.getData().get(FCM_SUBSCRIPTION_OWNER);
 
         Log.d(TAG, "received notification about subscription " + subscriptionId + " owned by " + subscriptionOwner);
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -120,7 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             return true;
         }
 
-        SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, MODE_PRIVATE);
+        SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SP_SUBSCRIPTIONS, MODE_PRIVATE);
         boolean subscriptionEnabled = sharedPreferencesSubscriptions.getBoolean(String.valueOf(subscriptionId), true);
         Log.d(TAG, "subscription is enabled? " + subscriptionEnabled);
         if (!subscriptionEnabled) {
@@ -129,7 +144,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         Intent eventDetailIntent = new Intent(this, EventDetailActivity.class);
-        eventDetailIntent.putExtra("event", event);
+        eventDetailIntent.putExtra(IE_EVENT, event);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0,
@@ -179,7 +194,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String uid = user.getUid();
-            SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferencesNotifications = getSharedPreferences(Constants.SP_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
             int notificationCount = sharedPreferencesNotifications.getInt(uid, 0);
             SharedPreferences.Editor editor = sharedPreferencesNotifications.edit();
             editor.putInt(uid, notificationCount + 1);
@@ -190,7 +205,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void handleDeleteEvent(RemoteMessage remoteMessage){
         Log.d(TAG, "handleDeleteEvent");
-        int eId = NumberUtils.toInt(remoteMessage.getData().get("id"), -1);
+        int eId = NumberUtils.toInt(remoteMessage.getData().get(FCM_ID), -1);
         if(eId < 0) return;
 
         EventDB eventDB = new EventDB(this);
@@ -198,8 +213,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private String buildMapUrl(double latitude, double longitude){
-        String base = "https://maps.googleapis.com/maps/api/staticmap?center=%1$f,%2$f&zoom=15&size=400x400&markers=size:large%7C%1$f,%2$f&key=%3$s";
-        return String.format(base, latitude, longitude, getString(R.string.google_maps_key));
+        return String.format(MAPS_API_URL, latitude, longitude, getString(R.string.google_maps_key));
     }
 
     private Bitmap getMapBitmap(double latitude, double longitude) throws ExecutionException, InterruptedException {

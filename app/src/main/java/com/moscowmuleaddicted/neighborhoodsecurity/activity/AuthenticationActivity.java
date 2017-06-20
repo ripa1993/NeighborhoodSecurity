@@ -4,16 +4,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.AuthenticationFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EmailPasswordFragment;
+
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LOGGED_IN;
 
 /**
  * Activity containing a fragment that allows the user to choose between the available login methods
@@ -49,7 +44,7 @@ public class AuthenticationActivity extends AppCompatActivity implements Authent
         // a user is logged in
         Log.d(TAG, "logged in, exiting AuthenticationActivity");
         Intent data = new Intent();
-        data.putExtra("LOGGED_IN", true);
+        data.putExtra(IE_LOGGED_IN, true);
         setResult(RESULT_OK, data);
         finish();
     }

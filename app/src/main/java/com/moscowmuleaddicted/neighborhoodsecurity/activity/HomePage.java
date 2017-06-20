@@ -56,11 +56,16 @@ import com.ogaclejapan.arclayout.ArcLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
+
 public class HomePage extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
 
-    private static final int REQUEST_PERMISSION_LOCATION = 100;
     private static final String TAG = "HomePageActivity";
-    private static final int REQUEST_AUTH = 101;
 
     Button bMap, bSubscriptions;
     GoogleApiClient mGoogleApiClient;
@@ -105,14 +110,14 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 if (mLastLocation != null) {
                     // start with last known position
                     Log.d(TAG, "starting map activity with current position");
-                    mapIntent.putExtra("lat", mLastLocation.getLatitude());
-                    mapIntent.putExtra("lng", mLastLocation.getLongitude());
+                    mapIntent.putExtra(IE_LATITUDE, mLastLocation.getLatitude());
+                    mapIntent.putExtra(IE_LONGITUDE, mLastLocation.getLongitude());
 
                     NSService.getInstance(getApplicationContext()).getEventsByRadius(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 2000, new NSService.MyCallback<List<Event>>() {
                         @Override
                         public void onSuccess(List<Event> events) {
                             Log.d(TAG, "found " + events.size() + " events to show");
-                            mapIntent.putExtra("events", new ArrayList<Event>(events));
+                            mapIntent.putExtra(IE_EVENT_LIST, new ArrayList<Event>(events));
                             startActivity(mapIntent);
                         }
 
@@ -143,7 +148,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             public void onClick(View v) {
                 if (mAuth.getCurrentUser() != null) {
                     Intent subscriptionIntent = new Intent(getApplicationContext(), SubscriptionListActivity.class);
-                    subscriptionIntent.putExtra("UID", mAuth.getCurrentUser().getUid());
+                    subscriptionIntent.putExtra(IE_UID, mAuth.getCurrentUser().getUid());
                     startActivity(subscriptionIntent);
                 } else {
                     Log.d(TAG, "user is not logged in, this is required when accessing subscription list!");
@@ -216,7 +221,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         Intent authIntent = new Intent(HomePage.this, AuthenticationActivity.class);
-                        startActivityForResult(authIntent, REQUEST_AUTH);
+                        startActivityForResult(authIntent, RC_AUTHENTICATION);
                         return false;
                     }
                 });
@@ -417,7 +422,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // request permissions for accessing location, requires SDK >= 23 (marshmellow)
                 Log.d(TAG, "onConnected: prompting user to allow location permissions");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_LOCATION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, RC_PERMISSION_POSITION);
             } else {
                 Log.w(TAG, "onConnected: SDK version is too low (" + Build.VERSION.SDK_INT + ") to ask permissions at runtime");
                 Toast.makeText(getApplicationContext(), "Give location permission to allow application know events around you", Toast.LENGTH_LONG).show();
@@ -433,7 +438,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+        if (requestCode == RC_PERMISSION_POSITION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted, requesting last known position");
                 //noinspection MissingPermission
@@ -512,7 +517,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult request=" + requestCode + " result=" + resultCode);
-        if (requestCode == REQUEST_AUTH && resultCode == RESULT_OK) {
+        if (requestCode == RC_AUTHENTICATION && resultCode == RESULT_OK) {
             Log.d(TAG, "onActivityResult preparing to refresh drawer");
             updateDrawer();
         }
@@ -543,8 +548,6 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-//        float dx = metrics.widthPixels / 2;
-//        float dy = metrics.heightPixels;
         float dx = 0;
         float dy = -1 * metrics.widthPixels;
 

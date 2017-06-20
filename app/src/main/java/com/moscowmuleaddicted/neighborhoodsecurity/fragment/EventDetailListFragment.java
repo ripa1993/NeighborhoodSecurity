@@ -15,6 +15,9 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Details;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COLUMN_COUNT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -23,8 +26,6 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
  */
 public class EventDetailListFragment extends Fragment {
 
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    private static final String ARG_EVENT = "event";
     private int mColumnCount = 1;
     private Event mEvent;
     private OnListFragmentInteractionListener mListener;
@@ -39,8 +40,8 @@ public class EventDetailListFragment extends Fragment {
     public static EventDetailListFragment newInstance(int columnCount, Event event) {
         EventDetailListFragment fragment = new EventDetailListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        args.putSerializable(ARG_EVENT, event);
+        args.putInt(IE_COLUMN_COUNT, columnCount);
+        args.putSerializable(IE_EVENT, event);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +51,8 @@ public class EventDetailListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-            mEvent = (Event) getArguments().getSerializable(ARG_EVENT);
+            mColumnCount = getArguments().getInt(IE_COLUMN_COUNT);
+            mEvent = (Event) getArguments().getSerializable(IE_EVENT);
         }
     }
 

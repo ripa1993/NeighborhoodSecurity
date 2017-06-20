@@ -28,7 +28,8 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_VOTED_EVENTS;
 
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
 
@@ -45,7 +46,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         Bundle extras = getIntent().getExtras();
         Event event;
         if(extras != null){
-            event = (Event) extras.getSerializable("event");
+            event = (Event) extras.getSerializable(IE_EVENT);
             if(event == null) {
                 event = Event.makeDummy();
             }
@@ -215,7 +216,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
     }
 
     private boolean alreadyVoted(int eventId){
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_VOTED_EVENTS, MODE_PRIVATE);
         return sharedPreferences.getBoolean(String.valueOf(eventId), false);
     }
 }

@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
 
 public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
     public static final String TAG = "MySusRVAdapter";
@@ -49,7 +49,7 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         holder.mRadius.setText(String.format("%1$dm", mValues.get(position).getRadius()));
 
         final Context context = holder.mCity.getContext();
-        final SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = context.getSharedPreferences(SP_SUBSCRIPTIONS, Context.MODE_PRIVATE);
         boolean enabled = sharedPreferences.getBoolean(String.valueOf(holder.mItem.getId()), true);
         holder.mSwitch.setChecked(enabled);
         if (enabled) {

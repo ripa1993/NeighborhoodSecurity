@@ -18,6 +18,10 @@ import com.scalified.fab.ActionButton;
 
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+
 
 public class MapActivity extends AppCompatActivity {
 
@@ -47,14 +51,14 @@ public class MapActivity extends AppCompatActivity {
         List<Event> initialEvents;
         if(extras != null){
             // Set initial position if passed
-            if(extras.getSerializable("lat") != null && extras.getSerializable("lng") != null) {
-                initialLat = (double) extras.getSerializable("lat");
-                initialLng = (double) extras.getSerializable("lng");
+            if(extras.getSerializable(IE_LATITUDE) != null && extras.getSerializable(IE_LONGITUDE) != null) {
+                initialLat = (double) extras.getSerializable(IE_LATITUDE);
+                initialLng = (double) extras.getSerializable(IE_LONGITUDE);
                 mapFragment.setInitialPosition(new LatLng(initialLat, initialLng));
             }
             // Set initial events if passed
-            if(extras.getSerializable("events") != null) {
-                initialEvents = (List<Event>) extras.getSerializable("events");
+            if(extras.getSerializable(IE_EVENT_LIST) != null) {
+                initialEvents = (List<Event>) extras.getSerializable(IE_EVENT_LIST);
                 mapFragment.setInitialEvents(initialEvents);
             }
         }

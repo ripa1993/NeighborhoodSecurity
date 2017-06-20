@@ -30,6 +30,11 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EmailPasswordActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LOGGED_IN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_EMAIL_LOGIN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_GOOGLE_SIGNIN;
+
 /**
  * Authentication fragment, provides Facebook, Google and Email authentication
  *
@@ -41,14 +46,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
      * Tag used in logger
      */
     private static final String TAG = "AuthenticationFragment";
-    /**
-     * Request code for Google Signin
-     */
-    private static final int RC_SIGN_IN = 1;
-    /**
-     * Request code for email signin
-     */
-    private static final int EMAIL_LOGIN = 2;
+
     /**
      * The Google API client
      */
@@ -149,7 +147,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
             public void onClick(View v) {
 
                 Intent emailPasswordLogin = new Intent(getActivity(), EmailPasswordActivity.class);
-                startActivityForResult(emailPasswordLogin, EMAIL_LOGIN);
+                startActivityForResult(emailPasswordLogin, RC_EMAIL_LOGIN);
 
             }
         });
@@ -195,7 +193,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
     public void googleSignIn(View view) {
         Log.d(TAG, "googleSignIn: button clicked");
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, RC_GOOGLE_SIGNIN);
     }
 
     @Override
@@ -203,7 +201,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == RC_GOOGLE_SIGNIN) {
             Log.d(TAG, "onActivityResult: request code was RC_SIGN_IN");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
@@ -213,10 +211,10 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Email
-        if (requestCode == EMAIL_LOGIN) {
+        if (requestCode == RC_EMAIL_LOGIN) {
             Log.d(TAG, "onActivityResult: request code was EMAIL_LOGIN");
             // handle exit status
-            if (data.getBooleanExtra("LOGGED_IN", false)) {
+            if (data.getBooleanExtra(IE_LOGGED_IN, false)) {
                 // logged in
                 mListener.loggedIn();
             }

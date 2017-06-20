@@ -46,6 +46,10 @@ import java.util.List;
 import java.util.Set;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEFAULT_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEFAULT_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
 
 public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem>, GoogleMap.OnCameraIdleListener, GoogleMap.OnMapLongClickListener {
 
@@ -60,7 +64,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     private boolean initialPositionSet = false;
     private List<Event> initialEvents;
     private boolean initialEventsSet = false;
-    private LatLng defaultPosition = new LatLng(45.477072, 9.226096); // Milano
+    private LatLng defaultPosition = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE); // Milano
 
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
@@ -191,7 +195,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             events.add(e.getEvent());
         }
         Intent showEventList = new Intent(getActivity(), EventListActivity.class);
-        showEventList.putExtra("event-list", events);
+        showEventList.putExtra(IE_EVENT_LIST, events);
         startActivity(showEventList);
         return false;
     }
@@ -200,7 +204,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     public boolean onClusterItemClick(EventClusterItem eventClusterItem) {
         Event event = eventClusterItem.getEvent();
         Intent showEventDetail = new Intent(getActivity(), EventDetailActivity.class);
-        showEventDetail.putExtra("event", event);
+        showEventDetail.putExtra(IE_EVENT, event);
         startActivity(showEventDetail);
         return false;
     }

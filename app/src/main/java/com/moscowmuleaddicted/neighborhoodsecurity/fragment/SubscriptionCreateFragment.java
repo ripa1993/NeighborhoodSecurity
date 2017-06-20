@@ -37,7 +37,15 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PERMISSION_POSITION_RC;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,9 +96,6 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
 
-    private static final String ARG_LATITUDE = "latitude";
-    private static final String ARG_LONGITUDE = "longtitude";
-
     private Double mLatitude;
     private Double mLongitude;
 
@@ -107,8 +112,8 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
     public static SubscriptionCreateFragment newInstance(Double latitude, Double longitude) {
         SubscriptionCreateFragment fragment = new SubscriptionCreateFragment();
         Bundle args = new Bundle();
-        args.putDouble(ARG_LATITUDE, latitude);
-        args.putDouble(ARG_LONGITUDE, longitude);
+        args.putDouble(IE_LATITUDE, latitude);
+        args.putDouble(IE_LONGITUDE, longitude);
         fragment.setArguments(args);
         return fragment;
     }
@@ -117,8 +122,8 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mLatitude = getArguments().getDouble(ARG_LATITUDE);
-            mLongitude = getArguments().getDouble(ARG_LONGITUDE);
+            mLatitude = getArguments().getDouble(IE_LATITUDE);
+            mLongitude = getArguments().getDouble(IE_LONGITUDE);
         }
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getContext())
@@ -254,7 +259,7 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // request permissions for accessing location, requires SDK >= 23 (marshmellow)
                 Log.d(TAG, "onConnected: prompting user to allow location permissions");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_POSITION_RC);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, RC_PERMISSION_POSITION);
             } else {
                 Log.w(TAG, "onConnected: SDK version is too low (" + Build.VERSION.SDK_INT + ") to ask permissions at runtime");
                 Toast.makeText(getContext(), "Give location permission to allow application know events around you", Toast.LENGTH_LONG).show();
@@ -270,7 +275,7 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSION_POSITION_RC) {
+        if (requestCode == RC_PERMISSION_POSITION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted, requesting last known position");
                 //noinspection MissingPermission
@@ -315,19 +320,19 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
         } else {
             Double latitude = NumberUtils.toDouble(etLatitude.getText().toString(), -1000);
             Double longitude = NumberUtils.toDouble(etLongitude.getText().toString(), -1000);
-            if (etLatitude.getText().length() == 0 || latitude < -90d || latitude > 90d) {
+            if (etLatitude.getText().length() == 0 || latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
                 ilLatitude.setError(getString(R.string.msg_insert_valid_latitude));
             } else {
                 ilLatitude.setError(null);
             }
 
-            if (etLongitude.getText().length() == 0 || longitude < -180d || longitude > 180d) {
+            if (etLongitude.getText().length() == 0 || longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
                 ilLongitude.setError(getString(R.string.msg_insert_valid_longitude));
             } else {
                 ilLongitude.setError(null);
             }
 
-            if(sbRadius.getProgress() < 0 || sbRadius.getProgress()>2000){
+            if(sbRadius.getProgress() < MIN_RADIUS || sbRadius.getProgress()>MAX_RADIUS){
                 // cheated?
                 Toast.makeText(getContext(), getString(R.string.msg_insert_valid_radius), Toast.LENGTH_SHORT).show();
                 sbRadius.setProgress(500);

@@ -42,7 +42,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 import java.util.Date;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PERMISSION_POSITION_RC;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_CITY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COUNTRY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_STREET;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
 
 public class EventCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -57,13 +62,6 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private RadioGroup radioGroup;
-
-    private static final String ARG_LATITUDE = "latitude";
-    private static final String ARG_LONGITUDE = "longitude";
-    private static final String ARG_COUNTRY = "country";
-    private static final String ARG_CITY = "city";
-    private static final String ARG_STREET = "street";
-
 
     private Double latitude, longitude;
     private String country, city, street;
@@ -80,8 +78,8 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     public static EventCreateFragment newInstanceWithCoordinates(Double lat, Double lon) {
         EventCreateFragment fragment = new EventCreateFragment();
         Bundle args = new Bundle();
-        args.putDouble(ARG_LATITUDE, lat);
-        args.putDouble(ARG_LONGITUDE, lon);
+        args.putDouble(IE_LATITUDE, lat);
+        args.putDouble(IE_LONGITUDE, lon);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,9 +87,9 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     public static EventCreateFragment newInstanceWithAddress(String country, String city, String street) {
         EventCreateFragment fragment = new EventCreateFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_COUNTRY, country);
-        args.putString(ARG_CITY, city);
-        args.putString(ARG_STREET, street);
+        args.putString(IE_COUNTRY, country);
+        args.putString(IE_CITY, city);
+        args.putString(IE_STREET, street);
         fragment.setArguments(args);
         return fragment;
     }
@@ -100,9 +98,9 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            if (getArguments().containsKey(ARG_LONGITUDE) && getArguments().containsKey(ARG_LATITUDE)) {
-                latitude = getArguments().getDouble(ARG_LATITUDE);
-                longitude = getArguments().getDouble(ARG_LONGITUDE);
+            if (getArguments().containsKey(IE_LONGITUDE) && getArguments().containsKey(IE_LATITUDE)) {
+                latitude = getArguments().getDouble(IE_LATITUDE);
+                longitude = getArguments().getDouble(IE_LONGITUDE);
             }
         }
         if (mGoogleApiClient == null) {
@@ -287,7 +285,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 // request permissions for accessing location, requires SDK >= 23 (marshmellow)
                 Log.d(TAG, "onConnected: prompting user to allow location permissions");
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_POSITION_RC);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, RC_PERMISSION_POSITION);
             } else {
                 Log.w(TAG, "onConnected: SDK version is too low (" + Build.VERSION.SDK_INT + ") to ask permissions at runtime");
                 Toast.makeText(getContext(), "Give location permission to allow application know events around you", Toast.LENGTH_LONG).show();
@@ -303,7 +301,7 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSION_POSITION_RC) {
+        if (requestCode == RC_PERMISSION_POSITION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "onRequestPermissionsResult: location permission granted, requesting last known position");
                 //noinspection MissingPermission

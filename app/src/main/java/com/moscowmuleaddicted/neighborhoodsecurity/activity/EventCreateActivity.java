@@ -15,6 +15,9 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+
 public class EventCreateActivity extends AppCompatActivity implements EventCreateFragment.OnFragmentInteractionListener {
 
     EventCreateFragment mEventCreateFragment;
@@ -29,10 +32,10 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 
         Bundle extras = getIntent().getExtras();
         if(extras!=null){
-            if (extras.containsKey("lat") && extras.containsKey("lon")){
+            if (extras.containsKey(IE_LATITUDE) && extras.containsKey(IE_LONGITUDE)){
                 double lat, lon;
-                lat = extras.getDouble("lat");
-                lon = extras.getDouble("lon");
+                lat = extras.getDouble(IE_LATITUDE);
+                lon = extras.getDouble(IE_LONGITUDE);
                 mEventCreateFragment.setLocation(lat, lon);
             }
         }

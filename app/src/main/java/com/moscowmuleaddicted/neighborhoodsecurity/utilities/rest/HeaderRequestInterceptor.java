@@ -16,6 +16,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.google.android.gms.internal.zzt.TAG;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.AUTH_TOKEN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SERVICE_KEY;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
@@ -44,8 +46,8 @@ public final class HeaderRequestInterceptor implements Interceptor {
         Request originalRequest = chain.request();
         Request newRequest = originalRequest.newBuilder()
                 .header("Accept", "application/json")
-                .header("service_key", "moscowmule")
-                .header("auth_token", token).build();
+                .header(SERVICE_KEY, "moscowmule")
+                .header(AUTH_TOKEN, token).build();
         Log.i(TAG, "interceptHeaderRequest:proceeding request" );
         return chain.proceed(newRequest);
     }

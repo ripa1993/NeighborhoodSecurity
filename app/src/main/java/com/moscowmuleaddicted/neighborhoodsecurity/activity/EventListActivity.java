@@ -4,7 +4,6 @@ package com.moscowmuleaddicted.neighborhoodsecurity.activity;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -37,8 +35,12 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_EVENT_RC;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLACE_AUTOCOMPLETE_RC;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_CREATE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PLACE_AUTOCOMPLETE;
 import static xdroid.core.Global.getContext;
 
 /**
@@ -103,29 +105,29 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
         ArrayList<Event> events = new ArrayList<>();
         if (extras != null) {
-            if (extras.containsKey("event-list")) {
+            if (extras.containsKey(IE_EVENT_LIST)) {
                 // if an event list is provided
                 Log.d(TAG, "creating fragment from provided event list");
-                events = (ArrayList<Event>) extras.getSerializable("event-list");
+                events = (ArrayList<Event>) extras.getSerializable(IE_EVENT_LIST);
                 mFragment = EventListFragment.newInstance(1, events);
                 updateType = UpdateType.NONE;
                 setTitle(getString(R.string.title_event_list_generic));
                 Log.d(TAG, "fragment created");
-            } else if (extras.containsKey("UID")) {
+            } else if (extras.containsKey(IE_UID)) {
                 // if an uid is provided
                 Log.d(TAG, "creating fragment from provided UID");
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
                 updateType = UpdateType.UID;
-                uid = extras.getString("UID");
+                uid = extras.getString(IE_UID);
                 events.addAll(getByUid());
                 mFragment = EventListFragment.newInstance(1, events);
                 setTitle(getString(R.string.title_event_list_uid));
                 Log.d(TAG, "fragment created");
-            } else if (extras.containsKey("subscription")) {
+            } else if (extras.containsKey(IE_SUBSCRIPTION)) {
                 // if a subscription is provided
                 Log.d(TAG, "creating fragment from provided subscription");
-                sub = (Subscription) extras.getSerializable("subscription");
+                sub = (Subscription) extras.getSerializable(IE_SUBSCRIPTION);
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
                 updateType = UpdateType.SUBSCRIPTION;
@@ -152,7 +154,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                startActivityForResult(intent, CREATE_EVENT_RC);
+                startActivityForResult(intent, RC_CREATE_EVENT);
             }
         });
 
@@ -192,7 +194,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         Log.d(TAG, event.toString());
 
         Intent intent = new Intent(this, EventDetailActivity.class);
-        intent.putExtra("event", event);
+        intent.putExtra(IE_EVENT, event);
         startActivity(intent);
 
     }
@@ -417,7 +419,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
                             .build(this);
-            startActivityForResult(intent, PLACE_AUTOCOMPLETE_RC);
+            startActivityForResult(intent, RC_PLACE_AUTOCOMPLETE);
         } catch (GooglePlayServicesRepairableException e) {
             Log.d(TAG, "findPlace: repairable error " + e.getMessage());
             if (isInFront)
@@ -431,11 +433,11 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_EVENT_RC && resultCode == RESULT_OK) {
+        if (requestCode == RC_CREATE_EVENT && resultCode == RESULT_OK) {
             refreshList();
         }
 
-        if (requestCode == PLACE_AUTOCOMPLETE_RC) {
+        if (requestCode == RC_PLACE_AUTOCOMPLETE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 Log.i(TAG, "Place: " + place.getName());

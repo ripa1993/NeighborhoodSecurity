@@ -18,10 +18,11 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COLUMN_COUNT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION_LIST;
+
 public class SubscriptionListFragment extends Fragment {
 
-    private static final String ARG_SUBSCRIPTION = "subscriptions";
-    private static final String ARG_COLUMN_COUNT = "column-count";
 
     private List<Subscription> mSubscriptions = new ArrayList<>();
     private int mColumnCount = 1;
@@ -40,8 +41,8 @@ public class SubscriptionListFragment extends Fragment {
     public static SubscriptionListFragment newInstance(int columnCount, ArrayList<Subscription> subscriptions) {
         SubscriptionListFragment fragment = new SubscriptionListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        args.putSerializable(ARG_SUBSCRIPTION, subscriptions);
+        args.putInt(IE_COLUMN_COUNT, columnCount);
+        args.putSerializable(IE_SUBSCRIPTION_LIST, subscriptions);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,8 +52,8 @@ public class SubscriptionListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-            mSubscriptions = (ArrayList<Subscription>) getArguments().getSerializable(ARG_SUBSCRIPTION);
+            mColumnCount = getArguments().getInt(IE_COLUMN_COUNT);
+            mSubscriptions = (ArrayList<Subscription>) getArguments().getSerializable(IE_SUBSCRIPTION_LIST);
         }
     }
 

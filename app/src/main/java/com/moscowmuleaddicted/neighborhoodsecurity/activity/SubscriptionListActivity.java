@@ -25,7 +25,9 @@ import com.scalified.fab.ActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.CREATE_SUBSCRIPTION_RC;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_CREATE_SUBSCRIPTION;
 
 /**
  * Activity that shows a list of Subscription items
@@ -80,20 +82,20 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
 
         if (extras != null) {
-            if (extras.containsKey("subscription-list")) {
+            if (extras.containsKey(IE_SUBSCRIPTION_LIST)) {
                 // if subscription list is provided
                 Log.d(TAG, "creating fragment using provided subscription list");
-                mSubscriptions = (ArrayList<Subscription>) extras.getSerializable("subscription-list");
+                mSubscriptions = (ArrayList<Subscription>) extras.getSerializable(IE_SUBSCRIPTION_LIST);
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
                 updateType = UpdateType.NONE;
                 Log.d(TAG, "fragment created");
-            } else if (extras.containsKey("UID")) {
+            } else if (extras.containsKey(IE_UID)) {
                 // if UID is provided
                 Log.d(TAG, "creating fragment using provided UID");
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
                 updateType = UpdateType.UID;
-                uid = extras.getString("UID");
+                uid = extras.getString(IE_UID);
                 mSubscriptions.addAll(getByUid());
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
                 Log.d(TAG, "fragment created");
@@ -118,7 +120,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             public void onClick(View v) {
                 Log.d(TAG, "FAB clicked");
                 Intent intent = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                startActivityForResult(intent, CREATE_SUBSCRIPTION_RC);
+                startActivityForResult(intent, RC_CREATE_SUBSCRIPTION);
             }
         });
 
@@ -274,7 +276,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CREATE_SUBSCRIPTION_RC && resultCode == RESULT_OK) {
+        if (requestCode == RC_CREATE_SUBSCRIPTION && resultCode == RESULT_OK) {
             refreshList();
         }
     }

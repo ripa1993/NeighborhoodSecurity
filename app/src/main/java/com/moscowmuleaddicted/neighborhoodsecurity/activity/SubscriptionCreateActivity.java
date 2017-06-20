@@ -13,6 +13,15 @@ import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFr
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_RADIUS;
+
 public class SubscriptionCreateActivity extends AppCompatActivity implements SubscriptionCreateFragment.OnFragmentInteractionListener {
 
     private SubscriptionCreateFragment mFragment;
@@ -27,10 +36,10 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
 
         Bundle extras = getIntent().getExtras();
         if(extras!=null){
-            if (extras.containsKey("lat") && extras.containsKey("lon")){
+            if (extras.containsKey(IE_LATITUDE) && extras.containsKey(IE_LONGITUDE)){
                 double lat, lon;
-                lat = extras.getDouble("lat");
-                lon = extras.getDouble("lon");
+                lat = extras.getDouble(IE_LATITUDE);
+                lon = extras.getDouble(IE_LONGITUDE);
                 mFragment.setLocation(lat, lon);
             }
         }
@@ -61,7 +70,7 @@ public class SubscriptionCreateActivity extends AppCompatActivity implements Sub
                 }
 
                 // check valid values
-                if (latitude < -90d || latitude > 90d || longitude < -180d || longitude > 180d || radius < 0 || radius > 2000) {
+                if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE || longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE || radius < MIN_RADIUS || radius > MAX_RADIUS) {
                     mFragment.showErrors();
                     return false;
                 }

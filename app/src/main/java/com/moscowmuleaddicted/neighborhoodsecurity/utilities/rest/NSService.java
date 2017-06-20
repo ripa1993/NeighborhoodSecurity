@@ -43,8 +43,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.NS_REST_URL;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_VOTED_EVENTS;
 
 /**
  * Created by Simone Ripamonti on 12/04/2017.
@@ -1240,7 +1240,7 @@ public class NSService {
     }
 
     public int getNumReceivedNotifications(String uid) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SP_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
         return sharedPreferences.getInt(uid, 0);
     }
 
@@ -1251,7 +1251,7 @@ public class NSService {
         protected Integer doInBackground(Subscription... params) {
             int count = params.length;
             int i;
-            SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_SUBSCRIPTIONS, Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = context.getSharedPreferences(SP_SUBSCRIPTIONS, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             for (i = 0; i < count; i++){
                 subscriptionDB.addSubscription(params[i]);
@@ -1278,14 +1278,14 @@ public class NSService {
     }
 
     private void addVoteSharedPreferences(int eventId){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SP_VOTED_EVENTS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(String.valueOf(eventId), true);
         editor.commit();
     }
 
     private void removeVoteSharedPreferences(int eventId){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_VOTED_EVENTS, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SP_VOTED_EVENTS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(String.valueOf(eventId));
         editor.commit();
