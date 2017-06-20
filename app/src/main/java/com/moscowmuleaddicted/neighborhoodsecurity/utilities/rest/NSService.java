@@ -36,12 +36,13 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Converter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.google.android.gms.internal.zzt.TAG;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.NS_REST_URL;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_SUBSCRIPTIONS;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHARED_PREFERENCES_VOTED_EVENTS;
 
@@ -50,8 +51,8 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SH
  */
 
 public class NSService {
+    public static final String TAG = "NSService";
 
-    private static final String baseUrl = "thawing-taiga-87659.herokuapp.com";
     private FirebaseAuth mAuth;
     private static NSService instance;
     private static NSRestService restInterface;
@@ -71,7 +72,7 @@ public class NSService {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://thawing-taiga-87659.herokuapp.com/")
+                .baseUrl(NS_REST_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
@@ -92,6 +93,22 @@ public class NSService {
             instance = new NSService(context);
         }
         return instance;
+    }
+
+    public void warmUp(){
+        restInterface.getEventById(1).enqueue(new Callback<Event>() {
+            @Override
+            public void onResponse(Call<Event> call, Response<Event> response) {
+                Log.d(TAG, "warmUp: server is ready");
+                return;
+            }
+
+            @Override
+            public void onFailure(Call<Event> call, Throwable t) {
+                Log.w(TAG, "warmUp: server is still booting");
+                return;
+            }
+        });
     }
 
     /**
@@ -133,7 +150,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<List<Event>> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
 
@@ -179,7 +196,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<List<Event>> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -226,7 +243,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<Event> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -271,7 +288,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -309,7 +326,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -349,7 +366,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -398,7 +415,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -446,7 +463,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -484,7 +501,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -526,7 +543,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<List<Event>> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -689,7 +706,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<List<Subscription>> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -727,7 +744,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
 
                 callback.onFailure();
             }
@@ -767,7 +784,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<Subscription> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -807,7 +824,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -845,7 +862,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -885,7 +902,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });
@@ -923,7 +940,7 @@ public class NSService {
 
             @Override
             public void onFailure(Call<MyMessage> call, Throwable t) {
-                System.err.println(t.getMessage());
+                Log.w(TAG, t.getMessage());
                 callback.onFailure();
             }
         });

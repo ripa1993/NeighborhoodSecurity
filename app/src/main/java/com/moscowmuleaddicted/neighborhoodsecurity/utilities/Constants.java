@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class Constants {
+    public static final String NS_REST_URL = "https://thawing-taiga-87659.herokuapp.com/";
+
     public static final String SHARED_PREFERENCES_NOTIFICATION_COUNT_BY_UID = "com.moscowmuleaddicted.neighborhoodsecurity.counters";
     public static final String SHARED_PREFERENCES_VOTED_EVENTS = "com.moscowmuleaddicted.neighborhoodsecurity.voted_events";
     public static final String SHARED_PREFERENCES_SUBSCRIPTIONS = "com.moscowmuleaddicted.neighborhoodsecurity.subscriptions";

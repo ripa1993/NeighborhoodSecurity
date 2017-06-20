@@ -16,6 +16,7 @@ import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.moscowmuleaddicted.neighborhoodsecurity.services.DatabaseCleanJobService;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -57,6 +58,10 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             // if valid
             Log.d(TAG, "Play Service OK "+currentVersion);
+
+            // warm up server
+            Log.d(TAG, "warming up rest server");
+            NSService.getInstance(getApplicationContext()).warmUp();
 
             // prepare database clean job
             FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(getApplicationContext()));
