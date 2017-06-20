@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
 
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class SubscriptionDB extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Subscription.db";
     public static final String TAG = "SubscriptionDB";
 
@@ -55,6 +56,7 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         values.put(SubscriptionEntry.COLUMN_NAME_COUNTRY, s.getCountry());
         values.put(SubscriptionEntry.COLUMN_NAME_CITY, s.getCity());
         values.put(SubscriptionEntry.COLUMN_NAME_STREET, s.getStreet());
+        values.put(SubscriptionEntry.COLUMN_NAME_STORAGE_DATE, System.currentTimeMillis());
         getWritableDatabase().insertWithOnConflict(
                 SubscriptionEntry.TABLE_NAME,
                 null,
@@ -83,6 +85,10 @@ public class SubscriptionDB extends SQLiteOpenHelper {
 
     public void deleteById(int subscriptionId){
         getWritableDatabase().delete(SubscriptionEntry.TABLE_NAME, SubscriptionEntry._ID + " = ?", new String[]{String.valueOf(subscriptionId)});
+    }
+
+    public int clearOldSubscriptions(){
+        return getWritableDatabase().delete(SubscriptionEntry.TABLE_NAME, SubscriptionEntry.COLUMN_NAME_STORAGE_DATE + " < " + (System.currentTimeMillis() - Constants.MILLISECONDS_7_DAYS), new String[]{});
     }
 
     private Subscription toSubscription(Cursor cursor){

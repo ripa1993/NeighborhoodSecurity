@@ -2,6 +2,8 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities.db;
 
 import android.provider.BaseColumns;
 
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
+
 /**
  * Helper class to hold prepared statements and table / column names
  * <p>
@@ -26,6 +28,7 @@ public class DatabaseContract {
         public static final String COLUMN_NAME_LONGITUDE = "longitude";
         public static final String COLUMN_NAME_SUBMITTERID = "submitterid";
         public static final String COLUMN_NAME_VOTES = "votes";
+        public static final String COLUMN_NAME_STORAGE_DATE = "storage_date";
     }
 
     public static class SubscriptionEntry implements BaseColumns {
@@ -39,6 +42,7 @@ public class DatabaseContract {
         public static final String COLUMN_NAME_COUNTRY = "country";
         public static final String COLUMN_NAME_CITY = "city";
         public static final String COLUMN_NAME_STREET = "street";
+        public static final String COLUMN_NAME_STORAGE_DATE = "storage_date";
     }
 
     public static class EventStatements {
@@ -53,8 +57,9 @@ public class DatabaseContract {
                         + EventEntry.COLUMN_NAME_STREET + " TEXT, "
                         + EventEntry.COLUMN_NAME_LATITUDE + " DOUBLE, "
                         + EventEntry.COLUMN_NAME_LONGITUDE + " DOUBLE, "
-                        + EventEntry.COLUMN_NAME_SUBMITTERID + " TEXT,"
-                        + EventEntry.COLUMN_NAME_VOTES + " INTEGER )";
+                        + EventEntry.COLUMN_NAME_SUBMITTERID + " TEXT, "
+                        + EventEntry.COLUMN_NAME_VOTES + " INTEGER, "
+                        + EventEntry.COLUMN_NAME_STORAGE_DATE + " TIMESTAMP )";
 
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + EventEntry.TABLE_NAME;
@@ -90,7 +95,8 @@ public class DatabaseContract {
                         + SubscriptionEntry.COLUMN_NAME_RADIUS + " INTEGER, "
                         + SubscriptionEntry.COLUMN_NAME_COUNTRY + " TEXT, "
                         + SubscriptionEntry.COLUMN_NAME_CITY + " TEXT, "
-                        + SubscriptionEntry.COLUMN_NAME_STREET + " TEXT )";
+                        + SubscriptionEntry.COLUMN_NAME_STREET + " TEXT, "
+                        + SubscriptionEntry.COLUMN_NAME_STORAGE_DATE + " TIMESTAMP )";
 
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + SubscriptionEntry.TABLE_NAME;

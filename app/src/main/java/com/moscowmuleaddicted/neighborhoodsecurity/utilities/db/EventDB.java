@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class EventDB extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Event.db";
     public static final String TAG ="EventDB";
 
@@ -59,6 +60,7 @@ public class EventDB extends SQLiteOpenHelper {
         values.put(EventEntry.COLUMN_NAME_LONGITUDE, e.getLongitude());
         values.put(EventEntry.COLUMN_NAME_SUBMITTERID, e.getSubmitterId());
         values.put(EventEntry.COLUMN_NAME_VOTES, e.getVotes());
+        values.put(EventEntry.COLUMN_NAME_STORAGE_DATE, System.currentTimeMillis());
         long rows = getWritableDatabase().insertWithOnConflict(EventEntry.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         Log.d(TAG, "Inserted rows "+String.valueOf(rows));
     }
@@ -147,6 +149,10 @@ public class EventDB extends SQLiteOpenHelper {
         Cursor cursor = getReadableDatabase().rawQuery(EventStatements.SQL_SELECT_COUNT, new String[]{});
         cursor.moveToFirst();
         return cursor.getInt(0);
+    }
+
+    public int clearOldEvents(){
+        return getWritableDatabase().delete(EventEntry.TABLE_NAME, EventEntry.COLUMN_NAME_STORAGE_DATE + " < " + (System.currentTimeMillis() - Constants.MILLISECONDS_7_DAYS), new String[]{});
     }
 
     /**

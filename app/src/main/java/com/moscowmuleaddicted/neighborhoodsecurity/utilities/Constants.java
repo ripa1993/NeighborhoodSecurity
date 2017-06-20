@@ -1,5 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.utilities;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Simone Ripamonti on 20/05/2017.
  */
@@ -18,4 +20,10 @@ public class Constants {
 
     public static final int PLAY_SERVICES_MIN_VERSION = 10210000; // 10.2.1
 
+    public static final long MILLISECONDS_7_DAYS = TimeUnit.MILLISECONDS.convert(7, TimeUnit.DAYS);
+    public static final int MINUTES_IN_DAY = 1440;
+    public static final int MINUTES_IN_HOUR = 60;
+    public static final int SECONDS_IN_MINUTE = 60;
+
+    public static final String TAG_DB_CLEAN_JOB = "db-clean-job";
 }
