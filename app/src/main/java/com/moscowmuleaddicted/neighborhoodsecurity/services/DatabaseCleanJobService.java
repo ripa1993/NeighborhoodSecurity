@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_DAY;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
 
 /**
  * Created by Simone Ripamonti on 20/06/2017.
@@ -44,14 +45,14 @@ public class DatabaseCleanJobService extends JobService {
         Log.d(TAG, "scheduling next job");
         // prepare database clean job
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(getApplicationContext()));
-        dispatcher.cancelAll();
+        dispatcher.cancel(TAG_DB_CLEAN_JOB);
         int waitSeconds = SECONDS_IN_MINUTE*MINUTES_IN_HOUR*MINUTES_IN_DAY;
         Job dbCleanJob = dispatcher.newJobBuilder()
                 .setService(DatabaseCleanJobService.class)
                 .setTag(Constants.TAG_DB_CLEAN_JOB)
                 .setRecurring(true)
                 .setLifetime(Lifetime.FOREVER)
-                .setTrigger(Trigger.executionWindow(waitSeconds, waitSeconds))
+                .setTrigger(Trigger.executionWindow(waitSeconds, waitSeconds+300))
                 .build();
         dispatcher.mustSchedule(dbCleanJob);
 

@@ -27,6 +27,7 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MI
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLAY_SERVICES_MIN_VERSION;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -59,7 +60,7 @@ public class SplashActivity extends AppCompatActivity {
 
             // prepare database clean job
             FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(getApplicationContext()));
-            dispatcher.cancelAll();
+            dispatcher.cancel(TAG_DB_CLEAN_JOB);
             Calendar calendar = new GregorianCalendar();
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int minutes = calendar.get(Calendar.MINUTE);
@@ -69,9 +70,10 @@ public class SplashActivity extends AppCompatActivity {
                     .setTag(Constants.TAG_DB_CLEAN_JOB)
                     .setRecurring(true)
                     .setLifetime(Lifetime.FOREVER)
-                    .setTrigger(Trigger.executionWindow(waitSeconds, waitSeconds))
+                    .setTrigger(Trigger.executionWindow(waitSeconds, waitSeconds+300))
                     .build();
             dispatcher.mustSchedule(dbCleanJob);
+            Log.d(TAG, "scheduled clean job");
 
             // Start HomePage after SPLASH_TIME_OUT
             new Handler().postDelayed(new Runnable() {
