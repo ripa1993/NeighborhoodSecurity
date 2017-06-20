@@ -23,6 +23,8 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
@@ -211,14 +213,24 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
 
     @Override
     public boolean onListItemLongClick(final Event mItem, View view) {
-        // show  menu
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+        if (mUser == null) {
+            // user not logged in
+            return false;
+        }
+        if (!mUser.getUid().equals(mItem.getSubmitterId())) {
+            // user is not the owner!
+            return false;
+        }
+        // show  menu
         PopupMenu popupMenu = new PopupMenu(getApplication(), view, Gravity.CENTER);
         popupMenu.inflate(R.menu.menu_delete_event);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.action_delete_event:
                         NSService.getInstance(getApplicationContext()).deleteEvent(mItem.getId(), new NSService.MyCallback<String>() {
                             @Override
@@ -226,6 +238,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                                 mFragment.removeEvent(mItem);
                                 Toast.makeText(getApplicationContext(), getString(R.string.msg_event_deleted), Toast.LENGTH_SHORT).show();
                             }
+
                             @Override
                             public void onFailure() {
                                 String toastMessage = getString(R.string.msg_unknown_error);
@@ -235,7 +248,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                             @Override
                             public void onMessageLoad(MyMessage message, int status) {
                                 String toastMessage = "";
-                                switch (status){
+                                switch (status) {
                                     case 400:
                                         toastMessage = getString(R.string.msg_400_bad_request_delete_event);
                                         break;
