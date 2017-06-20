@@ -105,40 +105,19 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         bMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Intent mapIntent = new Intent(getApplicationContext(), MapActivity.class);
+                final Intent mapIntent = new Intent(HomePage.this, MapActivity.class);
 
                 if (mLastLocation != null) {
                     // start with last known position
                     Log.d(TAG, "starting map activity with current position");
                     mapIntent.putExtra(IE_LATITUDE, mLastLocation.getLatitude());
                     mapIntent.putExtra(IE_LONGITUDE, mLastLocation.getLongitude());
-
-                    NSService.getInstance(getApplicationContext()).getEventsByRadius(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 2000, new NSService.MyCallback<List<Event>>() {
-                        @Override
-                        public void onSuccess(List<Event> events) {
-                            Log.d(TAG, "found " + events.size() + " events to show");
-                            mapIntent.putExtra(IE_EVENT_LIST, new ArrayList<Event>(events));
-                            startActivity(mapIntent);
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            Log.w(TAG, "unknown failure");
-                            startActivity(mapIntent);
-                        }
-
-                        @Override
-                        public void onMessageLoad(MyMessage message, int status) {
-                            Log.w(TAG, message.getArgument() + " - " + message.getMessage());
-                            startActivity(mapIntent);
-                        }
-                    });
-
                 } else {
                     // start without last known position
                     Log.d(TAG, "starting map activity without current position");
-                    startActivity(mapIntent);
                 }
+
+                startActivity(mapIntent);
 
             }
         });
