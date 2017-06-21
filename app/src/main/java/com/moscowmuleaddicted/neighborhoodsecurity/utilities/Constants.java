@@ -3,7 +3,10 @@ package com.moscowmuleaddicted.neighborhoodsecurity.utilities;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Simone Ripamonti on 20/05/2017.
+ * Collection of constants used in the application
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
 public class Constants {

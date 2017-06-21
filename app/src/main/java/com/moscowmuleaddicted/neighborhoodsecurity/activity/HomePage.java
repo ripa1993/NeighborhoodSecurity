@@ -332,7 +332,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         Intent intentMyEvents = new Intent(HomePage.this, EventListActivity.class);
-                        intentMyEvents.putExtra("UID", mAuth.getCurrentUser().getUid());
+                        intentMyEvents.putExtra(IE_UID, mAuth.getCurrentUser().getUid());
                         startActivity(intentMyEvents);
                         return false;
                     }
