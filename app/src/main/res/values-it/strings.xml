@@ -142,4 +142,11 @@
     <string name="msg_subscription_deleted">Sottoscrizione eliminata</string>
     <string name="no">No</string>
     <string name="yes">Sì</string>
+    <string name="showcase_drawer_account">Questo è il tuo account. Puoi registrarne uno gratis!</string>
+    <string name="showcase_drawer_createaccount">È semplice, basta premere qui!</string>
+    <string name="showcase_drawer_intro">Questo è il menu laterale. Qui trovi altre funzionalità.</string>
+    <string name="showcase_intro">Benvenuto in Neighborhood Security! Ti mostro le funzioni principali.</string>
+    <string name="showcase_map">Premi qui per aprire una mappa degli eventi</string>
+    <string name="showcase_stats">Premi queste icone per vedere delle statistiche</string>
+    <string name="showcase_subscription">Qui puoi trovare le sottoscrizioni attive.</string>
 </resources>

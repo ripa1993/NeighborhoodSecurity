@@ -8,6 +8,7 @@ import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -22,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -54,11 +56,19 @@ import com.ogaclejapan.arclayout.ArcLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseQueue;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
+
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEMO_ACCOUNT_ID;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHOWCASE_HOME;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SHOWCASE;
 
 /**
  * Homepage that is the initial point of interaction between user and application
@@ -396,6 +406,25 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 })
                 .create();
 
+        final AlertDialog adHelp = new AlertDialog.Builder(this)
+                .setMessage(getString(R.string.help_ns))
+                .setTitle(getString(R.string.help))
+                .setIcon(R.drawable.ic_005_question)
+                .setCancelable(true)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("Showcase", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        runShowcase();
+                    }
+                })
+                .create();
+
         mEventSummary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -427,12 +456,20 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ad.setTitle(getString(R.string.help));
-                ad.setIcon(R.drawable.ic_005_question);
-                ad.setMessage(getString(R.string.help_ns));
-                ad.show();
+                adHelp.show();
             }
         });
+
+        // run showcase
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_SHOWCASE, MODE_PRIVATE);
+        boolean alreadyShowcased = sharedPreferences.getBoolean(SHOWCASE_HOME, false);
+        Log.d(TAG, "alreadyShowcased = "+alreadyShowcased);
+        if(!alreadyShowcased){
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(SHOWCASE_HOME, true);
+            editor.commit();
+            runShowcase();
+        }
 
     }
 
@@ -615,4 +652,116 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         return anim;
     }
 
+    /**
+     * Runs showcase to introduce the user to the various functionalities
+     */
+    private void runShowcase(){
+
+        // showcase home
+
+        FancyShowCaseView showcaseIntro = new FancyShowCaseView.Builder(this)
+                .backgroundColor(R.color.colorPrimaryDark)
+                .title(getString(R.string.showcase_intro))
+                .build();
+
+        FancyShowCaseView showcaseMap = new FancyShowCaseView.Builder(this)
+                .focusOn(bMap)
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .backgroundColor(R.color.colorPrimaryDark)
+                .title(getString(R.string.showcase_map))
+                .build();
+
+        FancyShowCaseView showcaseSubscription = new FancyShowCaseView.Builder(this)
+                .focusOn(bSubscriptions)
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .backgroundColor(R.color.colorPrimaryDark)
+                .title(getString(R.string.showcase_subscription))
+                .build();
+
+        FancyShowCaseView showcaseArcLayout = new FancyShowCaseView.Builder(this)
+                .focusOn(mArcLayout)
+                .focusShape(FocusShape.CIRCLE)
+                .title(getString(R.string.showcase_stats))
+                .backgroundColor(R.color.colorPrimaryDark)
+                .titleGravity(Gravity.BOTTOM | Gravity.CENTER)
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        // run second part
+                        runShowcaseDrawer();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+                        // do nothing
+                    }
+                })
+                .build();
+
+        new FancyShowCaseQueue()
+                .add(showcaseIntro)
+                .add(showcaseSubscription)
+                .add(showcaseMap)
+                .add(showcaseArcLayout)
+                .show();
+
+    }
+
+    /**
+     * Runs showcase to introduce the user to the various functionalities nested into the drawer
+     */
+    private void runShowcaseDrawer(){
+        final ProfileDrawerItem demoProfile = new ProfileDrawerItem()
+                .withEmail("marco.rossi@email.it")
+                .withName("Marco Rossi")
+                .withIcon(R.drawable.marmotta)
+                .withIdentifier(DEMO_ACCOUNT_ID);
+
+        FancyShowCaseView showcaseIntro = new FancyShowCaseView.Builder(this)
+                .title(getString(R.string.showcase_drawer_intro))
+                .backgroundColor(R.color.colorPrimaryDark)
+                .titleGravity(Gravity.BOTTOM | Gravity.CENTER)
+                .build();
+
+        FancyShowCaseView showcaseAccount = new FancyShowCaseView.Builder(this)
+                .focusOn(mDrawer.getHeader())
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .title(getString(R.string.showcase_drawer_account))
+                .backgroundColor(R.color.colorPrimaryDark)
+                .build();
+
+        FancyShowCaseView showcaseAuth =  new FancyShowCaseView.Builder(this)
+                .focusOn(mDrawer.getStickyFooter())
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .title(getString(R.string.showcase_drawer_createaccount))
+                .backgroundColor(R.color.colorPrimaryDark)
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        mAccountHeader.removeProfileByIdentifier(DEMO_ACCOUNT_ID);
+                        updateDrawer();
+                        mDrawer.closeDrawer();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+                        // do nothing
+                    }
+                })
+                .build();
+
+        mAccountHeader.removeProfile(0);
+        mAccountHeader.addProfiles(demoProfile);
+        updateDrawerLoggedIn();
+        mDrawer.removeAllStickyFooterItems();
+        mDrawer.addStickyFooterItem(mAuthDrawerItem);
+        mDrawer.openDrawer();
+
+        new FancyShowCaseQueue()
+                .add(showcaseIntro)
+                .add(showcaseAccount)
+                .add(showcaseAuth)
+                .show();
+
+    }
 }

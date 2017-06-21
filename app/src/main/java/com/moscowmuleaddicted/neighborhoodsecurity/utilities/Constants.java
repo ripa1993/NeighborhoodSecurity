@@ -20,6 +20,7 @@ public class Constants {
     public static final String SP_NOTIFICATION_COUNT_BY_UID = "com.moscowmuleaddicted.neighborhoodsecurity.counters";
     public static final String SP_VOTED_EVENTS = "com.moscowmuleaddicted.neighborhoodsecurity.voted_events";
     public static final String SP_SUBSCRIPTIONS = "com.moscowmuleaddicted.neighborhoodsecurity.subscriptions";
+    public static final String SP_SHOWCASE = "com.moscowmuleaddicted.neighborhoodsecurity.showcase";
 
     // request codes
     public static final int RC_PLACE_AUTOCOMPLETE = 300;
@@ -80,4 +81,8 @@ public class Constants {
     public static final int MAX_RADIUS = 2000;
     public static final double DEFAULT_LATITUDE = 45.477072;
     public static final double DEFAULT_LONGITUDE = 9.226096;
+    public static final long DEMO_ACCOUNT_ID = 123123123;
+
+    // showcase played
+    public static final String SHOWCASE_HOME = "showcase-home";
 }
