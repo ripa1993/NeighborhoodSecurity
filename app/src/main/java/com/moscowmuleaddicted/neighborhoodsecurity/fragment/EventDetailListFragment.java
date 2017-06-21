@@ -10,24 +10,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventDetailRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.DetailRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Details;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Detail;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COLUMN_COUNT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
- * interface.
+ * Fragment that shows a list of {@link Detail} about a given event
  */
 public class EventDetailListFragment extends Fragment {
-
+    /**
+     * Number of columns
+     */
     private int mColumnCount = 1;
+    /**
+     * Currently shown event details
+     */
     private Event mEvent;
+    /**
+     * Fragment listener
+     */
     private OnListFragmentInteractionListener mListener;
 
     /**
@@ -37,6 +42,12 @@ public class EventDetailListFragment extends Fragment {
     public EventDetailListFragment() {
     }
 
+    /**
+     * Builder method
+     * @param columnCount number of columns
+     * @param event to be shown
+     * @return
+     */
     public static EventDetailListFragment newInstance(int columnCount, Event event) {
         EventDetailListFragment fragment = new EventDetailListFragment();
         Bundle args = new Bundle();
@@ -70,7 +81,7 @@ public class EventDetailListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyEventDetailRecyclerViewAdapter(Details.listFromEvent(mEvent), mListener));
+            recyclerView.setAdapter(new DetailRecyclerViewAdapter(Detail.listFromEvent(mEvent), mListener));
         }
         return view;
     }
@@ -94,16 +105,9 @@ public class EventDetailListFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Fragment listener interface
      */
     public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(Details item);
+        void onListFragmentInteraction(Detail item);
     }
 }

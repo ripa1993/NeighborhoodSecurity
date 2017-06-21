@@ -19,9 +19,13 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE
  */
 public class EmailPasswordActivity extends AppCompatActivity implements EmailPasswordFragment.OnFragmentInteractionListener {
     /**
-     * The fragment
+     * Logger's TAG
      */
-    EmailPasswordFragment mFragment;
+    public static final String TAG = "EmailPassAct";
+    /**
+     * The contained fragment
+     */
+    private EmailPasswordFragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

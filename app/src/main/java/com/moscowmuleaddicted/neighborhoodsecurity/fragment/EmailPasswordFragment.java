@@ -26,25 +26,68 @@ import org.apache.commons.validator.routines.EmailValidator;
  * @version 1
  */
 public class EmailPasswordFragment extends Fragment {
-
-    public static final String TAG = "EmailPasswordFragment";
-
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "EmailPasswordFrag";
+    /**
+     * Fragment state to handle the behaviour of back button
+     */
+    private enum FragmentState {
+        LOGIN, REGISTER, PASSWORD_RESET;
+    }
     /**
      * The fragment state
      */
     private FragmentState state;
     /**
-     * Layout components
+     * Text input layout username
      */
-    private TextInputLayout inputLayoutUsername, inputLayoutPassword, inputLayoutEmail;
-    private EditText etUsername, etPassword, etEmail;
-    private Button buttonSignin, buttonSignup, buttonResetPassword;
-    private TextView tvForgotPassword, tvRegister;
+    private TextInputLayout inputLayoutUsername;
+    /**
+     * Text input layout password
+     */
+    private TextInputLayout inputLayoutPassword;
+    /**
+     * Text input layout email
+     */
+    private TextInputLayout inputLayoutEmail;
+    /**
+     * Edit text username
+     */
+    private EditText etUsername;
+    /**
+     * Edit text password
+     */
+    private EditText etPassword;
+    /**
+     * Edit text email
+     */
+    private EditText etEmail;
+    /**
+     * Button signin
+     */
+    private Button buttonSignin;
+    /**
+     * Button signup
+     */
+    private Button buttonSignup;
+    /**
+     * Button reset password
+     */
+    private Button buttonResetPassword;
+    /**
+     * Text view forgot password, clickable
+     */
+    private TextView tvForgotPassword;
+    /**
+     * Text view register, clickable
+     */
+    private TextView tvRegister;
     /**
      * Fragment listener
      */
     private OnFragmentInteractionListener mListener;
-
     /**
      * Empty constructor
      */
@@ -361,9 +404,3 @@ public class EmailPasswordFragment extends Fragment {
     }
 }
 
-/**
- * Fragment state to handle the behaviour of back button
- */
-enum FragmentState{
-    LOGIN, REGISTER, PASSWORD_RESET;
-}

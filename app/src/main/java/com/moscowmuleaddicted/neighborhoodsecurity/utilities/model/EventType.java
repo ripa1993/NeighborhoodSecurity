@@ -6,7 +6,11 @@ import xdroid.enumformat.EnumFormat;
 import xdroid.enumformat.EnumString;
 
 /**
- * Created by Simone Ripamonti on 21/04/2017.
+ * All the possible types for the field eventType in {@link Event}
+ * Annotations are used to provide localization of the enum values
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
 public enum EventType {
@@ -30,6 +34,9 @@ public enum EventType {
         return ef.format(this);
     }
 
+    /**
+     * @return non localized enum value text
+     */
     public String toStringNotLocalized(){
         return super.toString();
     }

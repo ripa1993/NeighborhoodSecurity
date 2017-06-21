@@ -18,13 +18,13 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE
  */
 public class AuthenticationActivity extends AppCompatActivity implements AuthenticationFragment.OnFragmentInteractionListener {
     /**
+     * Logger's TAG
+     */
+    public static final String TAG = "AuthenticationAct";
+    /**
      * The contained fragment
      */
     private AuthenticationFragment mFragment;
-    /**
-     * Log tag
-     */
-    private static final String TAG = "AuthenticationAct";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

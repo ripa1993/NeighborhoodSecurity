@@ -23,26 +23,46 @@ import java.util.List;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
 
-public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MySubscriptionRecyclerViewAdapter.ViewHolder> {
-    public static final String TAG = "MySusRVAdapter";
+/**
+ * Recycler View extension to show objects of the class {@link Subscription}
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
+public class SubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<SubscriptionRecyclerViewAdapter.SubscriptionViewHolder> {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "SubscriptionRVA";
+    /**
+     * List of subscriptions
+     */
     private final List<Subscription> mValues;
+    /**
+     * Listener
+     */
     private final OnListFragmentInteractionListener mListener;
 
-    public MySubscriptionRecyclerViewAdapter(List<Subscription> items, OnListFragmentInteractionListener listener) {
+    /**
+     * Constructor
+     * @param items subscriptions to be shown
+     * @param listener to notify
+     */
+    public SubscriptionRecyclerViewAdapter(List<Subscription> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         Collections.sort(mValues, idComparator);
         mListener = listener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SubscriptionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_subscription, parent, false);
-        return new ViewHolder(view);
+        return new SubscriptionViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final SubscriptionViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mCity.setText(mValues.get(position).getCity());
         holder.mStreet.setText(mValues.get(position).getStreet());
@@ -99,16 +119,43 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
+    /**
+     * Extension of ViewHolder that is used to display {@link Subscription} content
+     */
+    public class SubscriptionViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
+        /**
+         * Parent view
+         */
         public final View mView;
+        /**
+         * City text view
+         */
         public final TextView mCity;
+        /**
+         * Street text view
+         */
         public final TextView mStreet;
+        /**
+         * Radius text view
+         */
         public final TextView mRadius;
-        public Subscription mItem;
+        /**
+         * Switch to enable or disable subscription
+         */
         public final Switch mSwitch;
+        /**
+         * Icon
+         */
         public final ImageView mIcon;
-
-        public ViewHolder(View view) {
+        /**
+         * The displayed item
+         */
+        public Subscription mItem;
+        /**
+         * Creator
+         * @param view that needs to be populated
+         */
+        public SubscriptionViewHolder(View view) {
             super(view);
             mView = view;
             mCity = (TextView) view.findViewById(R.id.sub_city);
@@ -124,6 +171,10 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         }
     }
 
+    /**
+     * Adds subscriptions to the currently displayed ones, discarding duplucates, sorting by id
+     * @param subscriptions
+     */
     public synchronized void addSubscriptions(Collection<Subscription> subscriptions) {
         int oldSize = mValues.size();
         // remove events already present
@@ -138,6 +189,9 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         notifyDataSetChanged();
     }
 
+    /**
+     * Comparator that takes into account subscription ids
+     */
     private Comparator<Subscription> idComparator = new Comparator<Subscription>() {
         @Override
         public int compare(Subscription o1, Subscription o2) {
@@ -145,6 +199,10 @@ public class MySubscriptionRecyclerViewAdapter extends RecyclerViewWithEmptyView
         }
     };
 
+    /**
+     * Removes a subscription from the currently displayed ones
+     * @param s to be removed
+     */
     public synchronized void removeSubscription(Subscription s){
         mValues.remove(s);
         notifyDataSetChanged();

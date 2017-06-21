@@ -47,20 +47,50 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_VOTED_EVENTS;
 
 /**
- * Created by Simone Ripamonti on 12/04/2017.
+ * Class that gives access to all the data available locally and on the remote service.
+ * Singleton
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
 public class NSService {
+    /**
+     * Logger's TAG
+     */
     public static final String TAG = "NSService";
-
+    /**
+     * Firabase Authentication instance
+     */
     private FirebaseAuth mAuth;
+    /**
+     * Singleton instance
+     */
     private static NSService instance;
+    /**
+     * Interface to Retrofit client
+     */
     private static NSRestService restInterface;
+    /**
+     * Converter for Retrofit
+     */
     private static Converter<ResponseBody, MyMessage> converter;
+    /**
+     * The application context
+     */
     private Context context;
+    /**
+     * Instance of the event DB
+     */
     private static EventDB eventDB;
+    /**
+     * Instance of the subscription DB
+     */
     private static SubscriptionDB subscriptionDB;
 
+    /**
+     * Private constructor
+     * @param mContext
+     */
     private NSService(Context mContext) {
         context = mContext;
 
@@ -88,6 +118,12 @@ public class NSService {
 
     }
 
+    /**
+     * Singleton instance creator
+     *
+     * @param context
+     * @return
+     */
     public static synchronized NSService getInstance(Context context) {
         if (instance == null) {
             instance = new NSService(context);
@@ -95,6 +131,10 @@ public class NSService {
         return instance;
     }
 
+    /**
+     * Boots the server by doing a dummy request.
+     * This is required since our provider currently shuts down the service due to inactivity
+     */
     public void warmUp(){
         restInterface.getEventById(1).enqueue(new Callback<Event>() {
             @Override
@@ -946,6 +986,11 @@ public class NSService {
         });
     }
 
+    /**
+     * Asks Firebase Authentication service to send a password reset email to the user's email
+     * @param email
+     * @param callback
+     */
     public void sendPasswordResetEmail(String email, final MySimpleCallback callback){
         mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -962,6 +1007,11 @@ public class NSService {
         });
     }
 
+    /**
+     * Try to login using Google credentials to the Firebase Authentication service
+     * @param acct
+     * @param callback
+     */
     public void signInWithGoogle(GoogleSignInAccount acct, final MySimpleCallback callback){
         Log.d(TAG, "signInWithGoogle: " + acct.getId());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -1057,6 +1107,11 @@ public class NSService {
 
     }
 
+    /**
+     * Try to login using Facebook credentials to the Firebase Authentication service
+     * @param token
+     * @param callback
+     */
     public void signInWithFacebook(AccessToken token, final MySimpleCallback callback){
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
@@ -1153,7 +1208,9 @@ public class NSService {
                 });
     }
 
-
+    /**
+     * Callback interface, successfull response is a text message
+     */
     public static interface CallbackMessage {
         /**
          * an exception has occurred
@@ -1170,19 +1227,37 @@ public class NSService {
 
     }
 
+    /**
+     * Callback interface, successfull response is an object of class T
+     * @param <T> type of the response object
+     */
     public static interface MyCallback<T> extends CallbackMessage {
         public void onSuccess(T t);
     }
 
+    /**
+     * Simple callback containing text messages
+     */
     public static interface MySimpleCallback{
         public void onSuccess(String s);
         public void onFailure(String s);
     }
 
+    /**
+     * Logs the response of a Retrofit request
+     * @param response
+     */
     private void logResponse(Response<?> response) {
         Log.d(TAG, "rest response content: " + response.raw());
     }
 
+    /**
+     * Creates a new user on Neighborhood Security webservice
+     * @param id uid of the user
+     * @param name full name or username
+     * @param email
+     * @param callback
+     */
     private void postUser(String id, String name, String email, final MyCallback<String> callback) {
         // store user in users table
         restInterface.postUser(id, name, email).enqueue(new retrofit2.Callback<MyMessage>() {
@@ -1206,6 +1281,9 @@ public class NSService {
 
     }
 
+    /**
+     * {@link AsyncTask} that is used to store obtained {@link Event} as a response of a Retrofit request
+     */
     public class StoreEventsTask extends AsyncTask<Event, Integer, Integer> {
 
         public static final String TAG = "StoreEventsTask";
@@ -1231,19 +1309,9 @@ public class NSService {
         }
     }
 
-    public int getNumStoredEvents(){
-        return eventDB.getCount();
-    }
-
-    public int getNumStoredSubscriptions(String uid){
-        return subscriptionDB.getCountByUid(uid);
-    }
-
-    public int getNumReceivedNotifications(String uid) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SP_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(uid, 0);
-    }
-
+    /**
+     * {@link AsyncTask} that is used to store obtained {@link Subscription} as a response of a Retrofit request
+     */
     public class StoreSubscriptionsTask extends AsyncTask<Subscription, Integer, Integer>{
         public static final String TAG = "StoreSubsTask";
 
@@ -1277,6 +1345,37 @@ public class NSService {
         }
     }
 
+    /**
+     * Returns the number of stored events in the local db
+     * @return
+     */
+    public int getNumStoredEvents(){
+        return eventDB.getCount();
+    }
+
+    /**
+     * Returns the number of stored subscription by the user in the local db
+     * @param uid
+     * @return
+     */
+    public int getNumStoredSubscriptions(String uid){
+        return subscriptionDB.getCountByUid(uid);
+    }
+
+    /**
+     * Returns the number of received notifications by the user
+     * @param uid
+     * @return
+     */
+    public int getNumReceivedNotifications(String uid) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SP_NOTIFICATION_COUNT_BY_UID, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(uid, 0);
+    }
+
+    /**
+     * Store in a shared preference that the user has voted a particular event
+     * @param eventId
+     */
     private void addVoteSharedPreferences(int eventId){
         SharedPreferences sharedPreferences = context.getSharedPreferences(SP_VOTED_EVENTS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -1284,6 +1383,10 @@ public class NSService {
         editor.commit();
     }
 
+    /**
+     * Store in a shared preference that the user has voted a particular event
+     * @param eventId
+     */
     private void removeVoteSharedPreferences(int eventId){
         SharedPreferences sharedPreferences = context.getSharedPreferences(SP_VOTED_EVENTS, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();

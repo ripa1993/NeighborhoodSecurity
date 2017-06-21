@@ -24,7 +24,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,7 +47,6 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.ogaclejapan.arclayout.ArcLayout;
@@ -56,31 +54,87 @@ import com.ogaclejapan.arclayout.ArcLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
 
+/**
+ * Homepage that is the initial point of interaction between user and application
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class HomePage extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
-
-    private static final String TAG = "HomePageActivity";
-
-    Button bMap, bSubscriptions;
-    GoogleApiClient mGoogleApiClient;
-    FirebaseAuth mAuth;
-    Location mLastLocation;
-    ImageView mEventSummary, mSubscriptionSummary, mHelp;
-
-    Drawer mDrawer;
-    AccountHeader mAccountHeader;
-    PrimaryDrawerItem logoutItem, authItem;
-    private PrimaryDrawerItem myEventsItem;
-    private PrimaryDrawerItem newEventItem;
-    private PrimaryDrawerItem newSubscriptionItem;
-
-    ArcLayout mArcLayout;
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "HomePageAct";
+    /**
+     * Button that represents map function
+     */
+    private Button bMap;
+    /**
+     * Button that represents user's subscriptions
+     */
+    private Button bSubscriptions;
+    /**
+     * Imageview that represents user's event summary
+     */
+    private ImageView mEventSummary;
+    /**
+     * Imageview that represents user's subscription summary
+     */
+    private ImageView mSubscriptionSummary;
+    /**
+     * Imageview that represents application intro
+     */
+    private ImageView mHelp;
+    /**
+     * Side drawer menu
+     */
+    private Drawer mDrawer;
+    /**
+     * Account header in drawer
+     */
+    private AccountHeader mAccountHeader;
+    /**
+     * Logout item in drawer
+     */
+    private PrimaryDrawerItem mLogoutDrawerItem;
+    /**
+     * Authentication item in drawer
+     */
+    private PrimaryDrawerItem mAuthDrawerItem;
+    /**
+     * User's submitted event in drawer
+     */
+    private PrimaryDrawerItem mUserEventDrawerItem;
+    /**
+     * New event link in drawer
+     */
+    private PrimaryDrawerItem mNewEventDrawerItem;
+    /**
+     * New subscription link in drawer
+     */
+    private PrimaryDrawerItem mNewSubscriptionDrawerItem;
+    /**
+     * Arc layout that contains the three imageviews: mEventSummary, mSubscriptionSummary and mHelp
+     */
+    private ArcLayout mArcLayout;
+    /**
+     * Google api client, used to access location provider
+     */
+    private GoogleApiClient mGoogleApiClient;
+    /**
+     * Firebase auth instance, used to decide wheter a user is logged in or not
+     */
+    private FirebaseAuth mAuth;
+    /**
+     * Device last known location
+     */
+    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,7 +244,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mAccountHeader = mHeaderBuilder.build();
 
 
-        authItem = new PrimaryDrawerItem()
+        mAuthDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(1000)
                 .withName(R.string.drawer_login_register)
                 .withSelectable(false)
@@ -205,7 +259,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     }
                 });
 
-        logoutItem = new PrimaryDrawerItem()
+        mLogoutDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(1001)
                 .withName(R.string.drawer_logout)
                 .withSelectable(false)
@@ -239,7 +293,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     }
                 });
 
-        newEventItem = new PrimaryDrawerItem()
+        mNewEventDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(2000)
                 .withName(R.string.drawer_new_event)
                 .withSelectable(false)
@@ -253,7 +307,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                         return false;
                     }
                 });
-        newSubscriptionItem = new PrimaryDrawerItem()
+        mNewSubscriptionDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(2001)
                 .withName(R.string.drawer_new_subscription)
                 .withSelectable(false)
@@ -268,7 +322,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     }
                 });
 
-        myEventsItem = new PrimaryDrawerItem()
+        mUserEventDrawerItem = new PrimaryDrawerItem()
                 .withIdentifier(2002)
                 .withName(R.string.drawer_my_events)
                 .withSelectable(false)
@@ -293,9 +347,9 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                 .withActionBarDrawerToggleAnimated(true)
                 .withAccountHeader(mAccountHeader)
                 .addDrawerItems(
-                        newEventItem,
-                        newSubscriptionItem,
-                        myEventsItem
+                        mNewEventDrawerItem,
+                        mNewSubscriptionDrawerItem,
+                        mUserEventDrawerItem
                 )
                 .withSelectedItemByPosition(-1)
                 .build();
@@ -382,12 +436,14 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
 
     }
 
+    @Override
     protected void onStart() {
         Log.d(TAG, "onStart: connecting google api client");
         mGoogleApiClient.connect();
         super.onStart();
     }
 
+    @Override
     protected void onStop() {
         Log.d(TAG, "onStop: disconnecting google api client");
         mGoogleApiClient.disconnect();
@@ -455,6 +511,24 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         }
     }
 
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        updateDrawer();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult request=" + requestCode + " result=" + resultCode);
+        if (requestCode == RC_AUTHENTICATION && resultCode == RESULT_OK) {
+            Log.d(TAG, "onActivityResult preparing to refresh drawer");
+            updateDrawer();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * Updates the drawer according to the change in the logged in user
+     */
     private void updateDrawer() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
@@ -488,40 +562,37 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         }
     }
 
-    @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        updateDrawer();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult request=" + requestCode + " result=" + resultCode);
-        if (requestCode == RC_AUTHENTICATION && resultCode == RESULT_OK) {
-            Log.d(TAG, "onActivityResult preparing to refresh drawer");
-            updateDrawer();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
+    /**
+     * Updates the drawer items when no user is currently logged in
+     */
     private void updateDrawerLoggedOut() {
         mDrawer.removeAllStickyFooterItems();
-        mDrawer.addStickyFooterItem(authItem);
+        mDrawer.addStickyFooterItem(mAuthDrawerItem);
 
         mDrawer.removeAllItems();
 
         mDrawer.removeHeader();
     }
 
+    /**
+     * Updates the drawer items when a user is currently logged in
+     */
     private void updateDrawerLoggedIn() {
         mDrawer.removeAllStickyFooterItems();
-        mDrawer.addStickyFooterItem(logoutItem);
+        mDrawer.addStickyFooterItem(mLogoutDrawerItem);
 
         mDrawer.removeAllItems();
-        mDrawer.addItems(newEventItem, newSubscriptionItem, myEventsItem);
+        mDrawer.addItems(mNewEventDrawerItem, mNewSubscriptionDrawerItem, mUserEventDrawerItem);
 
         mDrawer.setHeader(mAccountHeader.getView());
     }
 
+    /**
+     * Creates an animation for the image views contained in the arc layout.
+     * The view will appear rotating from above
+     * @param item the view that needs to be animated
+     * @return the animation
+     */
     private Animator createShowItemAnimator(View item) {
 
         DisplayMetrics metrics = new DisplayMetrics();

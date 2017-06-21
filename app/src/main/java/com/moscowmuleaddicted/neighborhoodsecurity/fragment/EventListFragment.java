@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.EventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 
@@ -22,7 +22,7 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
 
 /**
- * Fragment to show a list of events
+ * Fragment to show a list of {@link Event}
  *
  * @author Simone Ripamonti
  * @version 1
@@ -41,7 +41,9 @@ public class EventListFragment extends Fragment {
      * listener
      */
     private OnListFragmentInteractionListener mListener;
-
+    /**
+     * The contained recycler view
+     */
     private RecyclerViewWithEmptyView mRecyclerView;
 
     /**
@@ -52,10 +54,10 @@ public class EventListFragment extends Fragment {
     }
 
     /**
-     * constructor that receives a list of events to show
+     * Constructor that receives a list of events to show
      *
-     * @param columnCount
-     * @param events
+     * @param columnCount number of columns
+     * @param events to be shown
      * @return
      */
     public static EventListFragment newInstance(int columnCount, ArrayList<Event> events) {
@@ -91,7 +93,7 @@ public class EventListFragment extends Fragment {
         } else {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        mRecyclerView.setAdapter(new MyEventRecyclerViewAdapter(mListEvents, mListener, getContext()));
+        mRecyclerView.setAdapter(new EventRecyclerViewAdapter(mListEvents, mListener, getContext()));
 
         mRecyclerView.addOnScrollListener(new RecyclerViewWithEmptyView.OnScrollListener() {
             @Override
@@ -129,6 +131,9 @@ public class EventListFragment extends Fragment {
         mListener = null;
     }
 
+    /**
+     * Fragment interface
+     */
     public interface OnListFragmentInteractionListener {
         void onListItemClick(Event event);
 
@@ -139,11 +144,19 @@ public class EventListFragment extends Fragment {
         boolean onListItemLongClick(Event mItem, View view);
     }
 
+    /**
+     * Returns the recycler view
+     * @return contained recycler view
+     */
     public RecyclerViewWithEmptyView getRecyclerView() {
         return mRecyclerView;
     }
 
+    /**
+     * Removes a particular {@link Event}
+     * @param e event
+     */
     public void removeEvent(Event e){
-        ((MyEventRecyclerViewAdapter) mRecyclerView.getAdapter()).removeEvent(e);
+        ((EventRecyclerViewAdapter) mRecyclerView.getAdapter()).removeEvent(e);
     }
 }

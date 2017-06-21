@@ -20,13 +20,16 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Adapter for an ArrayList of Events
+ * Recycler View extension to show objects of the class {@link Event}
  *
  * @author Simone Ripamonti
  * @version 1
  */
-public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<MyEventRecyclerViewAdapter.ViewHolder> {
-    public static final String TAG ="MyEvetRVAdapter";
+public class EventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapter<EventRecyclerViewAdapter.EventViewHolder> {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG ="EventRVA";
     /**
      * Application context, used to retrieve localized strings for the events
      */
@@ -49,7 +52,7 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
      * @param listener the listener to perform callback
      * @param context the application context
      */
-    public MyEventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, Context context) {
+    public EventRecyclerViewAdapter(List<Event> items, OnListFragmentInteractionListener listener, Context context) {
         mValues = items;
         mListener = listener;
         mContext = context;
@@ -58,14 +61,14 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_event, parent, false);
-        return new ViewHolder(view);
+        return new EventViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final EventViewHolder holder, int position) {
 
         Event e = mValues.get(position);
 
@@ -133,19 +136,43 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
     }
 
     /**
-     * View Holder to contain the events data
+     * Extension of ViewHolder that is used to display {@link Event} content
      */
-    public class ViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
+    public class EventViewHolder extends RecyclerViewWithEmptyView.ViewHolder {
+        /**
+         * Parent view
+         */
         public final View mView;
+        /**
+         * Event type text view
+         */
         public final TextView mEventType;
+        /**
+         * Location text view
+         */
         public final TextView mEventLocation;
+        /**
+         * Date text view
+         */
         public final TextView mEventDate;
+        /**
+         * Votes text view
+         */
         public final TextView mEventVotes;
+        /**
+         * Event type icon
+         */
         public final ImageView mEventIcon;
-
+        /**
+         * The displayed {@link Event}
+         */
         public Event mItem;
 
-        public ViewHolder(View view) {
+        /**
+         * Constructor
+         * @param view that needs to be populated
+         */
+        public EventViewHolder(View view) {
             super(view);
             mView = view;
             mEventType = (TextView) view.findViewById(R.id.event_type);
@@ -161,6 +188,10 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         }
     }
 
+    /**
+     * Adds new events to the currently displayed ones, discarding duplicates, sorting by date
+     * @param events
+     */
     public synchronized void addEvents(Collection<Event> events){
         int oldSize = mValues.size();
         // remove events already present
@@ -175,11 +206,18 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         notifyDataSetChanged();
     }
 
+    /**
+     * Removes an event from the currently displayed ones
+     * @param e
+     */
     public synchronized void removeEvent(Event e){
         mValues.remove(e);
         notifyDataSetChanged();
     }
 
+    /**
+     * Removes all the events currently displayed
+     */
     public synchronized void clear() {
         int size = this.mValues.size();
         this.mValues.clear();
@@ -188,6 +226,9 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         notifyDataSetChanged();
     }
 
+    /**
+     * Comparator based on the date of the events
+     */
     private Comparator<Event> dateComparator = new Comparator<Event>() {
         @Override
         public int compare(Event o1, Event o2) {
@@ -195,6 +236,9 @@ public class MyEventRecyclerViewAdapter extends RecyclerViewWithEmptyView.Adapte
         }
     };
 
+    /**
+     * Comparator based on the votes of the events
+     */
     private Comparator<Event> voteComparator = new Comparator<Event>() {
         @Override
         public int compare(Event o1, Event o2) {

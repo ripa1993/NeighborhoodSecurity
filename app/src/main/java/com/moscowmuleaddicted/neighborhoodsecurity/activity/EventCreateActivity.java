@@ -18,10 +18,21 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 
+/**
+ * Activity that guides the user through the creation of a new event
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class EventCreateActivity extends AppCompatActivity implements EventCreateFragment.OnFragmentInteractionListener {
-
-    EventCreateFragment mEventCreateFragment;
-    public static final String TAG = "EventCreateActivity";
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "EventCreateAct";
+    /**
+     * The contained fragment
+     */
+    private EventCreateFragment mEventCreateFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +54,7 @@ public class EventCreateActivity extends AppCompatActivity implements EventCreat
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
+        // does nothing
     }
 
     @Override

@@ -6,9 +6,12 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
- * Created by Simone Ripamonti on 24/04/2017.
+ * Representation of a Subscription returned by Neighborhood Security Rest webservice
+ * Annotations are used to provide Object instantiation give a json file
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
 public class Subscription implements Serializable{
     @SerializedName("id")
     @Expose

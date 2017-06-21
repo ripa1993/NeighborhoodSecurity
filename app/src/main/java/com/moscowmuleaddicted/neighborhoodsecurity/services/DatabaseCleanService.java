@@ -14,21 +14,24 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_DAY;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
 
 /**
- * Created by Simone Ripamonti on 20/06/2017.
+ * Extension of {@link JobService} that is run every midnight to delete events and subscription
+ * that have not been updated since 7 days (probably deleted!)
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
-public class DatabaseCleanJobService extends JobService {
-
-    public static final String TAG = "DatabaseCleanJobService";
+public class DatabaseCleanService extends JobService {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "DatabaseCleanService";
 
     @Override
     public boolean onStartJob(JobParameters params) {
@@ -48,7 +51,7 @@ public class DatabaseCleanJobService extends JobService {
         dispatcher.cancel(TAG_DB_CLEAN_JOB);
         int waitSeconds = SECONDS_IN_MINUTE*MINUTES_IN_HOUR*MINUTES_IN_DAY;
         Job dbCleanJob = dispatcher.newJobBuilder()
-                .setService(DatabaseCleanJobService.class)
+                .setService(DatabaseCleanService.class)
                 .setTag(Constants.TAG_DB_CLEAN_JOB)
                 .setRecurring(true)
                 .setLifetime(Lifetime.FOREVER)

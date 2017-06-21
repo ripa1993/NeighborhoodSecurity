@@ -1,5 +1,6 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.services;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -8,13 +9,19 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
 /**
- * Created by Simone Ripamonti on 25/04/2017.
+ * Extension of {@link FirebaseInstanceIdService} that is used to send the new FCM token to the
+ * remote server when it changes, so that the device can receive notificatinos
  */
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
+public class FCMTokenRefreshService extends FirebaseInstanceIdService {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "FCMTokenRefresh";
 
     @Override
     public void onTokenRefresh(){
+        Log.d(TAG, "refreshing fcm token");
         String token = FirebaseInstanceId.getInstance().getToken();
         NSService.getInstance(getApplicationContext()).updateFcm(token, new NSService.MyCallback<MyMessage>() {
             @Override

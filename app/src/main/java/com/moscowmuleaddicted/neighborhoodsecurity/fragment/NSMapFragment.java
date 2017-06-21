@@ -51,82 +51,77 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DE
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
 
+/**
+ * Extension of {@link MapFragment} to support the dynamic insertion of markers related to events
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class NSMapFragment extends MapFragment implements OnMapReadyCallback, ClusterManager.OnClusterClickListener<NSMapFragment.EventClusterItem>, ClusterManager.OnClusterItemClickListener<NSMapFragment.EventClusterItem>, GoogleMap.OnCameraIdleListener, GoogleMap.OnMapLongClickListener {
-
-    public static final String TAG = "NSMapFragment";
-
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "NSMapFrag";
+    /**
+     * Current shown google map
+     */
     private GoogleMap currentMap;
+    /**
+     * Reference to application data service
+     */
     private NSService service;
+    /**
+     * Ids that have already been shown
+     */
     private Set<Integer> idsAlreadyIn;
-
-    // Initial position or events
+    /**
+     * Map initial position
+     */
     private LatLng initialPosition;
+    /**
+     * Map initial position set flag
+     */
     private boolean initialPositionSet = false;
+    /**
+     * Map initial events
+     */
     private List<Event> initialEvents;
+    /**
+     * Map initial events flag
+     */
     private boolean initialEventsSet = false;
-    private LatLng defaultPosition = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE); // Milano
+    /**
+     * Map default initial position
+     */
+    private LatLng defaultPosition = new LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE);
+    /**
+     * Cluster manager
+     */
+    private ClusterManager<EventClusterItem> mClusterManager;
 
+    /**
+     * Sets the initial position of the map
+     * @param initialPosition center coordinates
+     */
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
         initialPositionSet = true;
     }
 
+    /**
+     * Sets the initial events to be shown
+     * @param initialEvents events to beshown
+     */
     public void setInitialEvents(List<Event> initialEvents) {
         this.initialEvents = initialEvents;
         initialEventsSet = true;
     }
 
-    // Declare a variable for the cluster manager.
-    private ClusterManager<EventClusterItem> mClusterManager;
-
-    @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        service = NSService.getInstance(getActivity());
-        idsAlreadyIn = new HashSet<Integer>();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        // Set local map variable
-        currentMap = googleMap;
-        //noinspection MissingPermission
-        currentMap.setMyLocationEnabled(false);
-        currentMap.setTrafficEnabled(false);
-        currentMap.setIndoorEnabled(false);
-        currentMap.setBuildingsEnabled(false);
-        currentMap.getUiSettings().setMapToolbarEnabled(false);
-
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<>(getActivity(), currentMap);
-        mClusterManager.setRenderer(new EventClusterRenderer());
-
-        // set listeners
-        currentMap.setOnCameraIdleListener(this);
-        mClusterManager.setOnClusterClickListener(this);
-        mClusterManager.setOnClusterItemClickListener(this);
-        currentMap.setOnMarkerClickListener(mClusterManager);
-
-        // load initial events
-        if (initialEventsSet) {
-            addToCluster(initialEvents);
-        }
-
-        // set initial position
-        if (initialPositionSet) {
-            moveCamera(initialPosition, true);
-        } else if (initialEventsSet){
-            centerCameraToContainAllEvents(initialEvents, true);
-        } else {
-            moveCamera(defaultPosition, true);
-        }
-
-        // set long click listener
-        googleMap.setOnMapLongClickListener(this);
-    }
-
-
+    /**
+     * Computes the center of the map given a list of events
+     * @param events
+     * @return coordinates where to center the map
+     */
     private LatLng computeCenterEventList(List<Event> events) {
 
         double x = 0;
@@ -154,7 +149,11 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         return new LatLng(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
     }
 
-
+    /**
+     * Centers the map in the barycenter of the events
+     * @param events
+     * @param animate true to animate, false to simply move
+     */
     private void centerCameraInBarycenterOfEvents(List<Event> events, boolean animate) {
         if (animate)
             currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
@@ -162,6 +161,11 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
     }
 
+    /**
+     * Centers the map to display all the events
+     * @param events
+     * @param animate true to animate, false to simply move
+     */
     private void centerCameraToContainAllEvents(List<Event> events, boolean animate) {
         //Calculate the markers to get their position
         LatLngBounds.Builder b = new LatLngBounds.Builder();
@@ -176,6 +180,10 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             currentMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
     }
 
+    /**
+     * Adds a list of events to the cluster manager, only if they are not duplicates
+     * @param events to be displayed
+     */
     private synchronized void addToCluster(List<Event> events) {
         Log.d(TAG, "Found " + events.size() + " events");
         List<EventClusterItem> eventClusterItems = new ArrayList<>();
@@ -185,6 +193,20 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             }
         }
         mClusterManager.addItems(eventClusterItems);
+    }
+
+    /**
+     * Moves the camera to the specified position
+     * @param latLng coordinates of the center
+     * @param animate true to animate, false to simply move
+     */
+    public void moveCamera(LatLng latLng, boolean animate){
+        if(animate){
+            currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+        } else {
+            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
+        }
+        onCameraIdle();
     }
 
     @Override
@@ -207,15 +229,6 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         showEventDetail.putExtra(IE_EVENT, event);
         startActivity(showEventDetail);
         return false;
-    }
-
-    public void moveCamera(LatLng latLng, boolean animate){
-        if(animate){
-            currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
-        } else {
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
-        }
-        onCameraIdle();
     }
 
     @Override
@@ -285,6 +298,56 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     }
 
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        service = NSService.getInstance(getActivity());
+        idsAlreadyIn = new HashSet<Integer>();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        // Set local map variable
+        currentMap = googleMap;
+        //noinspection MissingPermission
+        currentMap.setMyLocationEnabled(false);
+        currentMap.setTrafficEnabled(false);
+        currentMap.setIndoorEnabled(false);
+        currentMap.setBuildingsEnabled(false);
+        currentMap.getUiSettings().setMapToolbarEnabled(false);
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<>(getActivity(), currentMap);
+        mClusterManager.setRenderer(new EventClusterRenderer());
+
+        // set listeners
+        currentMap.setOnCameraIdleListener(this);
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        currentMap.setOnMarkerClickListener(mClusterManager);
+
+        // load initial events
+        if (initialEventsSet) {
+            addToCluster(initialEvents);
+        }
+
+        // set initial position
+        if (initialPositionSet) {
+            moveCamera(initialPosition, true);
+        } else if (initialEventsSet){
+            centerCameraToContainAllEvents(initialEvents, true);
+        } else {
+            moveCamera(defaultPosition, true);
+        }
+
+        // set long click listener
+        googleMap.setOnMapLongClickListener(this);
+    }
+
+    /**
+     * Implementation of {@link ClusterItem} in order to display {@link Event} marker on the map
+     */
     public class EventClusterItem implements ClusterItem {
         private Event mEvent;
         private LatLng mPosition;
@@ -323,8 +386,14 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         }
     }
 
+    /**
+     * Extension of {@link DefaultClusterRenderer} in order to customize the shown markers
+     */
     private class EventClusterRenderer extends DefaultClusterRenderer<EventClusterItem> {
 
+        /**
+         * Creator
+         */
         public EventClusterRenderer() {
             super(getApplicationContext(), currentMap, mClusterManager);
         }

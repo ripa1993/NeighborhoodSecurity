@@ -8,21 +8,40 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Details;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Detail;
 
 import java.util.List;
 
-
-public class MyEventDetailRecyclerViewAdapter extends RecyclerView.Adapter<MyEventDetailRecyclerViewAdapter.ViewHolder> {
-
-    private final List<Details> mValues;
+/**
+ * Recycler View extension to show objects of the class {@link Detail}
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
+public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecyclerViewAdapter.DetailsViewHolder> {
+    /**
+     * The values to be shown
+     */
+    private final List<Detail> mValues;
+    /**
+     * The listener
+     */
     private final OnListFragmentInteractionListener mListener;
 
-    public MyEventDetailRecyclerViewAdapter(List<Details> items, OnListFragmentInteractionListener listener) {
+    /**
+     * Adapter creator
+     * @param items list of {@link Detail} to be shown
+     * @param listener to which notify events
+     */
+    public DetailRecyclerViewAdapter(List<Detail> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
 
+    /**
+     * Function to change the value of a particular {@link Detail}, identified by position
+     * @param i the new value
+     */
     public void updateVotes(int i){
         int votes = Integer.valueOf(mValues.get(mValues.size() - 1).getContent());
         votes += i;
@@ -31,14 +50,14 @@ public class MyEventDetailRecyclerViewAdapter extends RecyclerView.Adapter<MyEve
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DetailsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_eventdetail, parent, false);
-        return new ViewHolder(view);
+        return new DetailsViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final DetailsViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getName());
         holder.mContentView.setText(mValues.get(position).getContent());
@@ -60,13 +79,32 @@ public class MyEventDetailRecyclerViewAdapter extends RecyclerView.Adapter<MyEve
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * Extension of ViewHolder that is used to display {@link Detail} content
+     */
+    public class DetailsViewHolder extends RecyclerView.ViewHolder {
+        /**
+         * The parent view
+         */
         public final View mView;
+        /**
+         * Text field to show the detail name
+         */
         public final TextView mIdView;
+        /**
+         * Text field to show the detail content
+         */
         public final TextView mContentView;
-        public Details mItem;
+        /**
+         * The {@link Detail} item shown in this view
+         */
+        public Detail mItem;
 
-        public ViewHolder(View view) {
+        /**
+         * The creator
+         * @param view that needs to be populated
+         */
+        public DetailsViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.id);

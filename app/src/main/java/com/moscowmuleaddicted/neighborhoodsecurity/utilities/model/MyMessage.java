@@ -4,7 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by Simone Ripamonti on 19/04/2017.
+ * Representation of a message returned by Neighborhood Security Rest webservice
+ * Annotations are used to provide Object instantiation give a json file
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
 public class MyMessage {

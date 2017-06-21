@@ -6,10 +6,12 @@ import xdroid.enumformat.EnumFormat;
 import xdroid.enumformat.EnumString;
 
 /**
- * Created by Simone Ripamonti on 25/04/2017.
+ * Auxiliary class to represent the {@link Detail} names for {@link Event} class
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
-public enum DetailsEnum {
+public enum DetailEventEnum {
     @EnumString(R.string.details_date)
     DATE,
     @EnumString(R.string.details_event_type)

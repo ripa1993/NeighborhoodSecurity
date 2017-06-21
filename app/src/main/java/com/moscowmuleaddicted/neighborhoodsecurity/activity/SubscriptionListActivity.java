@@ -15,7 +15,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.SubscriptionRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
@@ -35,20 +35,19 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC
  */
 public class SubscriptionListActivity extends AppCompatActivity implements SubscriptionListFragment.OnListFragmentInteractionListener {
     /**
+     * Logger's TAG
+     */
+    private static final String TAG = "SubscriptionListAct";
+    /**
      * Enumeration used to specify what is the source of Subscriptions
      */
     private enum UpdateType {
         NONE, UID;
     }
-
-    /**
-     * Log TAG
-     */
-    private static final String TAG = "SubscriptionListAct";
     /**
      * Floating action button
      */
-    private ActionButton mFab;
+    private ActionButton mFabNewSubscription;
     /**
      * Contained fragment
      */
@@ -60,7 +59,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
     /**
      * Source of the Subscription items
      */
-    private UpdateType updateType = UpdateType.NONE;
+    private UpdateType mUpdateType = UpdateType.NONE;
     /**
      * Auxiliary data for the source UID
      */
@@ -87,14 +86,14 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                 Log.d(TAG, "creating fragment using provided subscription list");
                 mSubscriptions = (ArrayList<Subscription>) extras.getSerializable(IE_SUBSCRIPTION_LIST);
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
-                updateType = UpdateType.NONE;
+                mUpdateType = UpdateType.NONE;
                 Log.d(TAG, "fragment created");
             } else if (extras.containsKey(IE_UID)) {
                 // if UID is provided
                 Log.d(TAG, "creating fragment using provided UID");
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
-                updateType = UpdateType.UID;
+                mUpdateType = UpdateType.UID;
                 uid = extras.getString(IE_UID);
                 mSubscriptions.addAll(getByUid());
                 mFragment = SubscriptionListFragment.newInstance(1, mSubscriptions);
@@ -114,8 +113,8 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         fragmentTransaction.commit();
 
 
-        mFab = (ActionButton) findViewById(R.id.subscription_create_fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
+        mFabNewSubscription = (ActionButton) findViewById(R.id.subscription_create_fab);
+        mFabNewSubscription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "FAB clicked");
@@ -135,23 +134,6 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
     }
 
-    private void refreshList() {
-        switch (updateType) {
-            case NONE:
-                // should not be activated
-                mSwipe.setEnabled(false);
-                mSwipe.setRefreshing(false);
-                return;
-            case UID:
-                getByUid();
-                return;
-            default:
-                mSwipe.setEnabled(false);
-                mSwipe.setRefreshing(false);
-                return;
-        }
-    }
-
     @Override
     public void onListItemClick(Subscription item) {
         Intent intent = new Intent(SubscriptionListActivity.this, EventListActivity.class);
@@ -161,15 +143,15 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
 
     @Override
     public void scrollingUp() {
-        if (!mFab.isHidden()) {
-            mFab.hide();
+        if (!mFabNewSubscription.isHidden()) {
+            mFabNewSubscription.hide();
         }
     }
 
     @Override
     public void scrollingDown() {
-        if (mFab.isHidden()) {
-            mFab.show();
+        if (mFabNewSubscription.isHidden()) {
+            mFabNewSubscription.show();
         }
     }
 
@@ -230,6 +212,48 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_CREATE_SUBSCRIPTION && resultCode == RESULT_OK) {
+            refreshList();
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
+    }
+
+    /**
+     * How to refresh the RecyclerView after a swipe by the user. We discard locally found
+     * subscriptions since we are only interested in new events that might be available on the
+     * remote server
+     */
+    private void refreshList() {
+        switch (mUpdateType) {
+            case NONE:
+                // should not be activated
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+            case UID:
+                getByUid();
+                return;
+            default:
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+        }
+    }
+
     /**
      * Auxiliary method to perform a call to NSService to obtain a fresh list of subscriptions
      * @return subscriptions retrieved on the local sqlite db
@@ -240,7 +264,7 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
             public void onSuccess(List<Subscription> subscriptions) {
                 Log.d(TAG, "subscriptions from UID: found " + subscriptions.size() + " subscriptions");
                 RecyclerView recyclerView = mFragment.getRecyclerView();
-                ((MySubscriptionRecyclerViewAdapter) recyclerView.getAdapter()).addSubscriptions(subscriptions);
+                ((SubscriptionRecyclerViewAdapter) recyclerView.getAdapter()).addSubscriptions(subscriptions);
                 mSwipe.setRefreshing(false);
             }
 
@@ -272,25 +296,5 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
                 mSwipe.setRefreshing(false);
             }
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_CREATE_SUBSCRIPTION && resultCode == RESULT_OK) {
-            refreshList();
-        }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        isInFront = true;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        isInFront = false;
     }
 }

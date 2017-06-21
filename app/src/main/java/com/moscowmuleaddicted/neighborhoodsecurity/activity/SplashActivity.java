@@ -14,15 +14,12 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.moscowmuleaddicted.neighborhoodsecurity.services.DatabaseCleanJobService;
+import com.moscowmuleaddicted.neighborhoodsecurity.services.DatabaseCleanService;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 
-import java.sql.Time;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_DAY;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
@@ -30,11 +27,25 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PL
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
 
+/**
+ * Splash activity that is shown on application start.
+ * If the device is not compliant with the requested Google Play Service version, a popup is shown
+ * and the user is requested to install or update the package. If the check is positive, a midnight
+ * job is scheduled to run, in order to clean old components of the local database. The splash
+ * screen has a duration provided by SPLASH_TIME_OUT
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class SplashActivity extends AppCompatActivity {
-
-    // Splash screen timer
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "SplashAct";
+    /**
+     *  Splash screen timer
+     */
     private static int SPLASH_TIME_OUT = 1000;
-    public static final String TAG = "Splash";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +82,7 @@ public class SplashActivity extends AppCompatActivity {
             int minutes = calendar.get(Calendar.MINUTE);
             int waitSeconds = (MINUTES_IN_DAY - hour*MINUTES_IN_HOUR - minutes)*SECONDS_IN_MINUTE;
             Job dbCleanJob = dispatcher.newJobBuilder()
-                    .setService(DatabaseCleanJobService.class)
+                    .setService(DatabaseCleanService.class)
                     .setTag(Constants.TAG_DB_CLEAN_JOB)
                     .setRecurring(true)
                     .setLifetime(Lifetime.FOREVER)

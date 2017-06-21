@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MySubscriptionRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.SubscriptionRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
@@ -70,7 +70,7 @@ public class SubscriptionListFragment extends Fragment {
         } else {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        mRecyclerView.setAdapter(new MySubscriptionRecyclerViewAdapter(mSubscriptions, mListener));
+        mRecyclerView.setAdapter(new SubscriptionRecyclerViewAdapter(mSubscriptions, mListener));
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -125,11 +125,11 @@ public class SubscriptionListFragment extends Fragment {
     }
 
     public void showData(List<Subscription> subscriptions) {
-        mRecyclerView.swapAdapter(new MySubscriptionRecyclerViewAdapter(subscriptions, mListener), false);
+        mRecyclerView.swapAdapter(new SubscriptionRecyclerViewAdapter(subscriptions, mListener), false);
     }
 
     public void removeSubscription(Subscription s){
-        ((MySubscriptionRecyclerViewAdapter) mRecyclerView.getAdapter()).removeSubscription(s);
+        ((SubscriptionRecyclerViewAdapter) mRecyclerView.getAdapter()).removeSubscription(s);
     }
 
 }

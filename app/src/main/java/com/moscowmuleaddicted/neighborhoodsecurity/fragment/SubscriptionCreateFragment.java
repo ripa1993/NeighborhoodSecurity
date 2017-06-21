@@ -48,83 +48,78 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MI
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SubscriptionCreateFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SubscriptionCreateFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment containing the fields required for the creation of a new {@link com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription}
+ *
+ * @author Simone Ripamonti
+ * @version 2
  */
-class Coords {
-    private double lat, lon;
-
-    public Coords() {
-    }
-
-
-    public double getLat() {
-        return lat;
-    }
-
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
-}
-
 public class SubscriptionCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    private static final String TAG = "SubscriptionCreateFgmnt";
-
-    private Coords coords;
-
-    private EditText etLatitude, etLongitude;
-    private TextInputLayout ilLatitude, ilLongitude;
+    /**
+     * Logger's TAG
+     */
+    private static final String TAG = "SubscriptionCreateFrag";
+    /**
+     * Edit text latitude
+     */
+    private EditText etLatitude;
+    /**
+     * Edit text longitude
+     */
+    private EditText etLongitude;
+    /**
+     * Input layout latitude
+     */
+    private TextInputLayout ilLatitude;
+    /**
+     * Input layout longitude
+     */
+    private TextInputLayout ilLongitude;
+    /**
+     * Textview current radius
+     */
     private TextView tvSeekbarCurValue;
+    /**
+     * Seekbar radius
+     */
     private SeekBar sbRadius;
+    /**
+     * Radio group address and coordinates
+     */
     private RadioGroup radioGroup;
+    /**
+     * Radio button address
+     */
     private RadioButton rbAddress;
-
+    /**
+     * Image view showing a compass
+     */
     private ImageView ivGetPosition;
+    /**
+     * Google Api Client to obtain current position
+     */
     private GoogleApiClient mGoogleApiClient;
+    /**
+     * Device last known location
+     */
     private Location mLastLocation;
-
-    private Double mLatitude;
-    private Double mLongitude;
-
+    /**
+     * Google Places API autocomplete fragment
+     */
     private SupportPlaceAutocompleteFragment placeAutocompleteFragment;
-
-
+    /**
+     * Fragment interaction listener
+     */
     private OnFragmentInteractionListener mListener;
-
+    /**
+     * Constructor
+     */
     public SubscriptionCreateFragment() {
         // Required empty public constructor
-        coords = new Coords();
-    }
-
-    public static SubscriptionCreateFragment newInstance(Double latitude, Double longitude) {
-        SubscriptionCreateFragment fragment = new SubscriptionCreateFragment();
-        Bundle args = new Bundle();
-        args.putDouble(IE_LATITUDE, latitude);
-        args.putDouble(IE_LONGITUDE, longitude);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mLatitude = getArguments().getDouble(IE_LATITUDE);
-            mLongitude = getArguments().getDouble(IE_LONGITUDE);
-        }
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
@@ -132,7 +127,6 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
                     .addApi(LocationServices.API)
                     .build();
         }
-
     }
 
     @Override
@@ -233,7 +227,6 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
         return view;
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -297,21 +290,51 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
 
     }
 
+    @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    /**
+     * Fragment listener interface
+     */
     public interface OnFragmentInteractionListener {
     }
 
+    /**
+     * Radius getter
+     * @return
+     */
     public int getRadius() {
         return sbRadius.getProgress();
     }
 
+    /**
+     * Latitude getter
+     * @return
+     */
     public Double getLatitude() {
         return NumberUtils.toDouble(etLatitude.getText().toString(), -1000d);
     }
 
+    /**
+     * Longitude getter
+     * @return
+     */
     public Double getLongitude() {
         return NumberUtils.toDouble(etLongitude.getText().toString(), -1000d);
     }
 
+    /**
+     * Show errors in the various fields
+     */
     public void showErrors() {
         if (rbAddress.isChecked()) {
             Toast.makeText(getContext(), getString(R.string.msg_insert_valid_place), Toast.LENGTH_SHORT).show();
@@ -340,22 +363,16 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
         }
     }
 
+    /**
+     * Manually set location according to coordinates
+     * @param lat latitude
+     * @param lon longitude
+     */
     public void setLocation(double lat, double lon) {
         radioGroup.check(R.id.radio_coordinates_sub);
         etLatitude.setText(String.valueOf(lat));
         etLongitude.setText(String.valueOf(lon));
     }
 
-    @Override
-    public void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
 
 }

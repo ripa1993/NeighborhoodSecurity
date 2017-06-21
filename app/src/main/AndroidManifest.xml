@@ -45,17 +45,17 @@
 
         </activity>
 
-        <service android:name=".services.MyFirebaseInstanceIDService">
+        <service android:name=".services.FCMTokenRefreshService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".services.MyFirebaseMessagingService">
+        <service android:name=".services.FCMReceiverService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".services.DatabaseCleanJobService"
+        <service android:name=".services.DatabaseCleanService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>

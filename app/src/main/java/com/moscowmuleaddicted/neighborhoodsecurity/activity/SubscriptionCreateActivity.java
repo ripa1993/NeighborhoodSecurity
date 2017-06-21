@@ -22,10 +22,21 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MI
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LONGITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_RADIUS;
 
+/**
+ * Activity that guides the user in the creation of a new subscription
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class SubscriptionCreateActivity extends AppCompatActivity implements SubscriptionCreateFragment.OnFragmentInteractionListener {
-
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "SubscriptionCreateAct";
+    /**
+     * The contained fragment
+     */
     private SubscriptionCreateFragment mFragment;
-    public static final String TAG = "SubsCreateActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

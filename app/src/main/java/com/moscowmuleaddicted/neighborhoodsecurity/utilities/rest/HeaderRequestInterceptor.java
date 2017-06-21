@@ -20,7 +20,16 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.AU
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SERVICE_KEY;
 
 /**
- * Created by Simone Ripamonti on 12/04/2017.
+ * Implementation of {@link Interceptor} in order to attach extra content to the request header.
+ * New headers:
+ * <ul>
+ *     <li>Accept: application/json</li>
+ *     <li>service-key: SERVICE_KEY</li>
+ *     <li>auth-token: AUTH_TOKEN</li>
+ * </ul>
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
 public final class HeaderRequestInterceptor implements Interceptor {

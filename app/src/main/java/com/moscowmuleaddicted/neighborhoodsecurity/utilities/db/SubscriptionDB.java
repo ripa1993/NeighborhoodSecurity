@@ -14,15 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Simone Ripamonti on 11/05/2017.
+ * SQLite initialization for Event DB
+ *
+ * @author Simone Ripamonti
+ * @version 2
  */
-
 public class SubscriptionDB extends SQLiteOpenHelper {
-    // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
-    public static final String DATABASE_NAME = "Subscription.db";
+    /**
+     * Logger's TAG
+     */
     public static final String TAG = "SubscriptionDB";
+    /**
+     * Database version
+     */
+    public static final int DATABASE_VERSION = 2;
+    /**
+     * Database name
+     */
+    public static final String DATABASE_NAME = "Subscription.db";
 
+    /**
+     * Constructor
+     * @param context
+     */
     public SubscriptionDB(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -40,10 +54,15 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    /**
+     * Stores a new subscription
+     * @param s
+     */
     public void addSubscription(Subscription s){
         ContentValues values = new ContentValues(10);
         values.put(SubscriptionEntry._ID, s.getId());
@@ -64,6 +83,11 @@ public class SubscriptionDB extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    /**
+     * Get a subscription based on the UID of the owner
+     * @param uid
+     * @return
+     */
     public List<Subscription> getByUID(String uid){
         List<Subscription> subscriptions = new ArrayList<>();
         Cursor cursor = getReadableDatabase().rawQuery(SubscriptionStatements.SQL_SELECT_BY_UID,
@@ -77,20 +101,38 @@ public class SubscriptionDB extends SQLiteOpenHelper {
         return subscriptions;
     }
 
+    /**
+     * Gets the count of the subscriptions referred to a specific user's UID
+     * @param uid
+     * @return
+     */
     public int getCountByUid(String uid){
         Cursor cursor = getReadableDatabase().rawQuery(SubscriptionStatements.SQL_SELECT_COUNT, new String[]{uid});
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
 
+    /**
+     * Deletes a subscription based on its id
+     * @param subscriptionId
+     */
     public void deleteById(int subscriptionId){
         getWritableDatabase().delete(SubscriptionEntry.TABLE_NAME, SubscriptionEntry._ID + " = ?", new String[]{String.valueOf(subscriptionId)});
     }
 
+    /**
+     * Deletes subscriptions older than 7 days
+     * @return
+     */
     public int clearOldSubscriptions(){
         return getWritableDatabase().delete(SubscriptionEntry.TABLE_NAME, SubscriptionEntry.COLUMN_NAME_STORAGE_DATE + " < " + (System.currentTimeMillis() - Constants.MILLISECONDS_7_DAYS), new String[]{});
     }
 
+    /**
+     * Converts a cursor row to a subscription
+     * @param cursor
+     * @return
+     */
     private Subscription toSubscription(Cursor cursor){
         Subscription sub = new Subscription();
         sub.setId(cursor.getInt(0));

@@ -7,12 +7,23 @@ import android.util.Log;
 import android.view.View;
 
 /**
- * Created by Simone Ripamonti on 25/05/2017.
+ * {@link RecyclerView} extension that shows an particular view when no data to show is available
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
 public class RecyclerViewWithEmptyView extends RecyclerView {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "RecyclerViewWEmptyV";
+    /**
+     * The view that must be shown when no data is available
+     */
     private View mEmptyView;
-    public static final String TAG = "RecyclerViewWithEmptyV";
+    /**
+     * Data observer that updates the empty view
+     */
     private AdapterDataObserver mDataObserver = new AdapterDataObserver() {
         @Override
         public void onChanged() {
@@ -22,14 +33,29 @@ public class RecyclerViewWithEmptyView extends RecyclerView {
         }
     };
 
+    /**
+     * Creator
+     * @param context
+     */
     public RecyclerViewWithEmptyView(Context context) {
         super(context);
     }
 
+    /**
+     * Creator
+     * @param context
+     * @param attrs
+     */
     public RecyclerViewWithEmptyView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
+    /**
+     * Creator
+     * @param context
+     * @param attrs
+     * @param defStyle
+     */
     public RecyclerViewWithEmptyView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -43,6 +69,17 @@ public class RecyclerViewWithEmptyView extends RecyclerView {
         mEmptyView = emptyView;
     }
 
+    /**
+     * Shows or hides mEmptyView according to the data available to the adapter
+     */
+    public void updateEmptyView() {
+        if (mEmptyView != null && getAdapter() != null) {
+            boolean showEmptyView = getAdapter().getItemCount() == 0;
+            mEmptyView.setVisibility(showEmptyView ? VISIBLE : GONE);
+            setVisibility(showEmptyView ? GONE : VISIBLE);
+        }
+    }
+
     @Override
     public void setAdapter(RecyclerViewWithEmptyView.Adapter adapter) {
         if (getAdapter() != null) {
@@ -53,13 +90,5 @@ public class RecyclerViewWithEmptyView extends RecyclerView {
         }
         super.setAdapter(adapter);
         updateEmptyView();
-    }
-
-    public void updateEmptyView() {
-        if (mEmptyView != null && getAdapter() != null) {
-            boolean showEmptyView = getAdapter().getItemCount() == 0;
-            mEmptyView.setVisibility(showEmptyView ? VISIBLE : GONE);
-            setVisibility(showEmptyView ? GONE : VISIBLE);
-        }
     }
 }

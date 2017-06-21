@@ -7,9 +7,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by Simone Ripamonti on 12/04/2017.
+ * Representation of a Event returned by Neighborhood Security Rest webservice
+ * Annotations are used to provide Object instantiation give a json file
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
-
 public class Event implements Serializable{
 
     @SerializedName("id")
@@ -141,6 +144,10 @@ public class Event implements Serializable{
         this.submitterId = submitterId;
     }
 
+    /**
+     * Generates a dummy event, for testing purpose
+     * @return
+     */
     public static Event makeDummy(){
         Event event = new Event();
         event.setCity("asd");

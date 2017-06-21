@@ -49,47 +49,105 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_STREET;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
 
+/**
+ * Fragment containing the fields required for the creation of a new {@link Event}
+ *
+ * @author Simone Ripamonti
+ * @version 2
+ */
 public class EventCreateFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
+    /**
+     * Logger's TAG
+     */
+    private static final String TAG = "EventCreateFrag";
+    /**
+     * The locally created event
+     */
     final private Event event;
-
-    private static final String TAG = "EventCreateFragment";
-    private EditText etDescription, etLatitude, etLongitude;
-    private TextInputLayout ilDescription, ilLatitude, ilLongitude;
+    /**
+     * Description edit text
+     */
+    private EditText etDescription;
+    /**
+     * Latitude edit text
+     */
+    private EditText etLatitude;
+    /**
+     * Longitude edit text
+     */
+    private EditText etLongitude;
+    /**
+     * Description input layout
+     */
+    private TextInputLayout ilDescription;
+    /**
+     * Latitude input layout
+     */
+    private TextInputLayout ilLatitude;
+    /**
+     * Longitude input layout
+     */
+    private TextInputLayout ilLongitude;
+    /**
+     * Event type spinner
+     */
     private LabelledSpinner lsEventType;
-    private RadioButton rbAddress;
-    private ImageView ivGetPosition;
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
+    /**
+     * Radio group containing address radio and coordinates radio
+     */
     private RadioGroup radioGroup;
-
-    private Double latitude, longitude;
-    private String country, city, street;
-
+    /**
+     * Address radio button
+     */
+    private RadioButton rbAddress;
+    /**
+     * Image view showing a compass
+     */
+    private ImageView ivGetPosition;
+    /**
+     * Google API client to obtain position services location
+     */
+    private GoogleApiClient mGoogleApiClient;
+    /**
+     * Last known location
+     */
+    private Location mLastLocation;
+    /**
+     * Latitude obtained by coordinates or by Google Places API
+     */
+    private Double latitude;
+    /**
+     * Longitude obtained by coordinates or by Google Places API
+     */
+    private Double longitude;
+    /**
+     * Fragment interaction listener
+     */
     private OnFragmentInteractionListener mListener;
-
+    /**
+     * Google Places API autocomplete fragment
+     */
     private SupportPlaceAutocompleteFragment placeAutocompleteFragment;
 
+    /**
+     * Creator
+     */
     public EventCreateFragment() {
         // Required empty public constructor
         event = new Event();
     }
 
+    /**
+     * Builder that initializes a particular coordinates position
+     * @param lat
+     * @param lon
+     * @return
+     */
     public static EventCreateFragment newInstanceWithCoordinates(Double lat, Double lon) {
         EventCreateFragment fragment = new EventCreateFragment();
         Bundle args = new Bundle();
         args.putDouble(IE_LATITUDE, lat);
         args.putDouble(IE_LONGITUDE, lon);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public static EventCreateFragment newInstanceWithAddress(String country, String city, String street) {
-        EventCreateFragment fragment = new EventCreateFragment();
-        Bundle args = new Bundle();
-        args.putString(IE_COUNTRY, country);
-        args.putString(IE_CITY, city);
-        args.putString(IE_STREET, street);
         fragment.setArguments(args);
         return fragment;
     }
@@ -205,12 +263,6 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
         return view;
     }
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -226,55 +278,6 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    public Event getEvent(){
-        if(!eventUsesAddress()){
-            event.setLatitude(NumberUtils.toDouble(etLatitude.getText().toString(), Double.NEGATIVE_INFINITY));
-            event.setLongitude(NumberUtils.toDouble(etLongitude.getText().toString(), Double.NEGATIVE_INFINITY));
-
-            placeAutocompleteFragment.setText("");
-        }
-        event.setDate(new Date());
-        event.setDescription(etDescription.getText().toString());
-        event.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
-        return event;
-    }
-
-    public boolean eventUsesAddress(){
-        if (rbAddress.isChecked()){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    public void showErrors(){
-        if(etDescription.getText().length() == 0){
-            ilDescription.setError(getString(R.string.msg_insert_valid_description));
-        } else {
-            ilDescription.setError(null);
-        }
-
-        if(eventUsesAddress()){
-            placeAutocompleteFragment.setText("");
-
-        } else {
-            if(etLatitude.getText().length() == 0){
-                ilLatitude.setError(getString(R.string.msg_insert_valid_latitude));
-            } else {
-                ilLatitude.setError(null);
-            }
-
-            if(etLongitude.getText().length() == 0){
-                ilLongitude.setError(getString(R.string.msg_insert_valid_longitude));
-            } else {
-                ilLongitude.setError(null);
-            }
-        }
-
-
     }
 
     @Override
@@ -314,27 +317,12 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        // do nothing
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        // do nothing
     }
 
     @Override
@@ -349,10 +337,79 @@ public class EventCreateFragment extends Fragment implements GoogleApiClient.Con
         super.onStop();
     }
 
+    /**
+     * Get the event characterized by the value contained in the different views
+     * @return the event
+     */
+    public Event getEvent(){
+        if(!eventUsesAddress()){
+            event.setLatitude(NumberUtils.toDouble(etLatitude.getText().toString(), Double.NEGATIVE_INFINITY));
+            event.setLongitude(NumberUtils.toDouble(etLongitude.getText().toString(), Double.NEGATIVE_INFINITY));
+
+            placeAutocompleteFragment.setText("");
+        }
+        event.setDate(new Date());
+        event.setDescription(etDescription.getText().toString());
+        event.setEventType((EventType) lsEventType.getSpinner().getSelectedItem());
+        return event;
+    }
+
+    /**
+     * Checks if the event is built using a Place or Coordinates
+     * @return true if Place, else false
+     */
+    public boolean eventUsesAddress(){
+        if (rbAddress.isChecked()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Shows errors
+     */
+    public void showErrors(){
+        if(etDescription.getText().length() == 0){
+            ilDescription.setError(getString(R.string.msg_insert_valid_description));
+        } else {
+            ilDescription.setError(null);
+        }
+
+        if(eventUsesAddress()){
+            placeAutocompleteFragment.setText("");
+
+        } else {
+            if(etLatitude.getText().length() == 0){
+                ilLatitude.setError(getString(R.string.msg_insert_valid_latitude));
+            } else {
+                ilLatitude.setError(null);
+            }
+
+            if(etLongitude.getText().length() == 0){
+                ilLongitude.setError(getString(R.string.msg_insert_valid_longitude));
+            } else {
+                ilLongitude.setError(null);
+            }
+        }
+    }
+
+    /**
+     * Sets the location manually to the specified coordinates
+     * @param lat latitude
+     * @param lon longitude
+     */
     public void setLocation(double lat, double lon) {
         radioGroup.check(R.id.radio_coordinates_event);
         etLatitude.setText(String.valueOf(lat));
         etLongitude.setText(String.valueOf(lon));
+    }
+
+    /**
+     * Fragment listener interface
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 
 }

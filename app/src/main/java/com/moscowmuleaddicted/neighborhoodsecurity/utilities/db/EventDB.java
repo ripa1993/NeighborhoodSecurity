@@ -17,15 +17,29 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Simone Ripamonti on 11/05/2017.
+ * SQLite initialization for Event DB
+ *
+ * @author Simone Ripamonti
+ * @version 2
  */
-
 public class EventDB extends SQLiteOpenHelper {
-    // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
-    public static final String DATABASE_NAME = "Event.db";
+    /**
+     * Logger's TAG
+     */
     public static final String TAG ="EventDB";
+    /**
+     * Database version
+     */
+    public static final int DATABASE_VERSION = 2;
+    /**
+     * Database name
+     */
+    public static final String DATABASE_NAME = "Event.db";
 
+    /**
+     * Constructor
+     * @param context
+     */
     public EventDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -43,10 +57,15 @@ public class EventDB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    /**
+     * Stores a new event
+     * @param e
+     */
     public void addEvent(Event e) {
         ContentValues values = new ContentValues(11);
         values.put(EventEntry._ID, e.getId());
@@ -135,22 +154,40 @@ public class EventDB extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Deletes an event provided its id
+     * @param eventId
+     */
     public void deleteById(int eventId){
         getWritableDatabase().delete(EventEntry.TABLE_NAME, EventEntry._ID + " = ?", new String[]{String.valueOf(eventId)});
     }
 
-    public void modifyVote(int eventId, int vote) throws NoEventFoundException {
+    /**
+     * Modifies the votes of an event
+     * @param eventId
+     * @param deltaVote
+     * @throws NoEventFoundException
+     */
+    public void modifyVote(int eventId, int deltaVote) throws NoEventFoundException {
         Event event = getById(eventId);
-        event.setVotes(event.getVotes()+vote);
+        event.setVotes(event.getVotes()+deltaVote);
         addEvent(event);
     }
 
+    /**
+     * Gets the count of events stored
+     * @return
+     */
     public int getCount(){
         Cursor cursor = getReadableDatabase().rawQuery(EventStatements.SQL_SELECT_COUNT, new String[]{});
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
 
+    /**
+     * Removes events that are older than 7 days
+     * @return
+     */
     public int clearOldEvents(){
         return getWritableDatabase().delete(EventEntry.TABLE_NAME, EventEntry.COLUMN_NAME_STORAGE_DATE + " < " + (System.currentTimeMillis() - Constants.MILLISECONDS_7_DAYS), new String[]{});
     }
@@ -176,6 +213,9 @@ public class EventDB extends SQLiteOpenHelper {
         return e;
     }
 
+    /**
+     * Exception that represent a not found event
+     */
     public class NoEventFoundException extends Exception {
     }
 }

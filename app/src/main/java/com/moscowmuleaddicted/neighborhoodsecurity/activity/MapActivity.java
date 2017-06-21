@@ -22,13 +22,29 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 
-
+/**
+ * Activity that shows a map that is refreshed when it is moved
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class MapActivity extends AppCompatActivity {
-
-    public static final String TAG = "MapActivity";
-    NSMapFragment mapFragment;
-    PlaceAutocompleteFragment placeAutocompleteFragment;
-    ActionButton fab;
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "MapAct";
+    /**
+     * The customized Google Map fragment
+     */
+    private NSMapFragment mMapFragment;
+    /**
+     * The place autocomplete fragment, used to search locations
+     */
+    private PlaceAutocompleteFragment mPlaceAutocompleteFragment;
+    /**
+     * Floating action button as a shortcut to event creation
+     */
+    private ActionButton mFabNewEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,11 +54,11 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         // Get the MapFragment
-        mapFragment = (NSMapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mMapFragment = (NSMapFragment) getFragmentManager().findFragmentById(R.id.map);
         // Get the PlacesAutomcomplete
-        placeAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        mPlaceAutocompleteFragment = (PlaceAutocompleteFragment) getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         // Get the FAB
-        fab = (ActionButton) findViewById(R.id.new_fab);
+        mFabNewEvent = (ActionButton) findViewById(R.id.new_fab);
 
         // Get data passed to the intent
         Bundle extras = getIntent().getExtras();
@@ -54,22 +70,22 @@ public class MapActivity extends AppCompatActivity {
             if(extras.getSerializable(IE_LATITUDE) != null && extras.getSerializable(IE_LONGITUDE) != null) {
                 initialLat = (double) extras.getSerializable(IE_LATITUDE);
                 initialLng = (double) extras.getSerializable(IE_LONGITUDE);
-                mapFragment.setInitialPosition(new LatLng(initialLat, initialLng));
+                mMapFragment.setInitialPosition(new LatLng(initialLat, initialLng));
             }
             // Set initial events if passed
             if(extras.getSerializable(IE_EVENT_LIST) != null) {
                 initialEvents = (List<Event>) extras.getSerializable(IE_EVENT_LIST);
-                mapFragment.setInitialEvents(initialEvents);
+                mMapFragment.setInitialEvents(initialEvents);
             }
         }
 
-        mapFragment.getMapAsync(mapFragment);
+        mMapFragment.getMapAsync(mMapFragment);
 
-        placeAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        mPlaceAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 Log.w(TAG, "PlaceAutocomplete returned "+place.getLatLng());
-                mapFragment.moveCamera(place.getLatLng(), true);
+                mMapFragment.moveCamera(place.getLatLng(), true);
             }
 
             @Override
@@ -78,7 +94,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFabNewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapActivity.this, EventCreateActivity.class);

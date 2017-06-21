@@ -24,7 +24,7 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.EventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
@@ -44,22 +44,22 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC
 import static xdroid.core.Global.getContext;
 
 /**
- * Activity that shows a list of Events
+ * Activity that shows a list of Events, provided by different sources
  *
  * @author Simone Ripamonti
+ * @version 1
  */
 public class EventListActivity extends AppCompatActivity implements EventListFragment.OnListFragmentInteractionListener {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "EventListAct";
     /**
      * Source of the event
      */
     private enum UpdateType {
         UID, SUBSCRIPTION, LOCATION, NONE
     }
-
-    /**
-     * Log tag
-     */
-    private static final String TAG = "EventListActivity";
     /**
      * The contained fragment
      */
@@ -75,7 +75,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
     /**
      * Source of the Event shown
      */
-    private UpdateType updateType = UpdateType.NONE;
+    private UpdateType mUpdateType = UpdateType.NONE;
     /**
      * Auxiliary info about source SUBSCRIPTION
      */
@@ -110,7 +110,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 Log.d(TAG, "creating fragment from provided event list");
                 events = (ArrayList<Event>) extras.getSerializable(IE_EVENT_LIST);
                 mFragment = EventListFragment.newInstance(1, events);
-                updateType = UpdateType.NONE;
+                mUpdateType = UpdateType.NONE;
                 setTitle(getString(R.string.title_event_list_generic));
                 Log.d(TAG, "fragment created");
             } else if (extras.containsKey(IE_UID)) {
@@ -118,7 +118,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 Log.d(TAG, "creating fragment from provided UID");
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
-                updateType = UpdateType.UID;
+                mUpdateType = UpdateType.UID;
                 uid = extras.getString(IE_UID);
                 events.addAll(getByUid());
                 mFragment = EventListFragment.newInstance(1, events);
@@ -130,7 +130,7 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 sub = (Subscription) extras.getSerializable(IE_SUBSCRIPTION);
                 mSwipe.setRefreshing(true);
                 mSwipe.setEnabled(true);
-                updateType = UpdateType.SUBSCRIPTION;
+                mUpdateType = UpdateType.SUBSCRIPTION;
                 events.addAll(getBySub());
                 mFragment = EventListFragment.newInstance(1, events);
                 setTitle(getString(R.string.title_event_list_subscription));
@@ -164,29 +164,6 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 refreshList();
             }
         });
-    }
-
-    private void refreshList() {
-        switch (updateType) {
-            case NONE:
-                // should not be enabled
-                mSwipe.setEnabled(false);
-                mSwipe.setRefreshing(false);
-                return;
-            case UID:
-                getByUid();
-                return;
-            case SUBSCRIPTION:
-                getBySub();
-                return;
-            case LOCATION:
-                getByLocation();
-                return;
-            default:
-                mSwipe.setEnabled(false);
-                mSwipe.setRefreshing(false);
-                return;
-        }
     }
 
     @Override
@@ -281,156 +258,6 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         return true;
     }
 
-    /**
-     * Auxiliary method to retrieve fresh Events from NSService using UID and update the list shown
-     *
-     * @return the events found locally on the SQLite DB
-     */
-    private List<Event> getByUid() {
-        return NSService.getInstance(getApplicationContext()).getEventsByUser(uid, new NSService.MyCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from UID: found " + events.size() + " events");
-                RecyclerView recyclerView = mFragment.getRecyclerView();
-                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure() {
-                Log.w(TAG, "events from UID: failure");
-                if (isInFront)
-                    Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from UID: " + message);
-                String msg = "";
-                switch (status) {
-                    case 400:
-                        msg = getString(R.string.msg_400_bad_request_events);
-                        break;
-                    case 404:
-                        msg = getString(R.string.msg_404_not_found_user_events);
-                        break;
-                    case 500:
-                        msg = getString(R.string.msg_500_internal_server_error_events);
-                        break;
-                    default:
-                        msg = getString(R.string.msg_unknown_error);
-                        break;
-                }
-                if (isInFront)
-                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-        });
-    }
-
-    /**
-     * Auxiliary method to retrieve fresh Events from NSService using Subscription and update the list shown
-     *
-     * @return the events found locally on the SQLite DB
-     */
-    private List<Event> getBySub() {
-        return NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from sub: found " + events.size() + " events");
-                RecyclerView recyclerView = mFragment.getRecyclerView();
-                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure() {
-                Log.w(TAG, "events from sub: failure");
-                if (isInFront)
-                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from sub: " + message);
-                String msg = "";
-                switch (status) {
-                    case 400:
-                        msg = getString(R.string.msg_400_bad_request_events);
-                        break;
-                    case 500:
-                        msg = getString(R.string.msg_500_internal_server_error_events);
-                        break;
-                    default:
-                        msg = getString(R.string.msg_unknown_error);
-                        break;
-                }
-                if (isInFront)
-                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-        });
-    }
-
-    private List<Event> getByLocation() {
-        return NSService.getInstance(getContext()).getEventsByRadius(latitude, longitude, 2000, new NSService.MyCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                Log.d(TAG, "events from location: found " + events.size() + " events");
-                RecyclerView recyclerView = mFragment.getRecyclerView();
-                ((MyEventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onFailure() {
-                Log.w(TAG, "events from location: failure");
-                if (isInFront)
-                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Log.w(TAG, "events from location: " + message);
-                String msg = "";
-                switch (status) {
-                    case 400:
-                        msg = getString(R.string.msg_400_bad_request_events);
-                        break;
-                    case 500:
-                        msg = getString(R.string.msg_500_internal_server_error_events);
-                        break;
-                    default:
-                        msg = getString(R.string.msg_unknown_error);
-                        break;
-                }
-                if (isInFront)
-                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-                mSwipe.setRefreshing(false);
-            }
-        });
-    }
-
-    public void findPlace() {
-        try {
-            Intent intent =
-                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                            .build(this);
-            startActivityForResult(intent, RC_PLACE_AUTOCOMPLETE);
-        } catch (GooglePlayServicesRepairableException e) {
-            Log.d(TAG, "findPlace: repairable error " + e.getMessage());
-            if (isInFront)
-                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-        } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d(TAG, "findPlace: play service not available error " + e.getMessage());
-            if (isInFront)
-                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_CREATE_EVENT && resultCode == RESULT_OK) {
@@ -447,11 +274,11 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 mSwipe.setRefreshing(true);
 
                 // set update type
-                updateType = UpdateType.LOCATION;
+                mUpdateType = UpdateType.LOCATION;
 
                 // clear the list
                 RecyclerView recyclerView = mFragment.getRecyclerView();
-                MyEventRecyclerViewAdapter adapter = (MyEventRecyclerViewAdapter) recyclerView.getAdapter();
+                EventRecyclerViewAdapter adapter = (EventRecyclerViewAdapter) recyclerView.getAdapter();
                 adapter.clear();
 
                 // update lat lng
@@ -507,4 +334,194 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         super.onPause();
         isInFront = false;
     }
+
+    /**
+     * How to refresh the RecyclerView after a swipe by the user. We discard locally found events
+     * since we are only interested in new events that might be available on the remote server
+     */
+    private void refreshList() {
+        switch (mUpdateType) {
+            case NONE:
+                // should not be enabled
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+            case UID:
+                getByUid();
+                return;
+            case SUBSCRIPTION:
+                getBySub();
+                return;
+            case LOCATION:
+                getByLocation();
+                return;
+            default:
+                mSwipe.setEnabled(false);
+                mSwipe.setRefreshing(false);
+                return;
+        }
+    }
+
+    /**
+     * Auxiliary method to retrieve fresh Events from NSService using UID and update the list shown
+     *
+     * @return the events found locally on the SQLite DB
+     */
+    private List<Event> getByUid() {
+        return NSService.getInstance(getApplicationContext()).getEventsByUser(uid, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from UID: found " + events.size() + " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((EventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from UID: failure");
+                if (isInFront)
+                    Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from UID: " + message);
+                String msg = "";
+                switch (status) {
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 404:
+                        msg = getString(R.string.msg_404_not_found_user_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
+
+    /**
+     * Auxiliary method to retrieve fresh Events from NSService using Subscription and update the
+     * list shown
+     *
+     * @return the events found locally on the SQLite DB
+     */
+    private List<Event> getBySub() {
+        return NSService.getInstance(getApplicationContext()).getEventsByArea(sub.getMinLat(), sub.getMaxLat(), sub.getMinLon(), sub.getMaxLon(), new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from sub: found " + events.size() + " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((EventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from sub: failure");
+                if (isInFront)
+                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from sub: " + message);
+                String msg = "";
+                switch (status) {
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
+
+    /**
+     * Auxiliary method to retrieve fresh Events from NSService using a location and update the list
+     * shown
+     *
+     * @return the events found locally on the SQLite DB
+     */
+    private List<Event> getByLocation() {
+        return NSService.getInstance(getContext()).getEventsByRadius(latitude, longitude, 2000, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                Log.d(TAG, "events from location: found " + events.size() + " events");
+                RecyclerView recyclerView = mFragment.getRecyclerView();
+                ((EventRecyclerViewAdapter) recyclerView.getAdapter()).addEvents(events);
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure() {
+                Log.w(TAG, "events from location: failure");
+                if (isInFront)
+                    Toast.makeText(getContext(), getString(R.string.msg_network_problem_events_upd), Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Log.w(TAG, "events from location: " + message);
+                String msg = "";
+                switch (status) {
+                    case 400:
+                        msg = getString(R.string.msg_400_bad_request_events);
+                        break;
+                    case 500:
+                        msg = getString(R.string.msg_500_internal_server_error_events);
+                        break;
+                    default:
+                        msg = getString(R.string.msg_unknown_error);
+                        break;
+                }
+                if (isInFront)
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+                mSwipe.setRefreshing(false);
+            }
+        });
+    }
+
+    /**
+     * Start a new intent for Google's Place Autocomplete in order to search for a new location
+     * to use as source of events
+     */
+    public void findPlace() {
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
+            startActivityForResult(intent, RC_PLACE_AUTOCOMPLETE);
+        } catch (GooglePlayServicesRepairableException e) {
+            Log.d(TAG, "findPlace: repairable error " + e.getMessage());
+            if (isInFront)
+                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.d(TAG, "findPlace: play service not available error " + e.getMessage());
+            if (isInFront)
+                Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

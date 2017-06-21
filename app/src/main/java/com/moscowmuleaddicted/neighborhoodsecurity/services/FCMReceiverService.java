@@ -53,14 +53,17 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MA
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
 
 /**
- * Created by Simone Ripamonti on 25/04/2017.
- * <p>
- * https://firebase.google.com/docs/cloud-messaging/android/receive#sample-receive
+ * Extension of {@link FirebaseMessagingService} that handles the reception of new cloud messages
+ *
+ * @author Simone Ripamonti
+ * @version 1
  */
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
-    private static final String TAG = "MyFirebaseMsgService";
+public class FCMReceiverService extends FirebaseMessagingService {
+    /**
+     * Logger's TAG
+     */
+    public static final String TAG = "FCMReceiverService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -85,6 +88,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
+    /**
+     * Handles a message about a new event
+     * @param remoteMessage the payload
+     * @return true if the notification has been displayed, else false
+     */
     private boolean handleEvent(RemoteMessage remoteMessage) {
         Log.d(TAG, "handleEvent");
 
@@ -122,17 +130,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (firebaseUser == null) {
             Log.w(TAG, "discarding notification because no user is logged in");
-            return true;
+            return false;
         }
 
         if (!firebaseUser.getUid().equals(subscriptionOwner)) {
             Log.w(TAG, "discarding notification because it is not for the current user");
-            return true;
+            return false;
         }
 
         if (subscriptionId < 0) {
             Log.w(TAG, "discarding notification about an unknown subscription");
-            return true;
+            return false;
         }
 
         SharedPreferences sharedPreferencesSubscriptions = getSharedPreferences(SP_SUBSCRIPTIONS, MODE_PRIVATE);
@@ -200,9 +208,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             editor.putInt(uid, notificationCount + 1);
             editor.commit();
         }
-        return false;
+        return true;
     }
 
+    /**
+     * Handles a message about deletion of a event
+     * @param remoteMessage the payload
+     */
     private void handleDeleteEvent(RemoteMessage remoteMessage){
         Log.d(TAG, "handleDeleteEvent");
         int eId = NumberUtils.toInt(remoteMessage.getData().get(FCM_ID), -1);
@@ -212,10 +224,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         eventDB.deleteById(eId);
     }
 
+    /**
+     * Builds static map url according to given coordinates
+     * @param latitude
+     * @param longitude
+     * @return url
+     */
     private String buildMapUrl(double latitude, double longitude){
         return String.format(MAPS_API_URL, latitude, longitude, getString(R.string.google_maps_key));
     }
 
+    /**
+     * Using {@link Glide} to obtain the bitmap of the map, this is done synchronously since we need
+     * it to be available in order to continue
+     * @param latitude
+     * @param longitude
+     * @return static map Bitmap
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private Bitmap getMapBitmap(double latitude, double longitude) throws ExecutionException, InterruptedException {
         return Glide.
                 with(this).

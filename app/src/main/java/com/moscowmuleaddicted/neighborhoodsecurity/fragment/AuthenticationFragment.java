@@ -45,7 +45,7 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
     /**
      * Tag used in logger
      */
-    private static final String TAG = "AuthenticationFragment";
+    private static final String TAG = "AuthenticationFrag";
 
     /**
      * The Google API client
@@ -154,15 +154,6 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
 
         return view;
     }
-
-    /**
-     * Obtain the Facebook login button
-     * @return Facebook LoginButton instance
-     */
-    public LoginButton getLoginButtonFB() {
-        return facebookLoginButton;
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -274,6 +265,13 @@ public class AuthenticationFragment extends Fragment implements GoogleApiClient.
         });
     }
 
+    /**
+     * Obtain the Facebook login button
+     * @return Facebook LoginButton instance
+     */
+    public LoginButton getLoginButtonFB() {
+        return facebookLoginButton;
+    }
 
     /**
      * Fragment callbacks. loggedInWithEmail() is called when user successfully authenticates via one of the

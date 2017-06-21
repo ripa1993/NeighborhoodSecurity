@@ -20,10 +20,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.moscowmuleaddicted.neighborhoodsecurity.adapter.MyEventDetailRecyclerViewAdapter;
+import com.moscowmuleaddicted.neighborhoodsecurity.adapter.DetailRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Details;
+import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Detail;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
@@ -31,10 +31,23 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_VOTED_EVENTS;
 
+/**
+ * Activity that shows details about a particular event, providing information, a map and a voting
+ * function
+ *
+ * @author Simone Ripamonti
+ * @version 1
+ */
 public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
 
+    /**
+     * Logger's TAG
+     */
     public static final String TAG = "EventDetailAct";
-    FloatingActionButton fab;
+    /**
+     * Vote floating action button
+     */
+    private FloatingActionButton mFabVote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +105,8 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         fragmentTransaction.commit();
 
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        // setup floating action button
+        mFabVote = (FloatingActionButton) findViewById(R.id.fab);
         final int eventId = event.getId();
 
         if(alreadyVoted(eventId)){
@@ -101,7 +115,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
             enableFab();
         }
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFabVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 NSService.getInstance(getApplicationContext()).voteEvent(eventId, new NSService.MyCallback<String>() {
@@ -109,7 +123,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
                     public void onSuccess(String s) {
                         Log.d(TAG, "success in voting the event");
                         disableFab();
-                        final MyEventDetailRecyclerViewAdapter adapter =(MyEventDetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
+                        final DetailRecyclerViewAdapter adapter =(DetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
                         adapter.updateVotes(1);
                         final Snackbar snack = Snackbar.make(view, getString(R.string.event_voted), Snackbar.LENGTH_INDEFINITE);
                         snack.show();
@@ -200,21 +214,32 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         });
     }
 
-    private void enableFab() {
-        fab.setEnabled(true);
-        fab.setImageDrawable(getDrawable(R.drawable.ic_star_border));
-    }
-
-    private void disableFab() {
-        fab.setEnabled(false);
-        fab.setImageDrawable(getDrawable(R.drawable.ic_star));
-    }
-
     @Override
-    public void onListFragmentInteraction(Details item) {
-
+    public void onListFragmentInteraction(Detail item) {
+        // does nothing
     }
 
+    /**
+     * Enables click behaviour and sets the image drawable
+     */
+    private void enableFab() {
+        mFabVote.setEnabled(true);
+        mFabVote.setImageDrawable(getDrawable(R.drawable.ic_star_border));
+    }
+
+    /**
+     * Disables click beahaviour and sets the image drawable
+     */
+    private void disableFab() {
+        mFabVote.setEnabled(false);
+        mFabVote.setImageDrawable(getDrawable(R.drawable.ic_star));
+    }
+
+    /**
+     * Checks if the user has already voted the event (according to locally stored info)
+     * @param eventId id of the event
+     * @return true if the event has already been voted, false otherwise
+     */
     private boolean alreadyVoted(int eventId){
         SharedPreferences sharedPreferences = getSharedPreferences(SP_VOTED_EVENTS, MODE_PRIVATE);
         return sharedPreferences.getBoolean(String.valueOf(eventId), false);
