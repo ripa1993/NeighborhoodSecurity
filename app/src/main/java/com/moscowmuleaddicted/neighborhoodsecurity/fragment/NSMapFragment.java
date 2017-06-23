@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
@@ -50,6 +52,8 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DE
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEFAULT_LONGITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 
 /**
  * Extension of {@link MapFragment} to support the dynamic insertion of markers related to events
@@ -98,6 +102,10 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
      * Cluster manager
      */
     private ClusterManager<EventClusterItem> mClusterManager;
+    /**
+     * FirebaseAuth instance
+     */
+    private FirebaseAuth mAuth;
 
     /**
      * Sets the initial position of the map
@@ -272,25 +280,45 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.map_dialog)
-            .setItems(new String[]{getString(R.string.map_dialog_event), getString(R.string.map_dialog_subscription)}, new DialogInterface.OnClickListener() {
+            .setItems(new String[]{getString(R.string.map_dialog_event), getString(R.string.map_dialog_subscription), getString(R.string.map_dialog_whats_there)}, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which){
                         case 0:
-                            Log.d(TAG, "starting event creation");
-                            Intent intentEvent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                            intentEvent.putExtra("lat", latLng.latitude);
-                            intentEvent.putExtra("lon", latLng.longitude);
-                            startActivity(intentEvent);
-                            return;
+                            if(mAuth.getCurrentUser()!=null) {
+                                Log.d(TAG, "starting event creation");
+                                Intent intentEvent = new Intent(getApplicationContext(), EventCreateActivity.class);
+                                intentEvent.putExtra(IE_LATITUDE, latLng.latitude);
+                                intentEvent.putExtra(IE_LONGITUDE, latLng.longitude);
+                                startActivity(intentEvent);
+                                return;
+                            } else {
+                                Log.d(TAG, "user is not logged in, this is required when creating event!");
+                                Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                                return;
+                            }
                         case 1:
-                            Log.d(TAG, "starting subscription creation");
-                            Intent intentSubscription = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                            intentSubscription.putExtra("lat", latLng.latitude);
-                            intentSubscription.putExtra("lon", latLng.longitude);
-                            startActivity(intentSubscription);
+                            if(mAuth.getCurrentUser()!=null) {
+                                Log.d(TAG, "starting subscription creation");
+                                Intent intentSubscription = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
+                                intentSubscription.putExtra(IE_LATITUDE, latLng.latitude);
+                                intentSubscription.putExtra(IE_LONGITUDE, latLng.longitude);
+                                startActivity(intentSubscription);
+                                return;
+                            }  else {
+                            Log.d(TAG, "user is not logged in, this is required when creating a subscription!");
+                            Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        case 2:
+                            Log.d(TAG, "starting event list");
+                            Intent intentEventList = new Intent(getApplicationContext(), EventListActivity.class);
+                            intentEventList.putExtra(IE_LATITUDE, latLng.latitude);
+                            intentEventList.putExtra(IE_LONGITUDE, latLng.longitude);
+                            startActivity(intentEventList);
                             return;
                         default:
+                            Log.d(TAG, "nothing to do");
                             return;
                     }
                 }
@@ -303,6 +331,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         super.onCreate(bundle);
         service = NSService.getInstance(getActivity());
         idsAlreadyIn = new HashSet<Integer>();
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override

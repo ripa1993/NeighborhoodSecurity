@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.NSMapFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
@@ -45,6 +47,10 @@ public class MapActivity extends AppCompatActivity {
      * Floating action button as a shortcut to event creation
      */
     private ActionButton mFabNewEvent;
+    /**
+     * FirebaseAuth instance
+     */
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,8 @@ public class MapActivity extends AppCompatActivity {
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_map);
+
+        mAuth = FirebaseAuth.getInstance();
 
         // Get the MapFragment
         mMapFragment = (NSMapFragment) getFragmentManager().findFragmentById(R.id.map);
@@ -97,8 +105,13 @@ public class MapActivity extends AppCompatActivity {
         mFabNewEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MapActivity.this, EventCreateActivity.class);
-                startActivity(intent);
+                if(mAuth.getCurrentUser()!=null) {
+                    Intent intent = new Intent(MapActivity.this, EventCreateActivity.class);
+                    startActivity(intent);
+                }else {
+                    Log.d(TAG, "user is not logged in, this is required to access create event!");
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

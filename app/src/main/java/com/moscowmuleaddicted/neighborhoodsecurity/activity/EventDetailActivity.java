@@ -20,6 +20,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.DetailRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventDetailListFragment;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
@@ -38,7 +39,7 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP
  * @author Simone Ripamonti
  * @version 1
  */
-public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener{
+public class EventDetailActivity extends AppCompatActivity implements EventDetailListFragment.OnListFragmentInteractionListener {
 
     /**
      * Logger's TAG
@@ -48,19 +49,25 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
      * Vote floating action button
      */
     private FloatingActionButton mFabVote;
+    /**
+     * FirebaseAuth instance
+     */
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
+        mAuth = FirebaseAuth.getInstance();
+
         // get data passed to the intent
 
         Bundle extras = getIntent().getExtras();
         Event event;
-        if(extras != null){
+        if (extras != null) {
             event = (Event) extras.getSerializable(IE_EVENT);
-            if(event == null) {
+            if (event == null) {
                 event = Event.makeDummy();
             }
         } else {
@@ -77,7 +84,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         lat = event.getLatitude();
         lon = event.getLongitude();
         GoogleMapOptions gmo = new GoogleMapOptions();
-        final LatLng coords = new LatLng(lat,lon);
+        final LatLng coords = new LatLng(lat, lon);
         CameraPosition cp = new CameraPosition.Builder().target(coords).zoom(16f).build();
         gmo.camera(cp);
         gmo.scrollGesturesEnabled(false);
@@ -109,7 +116,7 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         mFabVote = (FloatingActionButton) findViewById(R.id.fab);
         final int eventId = event.getId();
 
-        if(alreadyVoted(eventId)){
+        if (alreadyVoted(eventId)) {
             disableFab();
         } else {
             enableFab();
@@ -118,98 +125,104 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
         mFabVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                NSService.getInstance(getApplicationContext()).voteEvent(eventId, new NSService.MyCallback<String>() {
-                    @Override
-                    public void onSuccess(String s) {
-                        Log.d(TAG, "success in voting the event");
-                        disableFab();
-                        final DetailRecyclerViewAdapter adapter =(DetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
-                        adapter.updateVotes(1);
-                        final Snackbar snack = Snackbar.make(view, getString(R.string.event_voted), Snackbar.LENGTH_INDEFINITE);
-                        snack.show();
-                        snack.setAction(getString(R.string.event_voted_undo), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                NSService.getInstance(getApplicationContext()).unvoteEvent(eventId, new NSService.MyCallback<String>() {
-                                    @Override
-                                    public void onSuccess(String s) {
-                                        Log.d(TAG, "success in unvoting the event");
-                                        snack.dismiss();
-                                        enableFab();
-                                        adapter.updateVotes(-1);
-                                    }
-
-                                    @Override
-                                    public void onFailure() {
-                                        Log.w(TAG, "failure in unvoting the event");
-                                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_unvote), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    @Override
-                                    public void onMessageLoad(MyMessage message, int status) {
-                                        Log.w(TAG, "failure in unvoting the event with msg: "+message);
-                                        String msg = "";
-                                        switch(status){
-                                            case 204:
-                                                msg = getString(R.string.msg_204_no_content_event_unvote);
-                                                enableFab();
-                                                break;
-                                            case 400:
-                                                msg = getString(R.string.msg_400_bad_request_event_vote);
-                                                break;
-                                            case 401:
-                                                msg = getString(R.string.msg_401_unauthorized_event_vote);
-                                                break;
-                                            case 404:
-                                                msg = getString(R.string.msg_404_not_found_event_vote);
-                                                break;
-                                            case 500:
-                                                msg = getString(R.string.msg_500_internal_server_error_event_vote);
-                                                break;
-                                            default:
-                                                msg = getString(R.string.msg_unknown_error);
-                                                break;
+                if (mAuth.getCurrentUser() != null) {
+                    NSService.getInstance(getApplicationContext()).voteEvent(eventId, new NSService.MyCallback<String>() {
+                        @Override
+                        public void onSuccess(String s) {
+                            Log.d(TAG, "success in voting the event");
+                            disableFab();
+                            final DetailRecyclerViewAdapter adapter = (DetailRecyclerViewAdapter) ((RecyclerView) findViewById(R.id.eventDetailRecyclerView)).getAdapter();
+                            adapter.updateVotes(1);
+                            final Snackbar snack = Snackbar.make(view, getString(R.string.event_voted), Snackbar.LENGTH_INDEFINITE);
+                            snack.show();
+                            snack.setAction(getString(R.string.event_voted_undo), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    NSService.getInstance(getApplicationContext()).unvoteEvent(eventId, new NSService.MyCallback<String>() {
+                                        @Override
+                                        public void onSuccess(String s) {
+                                            Log.d(TAG, "success in unvoting the event");
+                                            snack.dismiss();
+                                            enableFab();
+                                            adapter.updateVotes(-1);
                                         }
-                                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        });
-                    }
 
-                    @Override
-                    public void onFailure() {
-                        Log.w(TAG, "failure in voting the event");
-                        Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_vote), Toast.LENGTH_SHORT).show();
-                    }
+                                        @Override
+                                        public void onFailure() {
+                                            Log.w(TAG, "failure in unvoting the event");
+                                            Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_unvote), Toast.LENGTH_SHORT).show();
+                                        }
 
-                    @Override
-                    public void onMessageLoad(MyMessage message, int status) {
-                        Log.w(TAG, "failure in voting the event with msg: "+message);
-                        String msg = "";
-                        switch(status){
-                            case 204:
-                                msg = getString(R.string.msg_204_no_content_event_vote);
-                                disableFab();
-                                break;
-                            case 400:
-                                msg = getString(R.string.msg_400_bad_request_event_vote);
-                                break;
-                            case 401:
-                                msg = getString(R.string.msg_401_unauthorized_event_vote);
-                                break;
-                            case 404:
-                                msg = getString(R.string.msg_404_not_found_event_vote);
-                                break;
-                            case 500:
-                                msg = getString(R.string.msg_500_internal_server_error_event_vote);
-                                break;
-                            default:
-                                msg = getString(R.string.msg_unknown_error);
-                                break;
+                                        @Override
+                                        public void onMessageLoad(MyMessage message, int status) {
+                                            Log.w(TAG, "failure in unvoting the event with msg: " + message);
+                                            String msg = "";
+                                            switch (status) {
+                                                case 204:
+                                                    msg = getString(R.string.msg_204_no_content_event_unvote);
+                                                    enableFab();
+                                                    break;
+                                                case 400:
+                                                    msg = getString(R.string.msg_400_bad_request_event_vote);
+                                                    break;
+                                                case 401:
+                                                    msg = getString(R.string.msg_401_unauthorized_event_vote);
+                                                    break;
+                                                case 404:
+                                                    msg = getString(R.string.msg_404_not_found_event_vote);
+                                                    break;
+                                                case 500:
+                                                    msg = getString(R.string.msg_500_internal_server_error_event_vote);
+                                                    break;
+                                                default:
+                                                    msg = getString(R.string.msg_unknown_error);
+                                                    break;
+                                            }
+                                            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            });
                         }
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();                    }
-                });
+
+                        @Override
+                        public void onFailure() {
+                            Log.w(TAG, "failure in voting the event");
+                            Toast.makeText(getApplicationContext(), getString(R.string.msg_network_problem_event_vote), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onMessageLoad(MyMessage message, int status) {
+                            Log.w(TAG, "failure in voting the event with msg: " + message);
+                            String msg = "";
+                            switch (status) {
+                                case 204:
+                                    msg = getString(R.string.msg_204_no_content_event_vote);
+                                    disableFab();
+                                    break;
+                                case 400:
+                                    msg = getString(R.string.msg_400_bad_request_event_vote);
+                                    break;
+                                case 401:
+                                    msg = getString(R.string.msg_401_unauthorized_event_vote);
+                                    break;
+                                case 404:
+                                    msg = getString(R.string.msg_404_not_found_event_vote);
+                                    break;
+                                case 500:
+                                    msg = getString(R.string.msg_500_internal_server_error_event_vote);
+                                    break;
+                                default:
+                                    msg = getString(R.string.msg_unknown_error);
+                                    break;
+                            }
+                            Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "user is not logged in, this is required when accessing subscription list!");
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -237,10 +250,11 @@ public class EventDetailActivity extends AppCompatActivity implements EventDetai
 
     /**
      * Checks if the user has already voted the event (according to locally stored info)
+     *
      * @param eventId id of the event
      * @return true if the event has already been voted, false otherwise
      */
-    private boolean alreadyVoted(int eventId){
+    private boolean alreadyVoted(int eventId) {
         SharedPreferences sharedPreferences = getSharedPreferences(SP_VOTED_EVENTS, MODE_PRIVATE);
         return sharedPreferences.getBoolean(String.valueOf(eventId), false);
     }

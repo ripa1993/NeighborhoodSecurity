@@ -32,11 +32,14 @@ import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
 import com.scalified.fab.ActionButton;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
 import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_CREATE_EVENT;
@@ -54,6 +57,10 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
      * Logger's TAG
      */
     public static final String TAG = "EventListAct";
+    /**
+     * FirebaseAuth instance
+     */
+    private FirebaseAuth mAuth;
     /**
      * Source of the event
      */
@@ -135,6 +142,19 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
                 mFragment = EventListFragment.newInstance(1, events);
                 setTitle(getString(R.string.title_event_list_subscription));
                 Log.d(TAG, "fragment created");
+            } else if (extras.containsKey(IE_LATITUDE) && extras.containsKey(IE_LONGITUDE)){
+                // location provided
+                Log.d(TAG, "creating fragment from provided location");
+                latitude = extras.getDouble(IE_LATITUDE, 0);
+                longitude = extras.getDouble(IE_LONGITUDE, 0);
+                mSwipe.setRefreshing(true);
+                mSwipe.setEnabled(true);
+                mUpdateType = UpdateType.LOCATION;
+                events.addAll(getByLocation());
+                mFragment = EventListFragment.newInstance(1, events);
+                DecimalFormat df = new DecimalFormat("#.##");
+                setTitle(String.format(getString(R.string.title_event_list_location_coor), df.format(latitude), df.format(longitude)));
+                Log.d(TAG, "fragment created");
             }
         } else {
             // if nothing is provided
@@ -149,12 +169,18 @@ public class EventListActivity extends AppCompatActivity implements EventListFra
         fragmentTransaction.add(R.id.event_list_fragment, mFragment);
         fragmentTransaction.commit();
 
+        mAuth = FirebaseAuth.getInstance();
         mFab = (ActionButton) findViewById(R.id.event_create_fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                startActivityForResult(intent, RC_CREATE_EVENT);
+                if(mAuth.getCurrentUser()!=null) {
+                    Intent intent = new Intent(getApplicationContext(), EventCreateActivity.class);
+                    startActivityForResult(intent, RC_CREATE_EVENT);
+                } else {
+                    Log.d(TAG, "user is not logged in, this is required when accessing event creation!");
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                }
             }
         });
 

@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.SubscriptionRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
@@ -38,6 +39,10 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
      * Logger's TAG
      */
     private static final String TAG = "SubscriptionListAct";
+    /**
+     * FirebaseAuth instance
+     */
+    private FirebaseAuth mAuth;
     /**
      * Enumeration used to specify what is the source of Subscriptions
      */
@@ -112,14 +117,19 @@ public class SubscriptionListActivity extends AppCompatActivity implements Subsc
         fragmentTransaction.add(R.id.subscription_list_fragment, mFragment);
         fragmentTransaction.commit();
 
-
+        mAuth = FirebaseAuth.getInstance();
         mFabNewSubscription = (ActionButton) findViewById(R.id.subscription_create_fab);
         mFabNewSubscription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "FAB clicked");
-                Intent intent = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                startActivityForResult(intent, RC_CREATE_SUBSCRIPTION);
+                if(mAuth.getCurrentUser()!=null) {
+                    Intent intent = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
+                    startActivityForResult(intent, RC_CREATE_SUBSCRIPTION);
+                } else {
+                    Log.d(TAG, "user is not logged in, this is required when accessing subscription create!");
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                }
             }
         });
 

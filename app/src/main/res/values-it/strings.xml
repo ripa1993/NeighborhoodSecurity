@@ -127,9 +127,9 @@
     <string name="action_new_subscription">Nuova sottoscrizione</string>
     <string name="delete_event_message">Vuoi cancellare questo evento?</string>
     <string name="delete_event_title">Elimina evento?</string>
-    <string name="map_dialog">Crea nuovo</string>
-    <string name="map_dialog_event">Evento</string>
-    <string name="map_dialog_subscription">Sottoscrizione</string>
+    <string name="map_dialog">Cosa vuoi fare?</string>
+    <string name="map_dialog_event">Crea nuovo Evento</string>
+    <string name="map_dialog_subscription">Crea nuova Sottoscrizione</string>
     <string name="msg_400_bad_request_delete_event">C\'è stato un problema con la tua richiesta. Prova più tardi</string>
     <string name="msg_400_bad_request_delete_subscription">C\'è stato un problema con la tua richiesta. Prova più tardi</string>
     <string name="msg_401_unauthorized_delete_event">Non sei autorizzato a cancellare questo evento, ne sei il creatore?</string>
@@ -149,4 +149,6 @@
     <string name="showcase_map">Premi qui per aprire una mappa degli eventi</string>
     <string name="showcase_stats">Premi queste icone per vedere delle statistiche</string>
     <string name="showcase_subscription">Qui puoi trovare le sottoscrizioni attive.</string>
+    <string name="map_dialog_whats_there">Cosa c\'è qui?</string>
+    <string name="title_event_list_location_coor">Eventi vicino a (%1$s N, %2$s E)</string>
 </resources>

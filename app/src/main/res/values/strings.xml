@@ -168,9 +168,10 @@
     <string name="action_delete_subscription">Delete subscription</string>
     <string name="action_new_event">New event</string>
     <string name="action_new_subscription">New subscription</string>
-    <string name="map_dialog">Create new</string>
-    <string name="map_dialog_event">Event</string>
-    <string name="map_dialog_subscription">Subscription</string>
+    <string name="map_dialog">What to do?</string>
+    <string name="map_dialog_event">Create new Event</string>
+    <string name="map_dialog_subscription">Create new Subscription</string>
+    <string name="map_dialog_whats_there">What\'s here?</string>
     <string name="showcase_intro">Welcome to Neighborhood Security! I\'ll show you the main features.</string>
     <string name="showcase_map">Click here to open a map to show all the events</string>
     <string name="showcase_subscription">Here you can find your active subscriptions.</string>
@@ -178,4 +179,5 @@
     <string name="showcase_drawer_intro">This is the drawer. You can find additional functionalities here.</string>
     <string name="showcase_drawer_account">This is your account. You can register one for free!</string>
     <string name="showcase_drawer_createaccount">It\'s easy, just click here!</string>
+    <string name="title_event_list_location_coor">Events near (%1$s N, %2$s E)</string>
 </resources>
