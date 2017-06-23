@@ -217,9 +217,9 @@ public class SubscriptionCreateFragment extends Fragment implements GoogleApiCli
                     radioGroup.check(R.id.radio_coordinates_sub);
                     etLatitude.setText(String.valueOf(mLastLocation.getLatitude()));
                     etLongitude.setText(String.valueOf(mLastLocation.getLongitude()));
-                    Toast.makeText(getContext(), "location set with accuracy of "+(int)mLastLocation.getAccuracy()+" metres", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), String.format(getString(R.string.last_known_location_ok), (int)mLastLocation.getAccuracy()), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "still acquiring position", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.last_known_location_fail, Toast.LENGTH_SHORT).show();
                 }
             }
         });

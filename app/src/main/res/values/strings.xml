@@ -181,4 +181,6 @@
     <string name="showcase_drawer_createaccount">It\'s easy, just click here!</string>
     <string name="title_event_list_location_coor">Events near (%1$s N, %2$s E)</string>
     <string name="title_activity_auth_email">Email Authentication</string>
+    <string name="last_known_location_fail">Still acquiring position, try again</string>
+    <string name="last_known_location_ok">Location set with accuracy of $1%d metres</string>
 </resources>
