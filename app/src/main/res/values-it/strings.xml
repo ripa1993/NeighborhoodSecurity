@@ -151,4 +151,5 @@
     <string name="showcase_subscription">Qui puoi trovare le sottoscrizioni attive.</string>
     <string name="map_dialog_whats_there">Cosa c\'è qui?</string>
     <string name="title_event_list_location_coor">Eventi vicino a (%1$s N, %2$s E)</string>
+    <string name="title_activity_auth_email">Autenticazione con Email</string>
 </resources>
