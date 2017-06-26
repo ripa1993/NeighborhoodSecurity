@@ -7,8 +7,8 @@ import android.os.Bundle;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EmailPasswordFragment;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_EMAIL_LOGIN;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LOGGED_IN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_EMAIL_LOGIN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LOGGED_IN;
 
 /**
  * Activity that contains a fragment to allow user to register, signin or reset password using

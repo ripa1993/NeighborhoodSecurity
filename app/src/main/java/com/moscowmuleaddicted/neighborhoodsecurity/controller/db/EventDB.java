@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.db;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.DatabaseContract.*;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.EventType;
 
 import java.util.ArrayList;
 import java.util.Date;

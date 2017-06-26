@@ -1,8 +1,6 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.db;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller.db;
 
 import android.provider.BaseColumns;
-
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
 
 /**
  * Helper class to hold prepared statements and table / column names

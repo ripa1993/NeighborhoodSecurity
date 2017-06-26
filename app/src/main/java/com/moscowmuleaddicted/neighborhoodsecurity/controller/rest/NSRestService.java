@@ -1,9 +1,9 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller.rest;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.User;
 
 import java.util.List;
 

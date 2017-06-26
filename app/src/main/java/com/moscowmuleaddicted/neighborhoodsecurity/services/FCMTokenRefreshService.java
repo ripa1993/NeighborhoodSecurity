@@ -5,8 +5,8 @@ import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 
 /**
  * Extension of {@link FirebaseInstanceIdService} that is used to send the new FCM token to the

@@ -1,59 +1,47 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventCreateActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventListActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.activity.MapActivity;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.SubscriptionCreateActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEFAULT_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEFAULT_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.DEFAULT_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.DEFAULT_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LONGITUDE;
 
 /**
  * Extension of {@link MapFragment} to support the dynamic insertion of markers related to events

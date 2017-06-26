@@ -33,8 +33,8 @@ import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.EventType;
 import com.satsuware.usefulviews.LabelledSpinner;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -42,12 +42,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 import java.util.Date;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_CITY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COUNTRY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_STREET;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_PERMISSION_POSITION;
 
 /**
  * Fragment containing the fields required for the creation of a new {@link Event}

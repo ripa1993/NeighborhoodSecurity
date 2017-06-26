@@ -37,18 +37,16 @@ import com.moscowmuleaddicted.neighborhoodsecurity.R;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_RADIUS;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_RADIUS;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_PERMISSION_POSITION;
 
 /**
- * Fragment containing the fields required for the creation of a new {@link com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription}
+ * Fragment containing the fields required for the creation of a new {@link com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription}
  *
  * @author Simone Ripamonti
  * @version 2

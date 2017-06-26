@@ -13,13 +13,13 @@ import android.view.ViewGroup;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.EventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.RecyclerViewWithEmptyView;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COLUMN_COUNT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_COLUMN_COUNT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT_LIST;
 
 /**
  * Fragment to show a list of {@link Event}

@@ -8,7 +8,7 @@ import android.util.Log;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.AuthenticationFragment;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LOGGED_IN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LOGGED_IN;
 
 /**
  * Activity containing a fragment that allows the user to choose between the available login methods

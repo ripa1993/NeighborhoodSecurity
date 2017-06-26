@@ -18,17 +18,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.SubscriptionRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 import com.scalified.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION_LIST;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_CREATE_SUBSCRIPTION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_SUBSCRIPTION_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_CREATE_SUBSCRIPTION;
 
 /**
  * Activity that shows a list of Subscription items

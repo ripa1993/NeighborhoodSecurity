@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller.rest;
 
 import android.util.Log;
 
@@ -16,8 +16,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.google.android.gms.internal.zzt.TAG;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.AUTH_TOKEN;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SERVICE_KEY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.AUTH_TOKEN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SERVICE_KEY;
 
 /**
  * Implementation of {@link Interceptor} in order to attach extra content to the request header.

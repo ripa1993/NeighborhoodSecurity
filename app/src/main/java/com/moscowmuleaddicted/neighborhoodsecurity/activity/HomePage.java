@@ -49,8 +49,8 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerImageLoader;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 import com.ogaclejapan.arclayout.ArcLayout;
 
 import java.util.ArrayList;
@@ -61,14 +61,14 @@ import me.toptas.fancyshowcase.FancyShowCaseQueue;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.DEMO_ACCOUNT_ID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PERMISSION_POSITION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SHOWCASE_HOME;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SHOWCASE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.DEMO_ACCOUNT_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_AUTHENTICATION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_PERMISSION_POSITION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SHOWCASE_HOME;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_SHOWCASE;
 
 /**
  * Homepage that is the initial point of interaction between user and application

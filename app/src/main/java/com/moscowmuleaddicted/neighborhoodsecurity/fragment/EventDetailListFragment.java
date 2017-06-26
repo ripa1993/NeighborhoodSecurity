@@ -12,11 +12,11 @@ import android.view.ViewGroup;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.DetailRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Detail;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Detail;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_COLUMN_COUNT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_COLUMN_COUNT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
 
 /**
  * Fragment that shows a list of {@link Detail} about a given event

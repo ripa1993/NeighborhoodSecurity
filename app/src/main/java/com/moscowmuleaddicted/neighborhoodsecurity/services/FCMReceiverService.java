@@ -20,10 +20,10 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EventDetailActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.EventType;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -32,25 +32,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_CITY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_COUNTRY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_DATE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_DESCRIPTION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_EVENT_TYPE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_ID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_REMOVE_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_STREET;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBMITTER_ID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBSCRIPTION_ID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_SUBSCRIPTION_OWNER;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_TYPE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.FCM_VOTES;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAPS_API_URL;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_CITY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_COUNTRY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_DATE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_DESCRIPTION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_EVENT_TYPE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_REMOVE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_STREET;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_SUBMITTER_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_SUBSCRIPTION_ID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_SUBSCRIPTION_OWNER;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_TYPE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_VOTES;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAPS_API_URL;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_SUBSCRIPTIONS;
 
 /**
  * Extension of {@link FirebaseMessagingService} that handles the reception of new cloud messages

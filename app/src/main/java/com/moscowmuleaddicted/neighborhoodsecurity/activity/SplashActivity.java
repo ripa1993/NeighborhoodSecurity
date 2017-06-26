@@ -15,17 +15,17 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.moscowmuleaddicted.neighborhoodsecurity.services.DatabaseCleanService;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_DAY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.PLAY_SERVICES_MIN_VERSION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MINUTES_IN_DAY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MINUTES_IN_HOUR;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.PLAY_SERVICES_MIN_VERSION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SECONDS_IN_MINUTE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.TAG_DB_CLEAN_JOB;
 
 /**
  * Splash activity that is shown on application start.

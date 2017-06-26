@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionListFragment.OnListFragmentInteractionListener;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_SUBSCRIPTIONS;
 
 /**
  * Recycler View extension to show objects of the class {@link Subscription}

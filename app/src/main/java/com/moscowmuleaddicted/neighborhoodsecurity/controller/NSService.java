@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,14 +19,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.EventType;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.SubscriptionDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.EventType;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.User;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.rest.HeaderRequestInterceptor;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.rest.NSRestService;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -42,9 +43,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.NS_REST_URL;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_SUBSCRIPTIONS;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SP_VOTED_EVENTS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.NS_REST_URL;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_SUBSCRIPTIONS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_VOTED_EVENTS;
 
 /**
  * Class that gives access to all the data available locally and on the remote service.
@@ -248,7 +249,7 @@ public class NSService {
      * Retrieves an event given the id
      * GET /events/{id}
      *
-     * @throws com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB.NoEventFoundException if the event is not available locally
+     * @throws com.moscowmuleaddicted.neighborhoodsecurity.controller.db.EventDB.NoEventFoundException if the event is not available locally
      * @param id
      * @param callback onEventLoad if 200 OK,
      *                 onMessageLoad if 400 BAD REQUEST or 404 NOT FOUND or 500 INTERNAL SERVER ERROR,

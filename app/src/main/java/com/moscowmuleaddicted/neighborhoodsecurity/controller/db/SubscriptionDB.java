@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.db;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,9 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.DatabaseContract.*;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.DatabaseContract.*;
 
 import java.util.ArrayList;
 import java.util.List;

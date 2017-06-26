@@ -26,24 +26,24 @@ import com.google.firebase.auth.FirebaseUser;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.adapter.EventRecyclerViewAdapter;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.EventListFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Event;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.Subscription;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 import com.scalified.fab.ActionButton;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_EVENT_LIST;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_SUBSCRIPTION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_UID;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_CREATE_EVENT;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_PLACE_AUTOCOMPLETE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT_LIST;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_SUBSCRIPTION;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_UID;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_CREATE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_PLACE_AUTOCOMPLETE;
 import static xdroid.core.Global.getContext;
 
 /**

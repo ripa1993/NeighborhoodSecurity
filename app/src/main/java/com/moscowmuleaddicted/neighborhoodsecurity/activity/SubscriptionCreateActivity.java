@@ -10,17 +10,17 @@ import android.widget.Toast;
 
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.fragment.SubscriptionCreateFragment;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.model.MyMessage;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MAX_RADIUS;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LATITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_LONGITUDE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MIN_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAX_RADIUS;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_LATITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MIN_RADIUS;
 
 /**
  * Activity that guides the user in the creation of a new subscription

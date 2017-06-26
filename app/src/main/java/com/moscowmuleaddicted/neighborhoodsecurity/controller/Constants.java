@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities;
+package com.moscowmuleaddicted.neighborhoodsecurity.controller;
 
 import java.util.concurrent.TimeUnit;
 

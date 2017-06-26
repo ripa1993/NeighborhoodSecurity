@@ -10,14 +10,14 @@ import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.EventDB;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.db.SubscriptionDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.EventDB;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.db.SubscriptionDB;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_DAY;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.MINUTES_IN_HOUR;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.SECONDS_IN_MINUTE;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.TAG_DB_CLEAN_JOB;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MINUTES_IN_DAY;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MINUTES_IN_HOUR;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SECONDS_IN_MINUTE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.TAG_DB_CLEAN_JOB;
 
 /**
  * Extension of {@link JobService} that is run every midnight to delete events and subscription

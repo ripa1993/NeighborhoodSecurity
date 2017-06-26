@@ -28,12 +28,11 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.moscowmuleaddicted.neighborhoodsecurity.R;
 import com.moscowmuleaddicted.neighborhoodsecurity.activity.EmailPasswordActivity;
-import com.moscowmuleaddicted.neighborhoodsecurity.utilities.rest.NSService;
+import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
 
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.IE_LOGGED_IN;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_AUTHENTICATION;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_EMAIL_LOGIN;
-import static com.moscowmuleaddicted.neighborhoodsecurity.utilities.Constants.RC_GOOGLE_SIGNIN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LOGGED_IN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_EMAIL_LOGIN;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.RC_GOOGLE_SIGNIN;
 
 /**
  * Authentication fragment, provides Facebook, Google and Email authentication

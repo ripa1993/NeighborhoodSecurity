@@ -1,4 +1,4 @@
-package com.moscowmuleaddicted.neighborhoodsecurity.utilities.model;
+package com.moscowmuleaddicted.neighborhoodsecurity.model;
 
 
 import java.text.SimpleDateFormat;
