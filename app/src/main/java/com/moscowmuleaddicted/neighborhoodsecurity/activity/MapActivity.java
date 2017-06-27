@@ -27,18 +27,12 @@ public class MapActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         double initialLat;
         double initialLng;
-        List<Event> initialEvents;
         if(extras != null){
             // Set initial position if passed
             if(extras.getSerializable("lat") != null && extras.getSerializable("lng") != null) {
                 initialLat = (double) extras.getSerializable("lat");
                 initialLng = (double) extras.getSerializable("lng");
                 mapFragment.setInitialPosition(new LatLng(initialLat, initialLng));
-            }
-            // Set initial events if passed
-            if(extras.getSerializable("events") != null) {
-                initialEvents = (List<Event>) extras.getSerializable("events");
-                mapFragment.setInitialEvents(initialEvents);
             }
         }
 

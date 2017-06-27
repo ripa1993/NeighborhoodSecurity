@@ -22,48 +22,101 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
+public class NSMapFragment extends MapFragment implements
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnMarkerClickListener,
+        OnMapReadyCallback {
 
-    private GoogleMap currentMap;
+    private GoogleMap mMap;
     private NSService service;
     private Set<Integer> idsAlreadyIn;
 
     // Initial position or events
     private LatLng initialPosition;
     private boolean initialPositionSet = false;
-    private List<Event> initialEvents;
-    private boolean initialEventsSet = false;
 
     public void setInitialPosition(LatLng initialPosition) {
         this.initialPosition = initialPosition;
         initialPositionSet = true;
     }
 
-    public void setInitialEvents(List<Event> initialEvents) {
-        this.initialEvents = initialEvents;
-        initialEventsSet = true;
-    }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        idsAlreadyIn = new HashSet<Integer>();
-        // Set local map variable
-        currentMap = googleMap;
-        // Set a listener for marker click.
-        currentMap.setOnMarkerClickListener(this);
 
-        if (initialEventsSet) {
-            addEventListMarkers(initialEvents);
-            if (initialPositionSet)
-                currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
-            else
-                centerCameraInBarycenterOfEvents(initialEvents, false);
-        } else if(initialPositionSet){
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
+        idsAlreadyIn = new HashSet<Integer>();
+
+        service = NSService.getInstance(getActivity());
+
+        // Set local map variable
+        mMap = googleMap;
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
+
+        mMap.setOnCameraIdleListener(this);
+        mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnCameraMoveListener(this);
+        mMap.setOnCameraMoveCanceledListener(this);
+
+        if(initialPositionSet){
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPosition, 11));
         } else{
-            blank_start();
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(45.464217d, 9.186571d), 11));
         }
+    }
+
+    @Override
+    public void onCameraMoveStarted(int reason) {
+
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            // Toast.makeText(getActivity(), "The user gestured on the map.",Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION) {
+            // Toast.makeText(getActivity(), "The user tapped something on the map.",Toast.LENGTH_SHORT).show();
+        } else if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION) {
+            // Toast.makeText(getActivity(), "The app moved the camera.",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCameraMove() {
+        // Toast.makeText(getActivity(), "The camera is moving.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+        // Toast.makeText(getActivity(), "Camera movement canceled.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        // Toast.makeText(getActivity(), "The camera has stopped moving.", Toast.LENGTH_SHORT).show();
+        LatLngBounds curScreen = mMap.getProjection().getVisibleRegion().latLngBounds;
+        Double minLat = 0.0d, maxLat = 0.0d, minLon = 0.0d, maxLon = 0.0d;
+        minLat = curScreen.southwest.latitude;
+        maxLat = curScreen.northeast.latitude;
+        minLon = curScreen.southwest.longitude;
+        maxLon = curScreen.northeast.longitude;
+
+        List<Event> local_events = service.getEventsByArea(minLat, maxLat, minLon, maxLon, new NSService.MyCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> events) {
+                addEventListMarkers(events);
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getActivity(), "Failure", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessageLoad(MyMessage message, int status) {
+                Toast.makeText(getActivity(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+        addEventListMarkers(local_events);
     }
 
 
@@ -104,7 +157,7 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
             }
 
             // Add the marker
-            Marker newMarker = currentMap.addMarker(options);
+            Marker newMarker = mMap.addMarker(options);
 
             // Save the Event object in marker's Tag
             newMarker.setTag(event);
@@ -169,9 +222,9 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
 
     private void centerCameraInBarycenterOfEvents(List<Event> events, boolean animate) {
         if(animate)
-            currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
         else
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(computeCenterEventList(events), 11));
     }
 
     private void centerCameraToContainAllEvents(List<Event> events, boolean animate) {
@@ -183,35 +236,9 @@ public class NSMapFragment extends MapFragment implements GoogleMap.OnMarkerClic
         LatLngBounds bounds = b.build();
 
         if(animate)
-            currentMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
         else
-            currentMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 25, 25, 5));
     }
 
-
-    private void blank_start() {
-        final Double lat = 45.464217d, lon = 9.186571d;
-        int radius = 2000;
-
-        service = NSService.getInstance(getActivity());
-
-        service.getEventsByRadius(lat, lon, radius, new NSService.MyCallback<List<Event>>() {
-            @Override
-            public void onSuccess(List<Event> events) {
-                addEventListMarkers(events);
-                currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 11));;
-            }
-
-            @Override
-            public void onFailure() {
-                Toast.makeText(getActivity(), "Failure", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onMessageLoad(MyMessage message, int status) {
-                Toast.makeText(getActivity(), status + " " + message.getArgument() + " " + message.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-    }
 }
