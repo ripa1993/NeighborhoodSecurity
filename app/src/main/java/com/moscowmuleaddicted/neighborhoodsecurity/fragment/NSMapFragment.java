@@ -554,6 +554,10 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         }
     }
 
+    /**
+     * Shows a dialog fragment containing a tweet
+     * @param tweet
+     */
     public void showTweet(Tweet tweet) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(FRAGMENT_NAME_TWITTER);
