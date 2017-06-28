@@ -94,6 +94,7 @@ public class MapActivity extends AppCompatActivity {
             public void onPlaceSelected(Place place) {
                 Log.w(TAG, "PlaceAutocomplete returned "+place.getLatLng());
                 mMapFragment.moveCamera(place.getLatLng(), true);
+                mMapFragment.onCameraIdle();
             }
 
             @Override
