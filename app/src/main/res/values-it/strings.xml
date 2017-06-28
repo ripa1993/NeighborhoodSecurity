@@ -154,4 +154,5 @@
     <string name="title_activity_auth_email">Autenticazione con Email</string>
     <string name="last_known_location_fail">Ricerca posizione in corso, riprova poi</string>
     <string name="last_known_location_ok">Posizione trovata nel raggio di $1%d metri</string>
+    <string name="twitter_msg">Twitta con #NeighborhoodSecurity e inserisci una posizione per mostrare il tuo tweet sulla mappa</string>
 </resources>

@@ -102,6 +102,10 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
      */
     private ImageView mHelp;
     /**
+     * Imageview that represents twitter
+     */
+    private ImageView mTwitter;
+    /**
      * Side drawer menu
      */
     private Drawer mDrawer;
@@ -393,6 +397,7 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
         mEventSummary = (ImageView) findViewById(R.id.icon_burglar);
         mSubscriptionSummary = (ImageView) findViewById(R.id.icon_bell);
         mHelp = (ImageView) findViewById(R.id.icon_question);
+        mTwitter = (ImageView) findViewById(R.id.icon_twitter);
 
         final AlertDialog ad = new AlertDialog.Builder(this)
                 .setMessage("Msg")
@@ -421,6 +426,19 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         runShowcase();
+                    }
+                })
+                .create();
+
+        final AlertDialog adTwitter = new AlertDialog.Builder(this)
+                .setMessage(R.string.twitter_msg)
+                .setTitle(R.string.twitter_title)
+                .setIcon(R.drawable.ic_twitter_round)
+                .setCancelable(true)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
                     }
                 })
                 .create();
@@ -457,6 +475,12 @@ public class HomePage extends AppCompatActivity implements GoogleApiClient.Conne
             @Override
             public void onClick(View v) {
                 adHelp.show();
+            }
+        });
+        mTwitter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                adTwitter.show();
             }
         });
 
