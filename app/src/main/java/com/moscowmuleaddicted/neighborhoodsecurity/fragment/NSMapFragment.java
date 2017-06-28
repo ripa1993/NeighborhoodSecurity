@@ -1,5 +1,7 @@
 package com.moscowmuleaddicted.neighborhoodsecurity.fragment;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import com.moscowmuleaddicted.neighborhoodsecurity.activity.SubscriptionCreateAc
 import com.moscowmuleaddicted.neighborhoodsecurity.model.Event;
 import com.moscowmuleaddicted.neighborhoodsecurity.model.MyMessage;
 import com.moscowmuleaddicted.neighborhoodsecurity.controller.NSService;
+import com.twitter.sdk.android.core.models.Tweet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +41,7 @@ import java.util.Set;
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.DEFAULT_LATITUDE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.DEFAULT_LONGITUDE;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FRAGMENT_NAME_TWITTER;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT_LIST;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_LATITUDE;
@@ -66,6 +70,10 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
      * Ids that have already been shown
      */
     private Set<Integer> idsAlreadyIn;
+    /**
+     * Tweets that are already in the map
+     */
+    private Set<Long> tweetsAlreadyIn;
     /**
      * Map initial position
      */
@@ -180,7 +188,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
      * Adds a list of events to the cluster manager, only if they are not duplicates
      * @param events to be displayed
      */
-    private synchronized void addToCluster(List<Event> events) {
+    private synchronized void addToClusterEvent(List<Event> events) {
         Log.d(TAG, "Found " + events.size() + " events");
         List<EventClusterItem> eventClusterItems = new ArrayList<>();
         for (Event e : events) {
@@ -189,6 +197,17 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             }
         }
         mClusterManager.addItems(eventClusterItems);
+    }
+
+    private synchronized void addToClusterTweet(List<Tweet> tweets){
+        Log.d(TAG, "Found "+tweets.size() + " tweets");
+        List<EventClusterItem> tweetEvents = new ArrayList<>();
+        for (Tweet t: tweets){
+            if(tweetsAlreadyIn.add(t.getId())){
+                tweetEvents.add(new TweetEvent(t));
+            }
+        }
+        mClusterManager.addItems(tweetEvents);
     }
 
     /**
@@ -209,22 +228,40 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     public boolean onClusterClick(Cluster<EventClusterItem> cluster) {
         Collection<EventClusterItem> eventClusterItems = cluster.getItems();
         ArrayList<Event> events = new ArrayList<>();
+        ArrayList<Tweet> tweets = new ArrayList<>();
         for(EventClusterItem e: eventClusterItems){
-            events.add(e.getEvent());
+            if(e.getEvent() != null) {
+                // add only non tweets
+                events.add(e.getEvent());
+            } else {
+                tweets.add(((TweetEvent)e).getTweet());
+            }
         }
-        Intent showEventList = new Intent(getActivity(), EventListActivity.class);
-        showEventList.putExtra(IE_EVENT_LIST, events);
-        startActivity(showEventList);
-        return false;
+        if(events.size() > 0){
+            Intent showEventList = new Intent(getActivity(), EventListActivity.class);
+            showEventList.putExtra(IE_EVENT_LIST, events);
+            startActivity(showEventList);
+            return false;
+        } else if (tweets.size()>0){
+            showTweet(tweets.get(0));
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean onClusterItemClick(EventClusterItem eventClusterItem) {
-        Event event = eventClusterItem.getEvent();
-        Intent showEventDetail = new Intent(getActivity(), EventDetailActivity.class);
-        showEventDetail.putExtra(IE_EVENT, event);
-        startActivity(showEventDetail);
-        return false;
+        if(eventClusterItem instanceof TweetEvent) {
+            Tweet tweet = ((TweetEvent) eventClusterItem).getTweet();
+            showTweet(tweet);
+            return false;
+        } else {
+            Event event = eventClusterItem.getEvent();
+            Intent showEventDetail = new Intent(getActivity(), EventDetailActivity.class);
+            showEventDetail.putExtra(IE_EVENT, event);
+            startActivity(showEventDetail);
+            return false;
+        }
     }
 
     @Override
@@ -244,7 +281,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             @Override
             public void onSuccess(List<Event> events) {
                 Log.d(TAG, "Found " + events.size() + " events after the API call");
-                addToCluster(events);
+                addToClusterEvent(events);
             }
 
             @Override
@@ -258,7 +295,23 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             }
         }));
         Log.d(TAG, "Found " + localEvents.size() + " events in the local db");
-        addToCluster(localEvents);
+        addToClusterEvent(localEvents);
+
+        // get tweet
+        LatLng center = currentMap.getProjection().getVisibleRegion().latLngBounds.getCenter();
+        service.getTweetsByCoordinates(center.latitude, center.longitude, new NSService.TwitterCallback() {
+            @Override
+            public void onSuccess(List<Tweet> tweets) {
+                Log.d(TAG, "found "+tweets.size()+" tweets");
+                addToClusterTweet(tweets);
+            }
+
+            @Override
+            public void onFailure(String s) {
+                Log.w(TAG, s);
+            }
+        });
+
         mClusterManager.onCameraIdle();
     }
 
@@ -319,6 +372,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         super.onCreate(bundle);
         service = NSService.getInstance(getActivity());
         idsAlreadyIn = new HashSet<Integer>();
+        tweetsAlreadyIn = new HashSet<>();
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -346,7 +400,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
         // load initial events
         if (initialEventsSet) {
-            addToCluster(initialEvents);
+            addToClusterEvent(initialEvents);
         }
 
         // set initial position
@@ -404,6 +458,27 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     }
 
     /**
+     * Tweet marker to be shown
+     */
+    public class TweetEvent extends EventClusterItem{
+
+        private Tweet tweet;
+
+        public TweetEvent(Tweet tweet) {
+            super(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude(), null, null, null);
+            this.tweet = tweet;
+        }
+
+        public Tweet getTweet() {
+            return tweet;
+        }
+
+        public void setTweet(Tweet tweet) {
+            this.tweet = tweet;
+        }
+    }
+
+    /**
      * Extension of {@link DefaultClusterRenderer} in order to customize the shown markers
      */
     private class EventClusterRenderer extends DefaultClusterRenderer<EventClusterItem> {
@@ -417,29 +492,47 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
         @Override
         protected void onBeforeClusterItemRendered(EventClusterItem item, MarkerOptions markerOptions) {
-            switch (item.getEvent().getEventType()) {
-                case CARJACKING:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
-                    break;
-                case BURGLARY:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
-                    break;
-                case ROBBERY:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
-                    break;
-                case THEFT:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
-                    break;
-                case SHADY_PEOPLE:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
-                    break;
-                case SCAMMERS:
-                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
-                    break;
-                default:
-                    break;
+            if(item instanceof TweetEvent){
+                // display tweet
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.twitter));
+            } else {
+                switch (item.getEvent().getEventType()) {
+                    case CARJACKING:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_carjacking));
+                        break;
+                    case BURGLARY:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_burglary));
+                        break;
+                    case ROBBERY:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_robbery));
+                        break;
+                    case THEFT:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_theft));
+                        break;
+                    case SHADY_PEOPLE:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shady_people));
+                        break;
+                    case SCAMMERS:
+                        markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_scammers));
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+    }
+
+    public void showTweet(Tweet tweet){
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(FRAGMENT_NAME_TWITTER);
+        if(prev != null){
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        TwitterFragment newFragment = new TwitterFragment();
+        newFragment.addTweet(tweet);
+        newFragment.show(ft, FRAGMENT_NAME_TWITTER);
     }
 
 }

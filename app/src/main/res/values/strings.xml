@@ -183,4 +183,10 @@
     <string name="title_activity_auth_email">Email Authentication</string>
     <string name="last_known_location_fail">Still acquiring position, try again</string>
     <string name="last_known_location_ok">Location set with accuracy of $1%d metres</string>
+
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">Q5WsTVBfhxzGk656f6rUEUDND</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">3a0cDXxApxtcujE9vmNObwPjf8DxTjD9W0vVs05lRPdahB5lwH</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
