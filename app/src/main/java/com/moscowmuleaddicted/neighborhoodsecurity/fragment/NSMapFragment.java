@@ -105,6 +105,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Sets the initial position of the map
+     *
      * @param initialPosition center coordinates
      */
     public void setInitialPosition(LatLng initialPosition) {
@@ -114,6 +115,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Sets the initial events to be shown
+     *
      * @param initialEvents events to beshown
      */
     public void setInitialEvents(List<Event> initialEvents) {
@@ -123,6 +125,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Computes the center of the map given a list of events
+     *
      * @param events
      * @return coordinates where to center the map
      */
@@ -155,6 +158,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Centers the map in the barycenter of the events
+     *
      * @param events
      * @param animate true to animate, false to simply move
      */
@@ -167,6 +171,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Centers the map to display all the events
+     *
      * @param events
      * @param animate true to animate, false to simply move
      */
@@ -186,6 +191,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Adds a list of events to the cluster manager, only if they are not duplicates
+     *
      * @param events to be displayed
      */
     private synchronized void addToClusterEvent(List<Event> events) {
@@ -199,11 +205,11 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         mClusterManager.addItems(eventClusterItems);
     }
 
-    private synchronized void addToClusterTweet(List<Tweet> tweets){
-        Log.d(TAG, "Found "+tweets.size() + " tweets");
+    private synchronized void addToClusterTweet(List<Tweet> tweets) {
+        Log.d(TAG, "Found " + tweets.size() + " tweets");
         List<EventClusterItem> tweetEvents = new ArrayList<>();
-        for (Tweet t: tweets){
-            if(tweetsAlreadyIn.add(t.getId())){
+        for (Tweet t : tweets) {
+            if (tweetsAlreadyIn.add(t.getId())) {
                 tweetEvents.add(new TweetEvent(t));
             }
         }
@@ -212,11 +218,12 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     /**
      * Moves the camera to the specified position
-     * @param latLng coordinates of the center
+     *
+     * @param latLng  coordinates of the center
      * @param animate true to animate, false to simply move
      */
-    public void moveCamera(LatLng latLng, boolean animate){
-        if(animate){
+    public void moveCamera(LatLng latLng, boolean animate) {
+        if (animate) {
             currentMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
         } else {
             currentMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14f));
@@ -229,20 +236,20 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         Collection<EventClusterItem> eventClusterItems = cluster.getItems();
         ArrayList<Event> events = new ArrayList<>();
         ArrayList<Tweet> tweets = new ArrayList<>();
-        for(EventClusterItem e: eventClusterItems){
-            if(e.getEvent() != null) {
+        for (EventClusterItem e : eventClusterItems) {
+            if (e.getEvent() != null) {
                 // add only non tweets
                 events.add(e.getEvent());
             } else {
-                tweets.add(((TweetEvent)e).getTweet());
+                tweets.add(((TweetEvent) e).getTweet());
             }
         }
-        if(events.size() > 0){
+        if (events.size() > 0) {
             Intent showEventList = new Intent(getActivity(), EventListActivity.class);
             showEventList.putExtra(IE_EVENT_LIST, events);
             startActivity(showEventList);
             return false;
-        } else if (tweets.size()>0){
+        } else if (tweets.size() > 0) {
             showTweet(tweets.get(0));
             return false;
         }
@@ -251,7 +258,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
     @Override
     public boolean onClusterItemClick(EventClusterItem eventClusterItem) {
-        if(eventClusterItem instanceof TweetEvent) {
+        if (eventClusterItem instanceof TweetEvent) {
             Tweet tweet = ((TweetEvent) eventClusterItem).getTweet();
             showTweet(tweet);
             return false;
@@ -302,7 +309,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         service.getTweetsByCoordinates(center.latitude, center.longitude, new NSService.TwitterCallback() {
             @Override
             public void onSuccess(List<Tweet> tweets) {
-                Log.d(TAG, "found "+tweets.size()+" tweets");
+                Log.d(TAG, "found " + tweets.size() + " tweets");
                 addToClusterTweet(tweets);
             }
 
@@ -321,49 +328,49 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.map_dialog)
-            .setItems(new String[]{getString(R.string.map_dialog_event), getString(R.string.map_dialog_subscription), getString(R.string.map_dialog_whats_there)}, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case 0:
-                            if(mAuth.getCurrentUser()!=null) {
-                                Log.d(TAG, "starting event creation");
-                                Intent intentEvent = new Intent(getApplicationContext(), EventCreateActivity.class);
-                                intentEvent.putExtra(IE_LATITUDE, latLng.latitude);
-                                intentEvent.putExtra(IE_LONGITUDE, latLng.longitude);
-                                startActivity(intentEvent);
+                .setItems(new String[]{getString(R.string.map_dialog_event), getString(R.string.map_dialog_subscription), getString(R.string.map_dialog_whats_there)}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                if (mAuth.getCurrentUser() != null) {
+                                    Log.d(TAG, "starting event creation");
+                                    Intent intentEvent = new Intent(getApplicationContext(), EventCreateActivity.class);
+                                    intentEvent.putExtra(IE_LATITUDE, latLng.latitude);
+                                    intentEvent.putExtra(IE_LONGITUDE, latLng.longitude);
+                                    startActivity(intentEvent);
+                                    return;
+                                } else {
+                                    Log.d(TAG, "user is not logged in, this is required when creating event!");
+                                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                            case 1:
+                                if (mAuth.getCurrentUser() != null) {
+                                    Log.d(TAG, "starting subscription creation");
+                                    Intent intentSubscription = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
+                                    intentSubscription.putExtra(IE_LATITUDE, latLng.latitude);
+                                    intentSubscription.putExtra(IE_LONGITUDE, latLng.longitude);
+                                    startActivity(intentSubscription);
+                                    return;
+                                } else {
+                                    Log.d(TAG, "user is not logged in, this is required when creating a subscription!");
+                                    Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                            case 2:
+                                Log.d(TAG, "starting event list");
+                                Intent intentEventList = new Intent(getApplicationContext(), EventListActivity.class);
+                                intentEventList.putExtra(IE_LATITUDE, latLng.latitude);
+                                intentEventList.putExtra(IE_LONGITUDE, latLng.longitude);
+                                startActivity(intentEventList);
                                 return;
-                            } else {
-                                Log.d(TAG, "user is not logged in, this is required when creating event!");
-                                Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
+                            default:
+                                Log.d(TAG, "nothing to do");
                                 return;
-                            }
-                        case 1:
-                            if(mAuth.getCurrentUser()!=null) {
-                                Log.d(TAG, "starting subscription creation");
-                                Intent intentSubscription = new Intent(getApplicationContext(), SubscriptionCreateActivity.class);
-                                intentSubscription.putExtra(IE_LATITUDE, latLng.latitude);
-                                intentSubscription.putExtra(IE_LONGITUDE, latLng.longitude);
-                                startActivity(intentSubscription);
-                                return;
-                            }  else {
-                            Log.d(TAG, "user is not logged in, this is required when creating a subscription!");
-                            Toast.makeText(getApplicationContext(), getString(R.string.login_required_toast), Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                        case 2:
-                            Log.d(TAG, "starting event list");
-                            Intent intentEventList = new Intent(getApplicationContext(), EventListActivity.class);
-                            intentEventList.putExtra(IE_LATITUDE, latLng.latitude);
-                            intentEventList.putExtra(IE_LONGITUDE, latLng.longitude);
-                            startActivity(intentEventList);
-                            return;
-                        default:
-                            Log.d(TAG, "nothing to do");
-                            return;
+                        }
                     }
-                }
-            }).setCancelable(true).create().show();
+                }).setCancelable(true).create().show();
 
     }
 
@@ -406,7 +413,7 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         // set initial position
         if (initialPositionSet) {
             moveCamera(initialPosition, true);
-        } else if (initialEventsSet){
+        } else if (initialEventsSet) {
             centerCameraToContainAllEvents(initialEvents, true);
         } else {
             moveCamera(defaultPosition, true);
@@ -437,6 +444,9 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
             mEvent = event;
         }
 
+        public EventClusterItem() {
+        }
+
         @Override
         public LatLng getPosition() {
             return mPosition;
@@ -460,13 +470,35 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
     /**
      * Tweet marker to be shown
      */
-    public class TweetEvent extends EventClusterItem{
+    public class TweetEvent extends EventClusterItem {
 
         private Tweet tweet;
 
         public TweetEvent(Tweet tweet) {
-            super(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude(), null, null, null);
+            super();
+            if (tweet.coordinates != null) {
+                super.mPosition = new LatLng(tweet.coordinates.getLatitude(), tweet.coordinates.getLongitude());
+            } else if (tweet.place != null) {
+                List<LatLng> coordinates = new ArrayList<>();
+                List<List<Double>> polygon = tweet.place.boundingBox.coordinates.get(0);
+                for(List<Double> point: polygon){
+                    coordinates.add(new LatLng(point.get(1), point.get(0)));
+                }
+                super.mPosition = getCentroid(coordinates);
+
+                Log.d(TAG, super.mPosition.toString());
+            }
             this.tweet = tweet;
+
+        }
+
+        private LatLng getCentroid(List<LatLng> coords){
+            double centroidLat = 0, centroidLon = 0;
+            for(LatLng coord: coords){
+                centroidLat+=coord.latitude;
+                centroidLon+=coord.longitude;
+            }
+            return new LatLng(centroidLat/coords.size(), centroidLon/coords.size());
         }
 
         public Tweet getTweet() {
@@ -492,9 +524,9 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
 
         @Override
         protected void onBeforeClusterItemRendered(EventClusterItem item, MarkerOptions markerOptions) {
-            if(item instanceof TweetEvent){
+            if (item instanceof TweetEvent) {
                 // display tweet
-                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.twitter));
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_twitter_minimal));
             } else {
                 switch (item.getEvent().getEventType()) {
                     case CARJACKING:
@@ -522,10 +554,10 @@ public class NSMapFragment extends MapFragment implements OnMapReadyCallback, Cl
         }
     }
 
-    public void showTweet(Tweet tweet){
+    public void showTweet(Tweet tweet) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(FRAGMENT_NAME_TWITTER);
-        if(prev != null){
+        if (prev != null) {
             ft.remove(prev);
         }
         ft.addToBackStack(null);
