@@ -82,6 +82,7 @@ public class Constants {
     public static final double DEFAULT_LATITUDE = 45.477072;
     public static final double DEFAULT_LONGITUDE = 9.226096;
     public static final long DEMO_ACCOUNT_ID = 123123123;
+    public static final String FRAGMENT_NAME_TWITTER = "dialog-twitter";
 
     // showcase played
     public static final String SHOWCASE_HOME = "showcase-home";

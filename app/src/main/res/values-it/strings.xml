@@ -147,11 +147,12 @@
     <string name="showcase_drawer_intro">Questo è il menu laterale. Qui trovi altre funzionalità.</string>
     <string name="showcase_intro">Benvenuto in Neighborhood Security! Ti mostro le funzioni principali.</string>
     <string name="showcase_map">Premi qui per aprire una mappa degli eventi</string>
-    <string name="showcase_stats">Premi queste icone per vedere delle statistiche</string>
+    <string name="showcase_stats">Premi queste icone per avere informazioni sull\'app</string>
     <string name="showcase_subscription">Qui puoi trovare le sottoscrizioni attive.</string>
     <string name="map_dialog_whats_there">Cosa c\'è qui?</string>
     <string name="title_event_list_location_coor">Eventi vicino a (%1$s N, %2$s E)</string>
     <string name="title_activity_auth_email">Autenticazione con Email</string>
     <string name="last_known_location_fail">Ricerca posizione in corso, riprova poi</string>
     <string name="last_known_location_ok">Posizione trovata nel raggio di $1%d metri</string>
+    <string name="twitter_msg">Twitta con #NeighborhoodSecurity e inserisci una posizione per mostrare il tuo tweet sulla mappa</string>
 </resources>

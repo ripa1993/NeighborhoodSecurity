@@ -28,6 +28,15 @@ import com.moscowmuleaddicted.neighborhoodsecurity.model.Subscription;
 import com.moscowmuleaddicted.neighborhoodsecurity.model.User;
 import com.moscowmuleaddicted.neighborhoodsecurity.controller.rest.HeaderRequestInterceptor;
 import com.moscowmuleaddicted.neighborhoodsecurity.controller.rest.NSRestService;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.Search;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.SearchService;
+import com.twitter.sdk.android.core.services.params.Geocode;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -59,6 +68,14 @@ public class NSService {
      * Logger's TAG
      */
     public static final String TAG = "NSService";
+    /**
+     * The Twitter API client
+     */
+    private final TwitterApiClient twitterApiClient;
+    /**
+     * The twitter API search service
+     */
+    private final SearchService searchService;
     /**
      * Firabase Authentication instance
      */
@@ -117,6 +134,9 @@ public class NSService {
         eventDB = new EventDB(mContext);
         subscriptionDB = new SubscriptionDB(mContext);
 
+        Twitter.initialize(mContext);
+        twitterApiClient = TwitterCore.getInstance().getApiClient();
+        searchService = twitterApiClient.getSearchService();
     }
 
     /**
@@ -1210,6 +1230,28 @@ public class NSService {
     }
 
     /**
+     * Gets the tweets related to the application given a location
+     * @param latitude
+     * @param longitude
+     * @param callback
+     */
+    public void getTweetsByCoordinates(double latitude, double longitude, final TwitterCallback callback){
+        Log.d(TAG, "performing tweet search");
+        searchService.tweets("%23neighborhoodsecurity", new Geocode(latitude, longitude, 2, Geocode.Distance.KILOMETERS),
+                null, null, "mixed", null, null, null, null, false).enqueue(new com.twitter.sdk.android.core.Callback<Search>() {
+            @Override
+            public void success(Result<Search> result) {
+                callback.onSuccess(result.data.tweets);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                callback.onFailure(exception.getLocalizedMessage());
+            }
+        });
+    }
+
+    /**
      * Callback interface, successfull response is a text message
      */
     public static interface CallbackMessage {
@@ -1241,6 +1283,14 @@ public class NSService {
      */
     public static interface MySimpleCallback{
         public void onSuccess(String s);
+        public void onFailure(String s);
+    }
+
+    /**
+     * Callback for twitter
+     */
+    public static interface TwitterCallback{
+        public void onSuccess(List<Tweet> tweets);
         public void onFailure(String s);
     }
 
