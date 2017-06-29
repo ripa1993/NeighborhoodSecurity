@@ -38,14 +38,6 @@
             />
 
         <ImageView
-            android:id="@+id/icon_twitter"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_twitter_round"
-            app:arc_origin="center"
-            />
-
-        <ImageView
             android:id="@+id/icon_question"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -53,6 +45,13 @@
             app:arc_origin="center"
             />
 
+        <ImageView
+            android:id="@+id/icon_twitter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_twitter_round"
+            app:arc_origin="center"
+            />
 
     </com.ogaclejapan.arclayout.ArcLayout>
 

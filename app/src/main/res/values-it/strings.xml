@@ -147,7 +147,7 @@
     <string name="showcase_drawer_intro">Questo è il menu laterale. Qui trovi altre funzionalità.</string>
     <string name="showcase_intro">Benvenuto in Neighborhood Security! Ti mostro le funzioni principali.</string>
     <string name="showcase_map">Premi qui per aprire una mappa degli eventi</string>
-    <string name="showcase_stats">Premi queste icone per vedere delle statistiche</string>
+    <string name="showcase_stats">Premi queste icone per avere informazioni sull\'app</string>
     <string name="showcase_subscription">Qui puoi trovare le sottoscrizioni attive.</string>
     <string name="map_dialog_whats_there">Cosa c\'è qui?</string>
     <string name="title_event_list_location_coor">Eventi vicino a (%1$s N, %2$s E)</string>

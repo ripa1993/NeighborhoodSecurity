@@ -175,7 +175,7 @@
     <string name="showcase_intro">Welcome to Neighborhood Security! I\'ll show you the main features.</string>
     <string name="showcase_map">Click here to open a map to show all the events</string>
     <string name="showcase_subscription">Here you can find your active subscriptions.</string>
-    <string name="showcase_stats">Click these icons to see statistics about app usage</string>
+    <string name="showcase_stats">Click these icons to see information about app usage</string>
     <string name="showcase_drawer_intro">This is the drawer. You can find additional functionalities here.</string>
     <string name="showcase_drawer_account">This is your account. You can register one for free!</string>
     <string name="showcase_drawer_createaccount">It\'s easy, just click here!</string>
@@ -183,12 +183,9 @@
     <string name="title_activity_auth_email">Email Authentication</string>
     <string name="last_known_location_fail">Still acquiring position, try again</string>
     <string name="last_known_location_ok">Location set with accuracy of $1%d metres</string>
+    <string name="twitter_msg">Tweet using #NeighborhoodSecurity and providing a location to show your tweet on the map</string>
+    <string name="twitter_title" translatable="false">Twitter</string>
 
     <string name="com.twitter.sdk.android.CONSUMER_KEY" translatable="false">Q5WsTVBfhxzGk656f6rUEUDND</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET" translatable="false">3a0cDXxApxtcujE9vmNObwPjf8DxTjD9W0vVs05lRPdahB5lwH</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <string name="twitter_msg">Tweet using #NeighborhoodSecurity and providing a location to show your tweet on the map</string>
-    <string name="twitter_title" translatable="false">Twitter</string>
 </resources>
