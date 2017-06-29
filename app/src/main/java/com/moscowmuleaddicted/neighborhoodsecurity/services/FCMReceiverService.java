@@ -49,7 +49,10 @@ import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.F
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_TYPE;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.FCM_VOTES;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.IE_EVENT;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAPS_API_COORD;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAPS_API_URL;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAPS_API_URL_2;
+import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.MAPS_API_URL_3;
 import static com.moscowmuleaddicted.neighborhoodsecurity.controller.Constants.SP_SUBSCRIPTIONS;
 
 /**
@@ -166,9 +169,10 @@ public class FCMReceiverService extends FirebaseMessagingService {
         Bitmap map = null;
         try {
             map = getMapBitmap(eLatitude, eLongitude);
+            Log.d(TAG, "map: "+buildMapUrl(eLatitude, eLongitude));
         } catch (Exception e) {
             // ignore
-            Log.w(TAG, "cannot load static map image", e);
+            Log.w(TAG, "cannot load static map image "+buildMapUrl(eLatitude, eLongitude),e);
             skipMap = true;
         }
 
@@ -183,8 +187,8 @@ public class FCMReceiverService extends FirebaseMessagingService {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_marmotta_full)
-                .setContentTitle(eEventType + " @ " + eCity + ", " + eStreet)
-                .setContentText(eDescription)
+                .setContentTitle(eEventType + " @ " + eCity )
+                .setContentText(eStreet +"\n" + eDescription)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(eDescription)
                 )
@@ -231,7 +235,14 @@ public class FCMReceiverService extends FirebaseMessagingService {
      * @return url
      */
     private String buildMapUrl(double latitude, double longitude){
-        return String.format(MAPS_API_URL, latitude, longitude, getString(R.string.google_maps_key));
+        String mapUrl = "";
+        mapUrl += MAPS_API_URL;
+        mapUrl += String.format(MAPS_API_COORD, String.valueOf(latitude), String.valueOf(longitude));
+        mapUrl += MAPS_API_URL_2;
+        mapUrl += String.format(MAPS_API_COORD, String.valueOf(latitude), String.valueOf(longitude));
+        mapUrl += MAPS_API_URL_3;
+        mapUrl += getString(R.string.google_maps_key);
+        return mapUrl;
     }
 
     /**

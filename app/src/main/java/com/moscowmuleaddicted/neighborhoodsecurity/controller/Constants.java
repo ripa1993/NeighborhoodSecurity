@@ -12,7 +12,10 @@ import java.util.concurrent.TimeUnit;
 public class Constants {
     // urls and parameters
     public static final String NS_REST_URL = "https://thawing-taiga-87659.herokuapp.com/";
-    public static final String MAPS_API_URL = "https://maps.googleapis.com/maps/api/staticmap?center=%1$f,%2$f&zoom=15&size=400x400&markers=size:large%7C%1$f,%2$f&key=%3$s";
+    public static final String MAPS_API_URL = "https://maps.googleapis.com/maps/api/staticmap?center=";
+    public static final String MAPS_API_URL_2 = "&zoom=15&size=400x400&markers=size:large%7C";
+    public static final String MAPS_API_URL_3 = "&key=";
+    public static final String MAPS_API_COORD = "%1$s,%2$s";
     public static final String SERVICE_KEY = "service_key";
     public static final String AUTH_TOKEN = "auth_token";
 
