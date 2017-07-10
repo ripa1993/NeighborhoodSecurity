@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorAccentDark">#c13061</color>
-    <color name="splash_light">#646464</color>
-    <color name="splash_dark">#1a1a1a</color>
+    <color name="splash_light">#fff</color>
+    <color name="splash_dark">#fff</color>
 
     <color name="black_transparent">#20000000</color>
 
