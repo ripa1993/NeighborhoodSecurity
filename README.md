@@ -17,6 +17,9 @@ This repository contains the source code of the entire Android application
 - View Geotagged tweets on map
 - Extended Android Wear notifications
 
+## Note:
+Used API keys must be replaced since they are expired
+
 ## Useful Links:
 - [Design Document](https://github.com/ripa1993/Neighborhood-Security-DD)
 - [REST API Backed Source Code](https://github.com/ripa1993/NeighborhoodSecurityBackend)
